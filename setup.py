@@ -84,25 +84,23 @@ url = 'https://github.com/aequitas-aod/my_project'
 
 
 setup(
-    name='my_project',  # Required
+    name='unibo-dtm-se-2425-GardenInvasion',  # Required
     version=version,
-    description='Description of the project here',
+    description='A 2D arcade game combining Space Invaders and Plants vs. Zombies mechanics',
     license='Apache 2.0 License',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url=url,
-    author='Name Surname',
-    author_email='name.surname@organization.domain',
+    url='https://github.com/unibo-dtm-se-2425-GardenInvasion',
+    author='Filippo Malocco, Alessandro Filipelli',
+    author_email='filippo.malocco@studio.unibo.it, alessandro.filipelli@studio.unibo.it',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Topic :: Games/Entertainment :: Game',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3 :: Only'
     ],
-    keywords='aeuitas, horizon2020, xai, bias',  # Optional
+    keywords='game pygame, space-invaders, plants-vs-zombies arcade',
     # package_dir={'': 'src'},  # Optional
     packages=find_packages(),  # Required
     include_package_data=True,

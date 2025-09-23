@@ -1,6 +1,5 @@
 import logging
 
-
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('my_project')
 
@@ -9,8 +8,13 @@ logger = logging.getLogger('my_project')
 # put your main classes here, eg:
 class MyClass:
     def my_method(self):
-        return "Hello World"
-
+        return "Hello fellow plant, get ready to defend yourself from zombies soon"
+    
+try:
+    from .engine.game_engine import GameEngine
+    __all__ = ["GameEngine"]
+except ImportError:
+    __all__ = []
 
 # let this be the last line of this file
-logger.info("my_project loaded")
+logger.info("Garden Invasion loaded")
