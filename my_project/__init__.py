@@ -9,12 +9,6 @@ logger = logging.getLogger('my_project')
 class MyClass:
     def my_method(self):
         return "Hello fellow plant, get ready to defend yourself from zombies soon"
-    
-try:
-    from .engine.game_engine import GameEngine
-    __all__ = ["GameEngine"]
-except ImportError:
-    __all__ = []
 
 # let this be the last line of this file
 logger.info("Garden Invasion loaded")
