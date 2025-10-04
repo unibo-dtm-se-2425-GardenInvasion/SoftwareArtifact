@@ -1,12 +1,10 @@
-import pygame
-import sys
+import pygame, sys
 from pathlib import Path
 from my_project.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from my_project.Model.menu_model import BackgroundModel
 from my_project.Controller.menu_controller import main_menu_loop
 
-
-def main():
+if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Garden Invasion")
@@ -26,7 +24,3 @@ def main():
     finally:
         pygame.quit()
         sys.exit()
-
-
-if __name__ == "__main__":
-    main()

@@ -3,7 +3,6 @@
 # Screen settings
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
-FPS = 60
 
 # Colors (RGB values)
 BLACK = (0, 0, 0)
