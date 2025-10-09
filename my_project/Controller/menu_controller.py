@@ -94,12 +94,8 @@ def run_game(screen: pygame.Surface, model: MenuModel) -> None:
             if _global_quit(event, screen, model):
                 pygame.quit()
                 sys.exit()  # Quit on user confirmation
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                # Spawn projectile from top center of player
-                projectile = Projectile(player.rect.midtop)
-                projectile_group.add(projectile)
 
-        handle_player_input(player,projectile_group) # handle player movement input        
+        handle_player_input(player,projectile_group) # handle player movement input and auto shooting    
         # Update player (plant) and projectile position based on keyboard input
         player_group.update()
         projectile_group.update()

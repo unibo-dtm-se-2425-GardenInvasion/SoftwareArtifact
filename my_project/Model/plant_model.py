@@ -12,6 +12,9 @@ class Player(pygame.sprite.Sprite): # sprite is used to represent game objects i
         # get original image of the plant and change its size keeping the aspect ratio
         self.speed = 5 # movement speed
 
+        self.shoot_SecondTime = 500  # 0.5 seconds
+        self.last_shot = pygame.time.get_ticks()# track time of last shot
+
     def move_left(self): # move left
         self.rect.x -= self.speed
         if self.rect.left < 0:
@@ -21,3 +24,10 @@ class Player(pygame.sprite.Sprite): # sprite is used to represent game objects i
         self.rect.x += self.speed
         if self.rect.right > SCREEN_WIDTH:
             self.rect.right = SCREEN_WIDTH # prevent moving out of screen on the right side
+
+    def can_shoot(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_shot >= self.shoot_SecondTime:
+            self.last_shot = current_time
+            return True
+        return False
