@@ -1,78 +1,68 @@
 import pygame
 import sys
 from pathlib import Path
-from ..Model.menu_model import MenuModel
-from ..View.menu_view import draw_menu, draw_modal
+from ..Model.menu_model import MenuModel, BackgroundModel
+from ..View.menu_view import draw_menu, draw_modal, draw_pause_modal, get_pause_menu_button_rects
 from ..Utilities.constants import*
 from ..Model.plant_model import Player
 from .plant_controller import handle_player_input
-from ..Model.projectile_model import Projectile
 from ..View.RunGame_view import draw_game
-from ..Model.menu_model import BackgroundModel
+from .menu_controller_utilities import _global_quit, show_confirm_quit
+from .options_controller import run_options
 
 # ---------- modal helper ----------
-def show_confirm_quit(screen: pygame.Surface, model: MenuModel) -> bool:
-    #function returns True if user confirmed quit
-    clock = pygame.time.Clock() # clock to control frame rate
-    # we use the clock to set how fast the screen update itself in order to reduce CPU usage
-
-    background_copy = screen.copy() # used to capture screen content for blurring
-    small_size = (screen.get_width() // 3, screen.get_height() // 3)  # adjust factor for blur strength
-    blurred = pygame.transform.smoothscale(background_copy, small_size) # scale down for faster processing
-    blurred = pygame.transform.smoothscale(blurred, screen.get_size()) # scale back up to original size
-    # apply a blur effect to the confirm_quit window background
-
+def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
+    clock = pygame.time.Clock()
+    background_copy = screen.copy()
+    small_size = (screen.get_width() // 3, screen.get_height() // 3)
+    blurred = pygame.transform.smoothscale(background_copy, small_size)
+    blurred = pygame.transform.smoothscale(blurred, screen.get_size())
+    # Reset to middle button (Resume) by default
+    pause_selected = 1  # 0=Main Menu, 1=Resume, 2=Quit
+    
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:# window X → quit
-                return True
-            
+            if event.type == pygame.QUIT:
+                return 'quit' # Quit the game
             if event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_LEFT, pygame.K_a):
-                    model.modal_selected_button = (model.modal_selected_button - 1) % 2
-                    # used to switch between Yes/No buttons -> more left or up
+                    pause_selected = (pause_selected - 1) % 3 # Left arrow or A pressed
                 elif event.key in (pygame.K_RIGHT, pygame.K_d):
-                    model.modal_selected_button = (model.modal_selected_button + 1) % 2
-                    # used to switch between Yes/No buttons -> move right or down
+                    pause_selected = (pause_selected + 1) % 3 # right arrow or D pressed
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    return model.modal_selected_button == 0
-                elif event.key == pygame.K_ESCAPE:      # ESC inside modal = No
-                    return False
-            # this if handles the input from the keyboard
-
+                    if pause_selected == 0:
+                        return 'menu'
+                    elif pause_selected == 1:
+                        return 'resume'
+                    else:
+                        return 'quit'
+                elif event.key == pygame.K_ESCAPE:
+                    return 'resume'  # ESC in pause menu = resume
+                    
             if event.type == pygame.MOUSEMOTION:
-                # highlight button under cursor
-                yes_rect = pygame.Rect(0, 0, 140, 50)
-                no_rect  = pygame.Rect(0, 0, 140, 50)
-                box_y = SCREEN_HEIGHT//2 + int(SCREEN_HEIGHT*0.35*0.15)
-                yes_rect.center = (SCREEN_WIDTH//2 - 110, box_y)
-                no_rect.center  = (SCREEN_WIDTH//2 + 110, box_y)
-                if yes_rect.collidepoint(event.pos):
-                    model.modal_selected_button = 0 # highlight Yes button
-                elif no_rect.collidepoint(event.pos):
-                    model.modal_selected_button = 1 # highlight No button
-            # this if handles the input from the mouse movement
-
+                menu_rect, resume_rect, quit_rect = get_pause_menu_button_rects()
+                if menu_rect.collidepoint(event.pos):
+                    pause_selected = 0
+                elif resume_rect.collidepoint(event.pos):
+                    pause_selected = 1
+                elif quit_rect.collidepoint(event.pos):
+                    pause_selected = 2
+                    
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                return model.modal_selected_button == 0
-            # this if handles the input from the mouse left click
-
+                if pause_selected == 0:
+                    return 'menu'
+                elif pause_selected == 1:
+                    return 'resume'
+                else:
+                    return 'quit'
+        
         screen.blit(blurred, (0, 0))
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 150)) # semi-transparent overlay to a darken the background
+        overlay.fill((0, 0, 0, 150))
         screen.blit(overlay, (0, 0))
-        draw_modal(screen, model.modal_selected_button) # draw the modal window
-        pygame.display.flip() # update the full display
-        clock.tick(60) # limit to 60 FPS
-
-def _global_quit(event: pygame.event.Event, screen: pygame.Surface, model: MenuModel) -> bool:
-    # returns True if user confirmed quit by pressing the ESC key or window X
-    if event.type == pygame.QUIT:
-        return show_confirm_quit(screen, model)
-    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-        return show_confirm_quit(screen, model)
-    return False
-    # centralized helper to handle global quit events (QUIT or ESC key)
+        draw_pause_modal(screen, pause_selected)
+        pygame.display.flip()
+        clock.tick(60)
 
 # ---------- game + options scenes ----------
 def run_game(screen: pygame.Surface, model: MenuModel) -> None:
@@ -91,9 +81,19 @@ def run_game(screen: pygame.Surface, model: MenuModel) -> None:
     running = True
     while running:
         for event in pygame.event.get(): # event loop to handle user input
-            if _global_quit(event, screen, model):
-                pygame.quit()
-                sys.exit()  # Quit on user confirmation
+            if event.type == pygame.QUIT:
+                if show_confirm_quit(screen, model):
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                # Show pause menu instead of quit dialog
+                action = show_pause_menu(screen, model)
+                if action == 'quit':
+                    pygame.quit()
+                    sys.exit()
+                elif action == 'menu':
+                    running = False  # Exit game loop, return to main menu
+                # If 'resume', continue the loop normally
 
         handle_player_input(player,projectile_group) # handle player movement input and auto shooting    
         # Update player (plant) and projectile position based on keyboard input
@@ -106,20 +106,6 @@ def run_game(screen: pygame.Surface, model: MenuModel) -> None:
         # Update the full display surface
         pygame.display.flip() # update the full display
         clock.tick(60)  # Limit FPS to 60
-
-
-def run_options(screen: pygame.Surface, model: MenuModel) -> None:
-    #placeholder for the option menu until the user quits
-
-    clock = pygame.time.Clock()
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if _global_quit(event, screen, model):
-                pygame.quit(); sys.exit() # handle the global quit
-        screen.fill((0, 0, 0))
-        pygame.display.flip()
-        clock.tick(60)
 
 # ---------- main menu ----------
 def main_menu_loop(screen: pygame.Surface,
@@ -148,7 +134,7 @@ def main_menu_loop(screen: pygame.Surface,
                     if model.selected_index == 0:
                         run_game(screen, model)
                     else:
-                        run_options(screen, model)
+                        run_options(screen, model, background_surf, background_rect, fonts)
             # this if handles the input from the keyboard (UP/W and DOWN/S to navigate, ENTER/SPACE to select)
             
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -163,7 +149,7 @@ def main_menu_loop(screen: pygame.Surface,
                         if i == 0:
                             run_game(screen, model)
                         else:
-                            run_options(screen, model)
+                            run_options(screen, model, background_surf, background_rect, fonts)
             # this if handles the input from the mouse left click with an approximate hitbox
         draw_menu(screen, model, background_surf, background_rect, fonts) # draw the menu
         clock.tick(60) # limit to 60 FPS

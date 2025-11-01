@@ -79,9 +79,7 @@ class GetMinimumPythonVersion(distutils.cmd.Command):
     def run(self):
         print(".".join(python_version[2:].split(".")[:2]))
 
-
-url = 'https://github.com/aequitas-aod/my_project'
-
+url='https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact'
 
 setup(
     name='unibo-dtm-se-2425-GardenInvasion',  # Required
@@ -90,7 +88,7 @@ setup(
     license='Apache 2.0 License',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/unibo-dtm-se-2425-GardenInvasion',
+    url=url,
     author='Filippo Malocco, Alessandro Filipelli',
     author_email='filippo.malocco@studio.unibo.it, alessandro.filipelli@studio.unibo.it',
     classifiers=[
