@@ -5,6 +5,7 @@ from ..Model.menu_model import MenuModel, BackgroundModel
 from ..View.menu_view import draw_menu, draw_modal, draw_pause_modal, get_pause_menu_button_rects
 from ..Utilities.constants import*
 from ..Model.plant_model import Player
+from ..Model.setting_volume_model import SettingsModel
 from .plant_controller import handle_player_input
 from ..View.RunGame_view import draw_game
 from .menu_controller_utilities import _global_quit, show_confirm_quit
@@ -108,6 +109,9 @@ def run_game(screen: pygame.Surface, model: MenuModel) -> None:
         clock.tick(60)  # Limit FPS to 60
 
 # ---------- main menu ----------
+settings_model = SettingsModel()
+settings_model.load()
+
 def main_menu_loop(screen: pygame.Surface,
                    background_surf: pygame.Surface | None,
                    background_rect: pygame.Rect | None,
@@ -134,7 +138,7 @@ def main_menu_loop(screen: pygame.Surface,
                     if model.selected_index == 0:
                         run_game(screen, model)
                     else:
-                        run_options(screen, model, background_surf, background_rect, fonts)
+                        run_options(screen, model, background_surf, background_rect, fonts, settings_model)
             # this if handles the input from the keyboard (UP/W and DOWN/S to navigate, ENTER/SPACE to select)
             
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -149,7 +153,7 @@ def main_menu_loop(screen: pygame.Surface,
                         if i == 0:
                             run_game(screen, model)
                         else:
-                            run_options(screen, model, background_surf, background_rect, fonts)
+                            run_options(screen, model, background_surf, background_rect, fonts, settings_model)
             # this if handles the input from the mouse left click with an approximate hitbox
         draw_menu(screen, model, background_surf, background_rect, fonts) # draw the menu
         clock.tick(60) # limit to 60 FPS

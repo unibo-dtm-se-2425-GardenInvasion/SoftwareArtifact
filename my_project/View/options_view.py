@@ -156,7 +156,7 @@ def draw_contact_modal(screen, selected_button=0):
 
     # Button text labels
     open_label = font_btn.render("Open Email", True, (20, 20, 20))
-    cancel_label = font_btn.render("Cancel", True, (20, 20, 20))
+    cancel_label = font_btn.render("Back", True, (20, 20, 20))
     screen.blit(open_label, open_label.get_rect(center=open_rect.center))
     screen.blit(cancel_label, cancel_label.get_rect(center=cancel_rect.center))
 
