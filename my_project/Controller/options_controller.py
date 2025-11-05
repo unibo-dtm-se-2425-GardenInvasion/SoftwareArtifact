@@ -3,7 +3,7 @@ import sys
 import webbrowser # Added import for webbrowser later used for the email
 from pathlib import Path
 
-from .menu_controller_utilities import _global_quit, show_confirm_quit
+from .menu_controller_utilities import show_confirm_quit
 from ..Model.menu_model import MenuModel
 from ..Model.options_model import OptionsModel, VolumeModel
 from ..Model.setting_volume_model import SettingsModel
@@ -23,16 +23,21 @@ def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsMode
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: # Handle quit event
+                #print ("Quit event detected in contact confirmation modal")
                 return False
                 
             if event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_LEFT, pygame.K_a):
+                    # print ("Left key detected in contact confirmation modal, open email client")
                     options_model.modal_selected_button = 0 # Select "Open Email Client"
                 elif event.key in (pygame.K_RIGHT, pygame.K_d):
+                    # print ("Right key detected in contact confirmation modal, back to options menu")
                     options_model.modal_selected_button = 1 # Select "Back"
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                    # print ("Enter/Space key detected in contact confirmation modal, open email client")
                     return options_model.modal_selected_button == 0 # Return True if "Open Email Client" is selected
                 elif event.key == pygame.K_ESCAPE:
+                    # print ("Escape key detected in contact confirmation modal, back to options menu")
                     return False
                 
             elif event.type == pygame.MOUSEMOTION: # Handle mouse hover over buttons
@@ -51,9 +56,6 @@ def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsMode
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 return options_model.modal_selected_button == 0 # Return True if "Open Email Client" is selected
-
-            
-
 
         screen.blit(blurred, (0, 0))
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA) 
@@ -78,7 +80,9 @@ def run_volume_menu(screen: pygame.Surface,
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 # Show quit confirmation
+                print ("'X' Click detected, global quit shown in volume submenu")
                 if show_confirm_quit(screen, model):
+                    print("Click detected, global quit from volume submenu")
                     pygame.quit()
                     sys.exit()
                     
@@ -88,9 +92,12 @@ def run_volume_menu(screen: pygame.Surface,
                 elif event.key in (pygame.K_RIGHT, pygame.K_d):
                     volume_model.volume = min(100, volume_model.volume + 5) # adjust volume right
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                    print ("Enter/Space key detected in volume submenu, exiting volume menu")
                     running = False # Exit volume menu
                 elif event.key == pygame.K_ESCAPE:
+                    print ("Escape key detected in volume submenu, global quit shown")
                     if show_confirm_quit(screen, model):
+                        print("Enter/space key detected, Global quit from volume submenu")
                         pygame.quit()
                         sys.exit()
                         
@@ -105,6 +112,7 @@ def run_volume_menu(screen: pygame.Surface,
                 back_rect.center = (SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.61)
                 
                 if back_rect.collidepoint(event.pos):
+                    print ("Back button clicked in volume menu, exiting volume menu")
                     running = False # Exit volume menu
         back_rect = draw_volume_menu(screen, volume_model, background_surf, background_rect, fonts)
         pygame.display.flip()
@@ -126,13 +134,15 @@ def run_options(screen: pygame.Surface,
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: # Handle quit event
-                # Show quit confirmation
+                print ("'X' click detected in options menu, global quit shown")
                 if show_confirm_quit(screen, model):
+                    print ("Click detected, global quit from options menu")
                     pygame.quit()
                     sys.exit()
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE: # Escape key pressed
-                # Show quit confirmation
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                print ("Escape key detected in options menu, global quit shown")
                 if show_confirm_quit(screen, model):
+                    print ("Enter/space key detected, global quit from options menu")
                     pygame.quit()
                     sys.exit()
                 
@@ -145,16 +155,21 @@ def run_options(screen: pygame.Surface,
                     # S or Down Arrow pressed: move selection down
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if options_model.selected_index == 0:  # Volume
+                        print ("Enter/Space key detected on Volume option, opening volume menu")
                         options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume)
                         settings_model.volume = options_model.volume  # Update persistent model
                         settings_model.save()  # Save settings to file
                     elif options_model.selected_index == 1:  # Contact Us
+                        print ("Enter/Space key detected on Contact Us option, showing contact confirmation modal")
                         if show_contact_confirmation(screen, options_model):
                             email = "GardenInvasion@email.com"
                             mailto_url = "mailto:" + email
                             webbrowser.open(mailto_url)
-                            print(f"Opening email client with URL: {mailto_url}")
+                            print(f"Enter/Space key. Opening email client with URL: {mailto_url}")
+                        else:
+                            print ("Contact Us confirmation modal closed without opening email client")
                     elif options_model.selected_index == 2:  # Back clicked
+                        print ("Enter/Space key detected on Back option, exiting options menu")
                         running = False
                         
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left mouse button clicked 
@@ -165,18 +180,25 @@ def run_options(screen: pygame.Surface,
                     if abs(my - cy) < line_h * 0.4: # Check if mouse is over this option
                         options_model.selected_index = i
                         if i == 0:  # Volume clicked
+                            print ("Volume option clicked, opening volume menu")
                             options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume)
                             settings_model.volume = options_model.volume # Update persistent model
                             settings_model.save() # Save settings to file
                         elif i == 1:  # Contact Us clicked
+                            print ("Contact Us option clicked, showing contact confirmation modal")
                             if show_contact_confirmation(screen, options_model):
                                 email = "GardenInvasion@email.com"
                                 mailto_url = "mailto:" + email
                                 webbrowser.open(mailto_url)
-                                print(f"Opening email client with URL: {mailto_url}")
+                                print(f"Click detected. Opening email client with URL: {mailto_url}")
+                            else:
+                                print ("Contact Us confirmation modal closed without opening email client")
                         elif i == 2:  # Back clicked
+                            print ("Back option clicked, exiting options menu")
                             running = False
                             break
+                if not running: # allow the back button to actually exit the loop and thus go back to the main menu
+                    break
         
         draw_options_menu(screen, options_model, background_surf, background_rect, fonts) # Draw options menu
         pygame.display.flip()

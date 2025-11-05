@@ -1,6 +1,6 @@
 import pygame
 from pathlib import Path
-from ..Utilities.constants import*
+from ..Utilities.constants import *
 
 def load_background_keep_ratio(image_path: Path):
     # Load an image and scale it to fit the screen while maintaining aspect ratio
@@ -26,8 +26,9 @@ class BackgroundModel:
 
 class MenuModel:
     def __init__(self):
-        self.menu_items = ["New Game", "Options"] # List of menu items
-        self.selected_index = 0 # Index of the currently selected menu item, i.e. the first one "New Game"
-        # Modal-specific state
-        self.modal_open = False # Whether the modal is open         
-        self.modal_selected_button = 1 # track which button is selected in the modal (0: Yes, 1: No)
+        self.menu_items = ["New Game", "Options"]  # List of menu items
+        self.selected_index = 0  # Index of currently selected menu item (starts at "New Game")
+        
+        # Modal-specific state for quit confirmation dialog
+        self.modal_open = False  # Whether the modal is currently displayed
+        self.modal_selected_button = 1  # Which modal button is selected (0: Yes, 1: No)

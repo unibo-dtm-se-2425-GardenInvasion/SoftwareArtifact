@@ -3,7 +3,6 @@ from ..Model.menu_model import MenuModel
 from ..View.menu_view import draw_modal
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
-
 def show_confirm_quit(screen: pygame.Surface, model: MenuModel) -> bool:
     # Returns True if user confirmed quit, False otherwise
     clock = pygame.time.Clock()
@@ -17,7 +16,7 @@ def show_confirm_quit(screen: pygame.Surface, model: MenuModel) -> bool:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True # User closed the window
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_LEFT, pygame.K_a):
                     model.modal_selected_button = (model.modal_selected_button - 1) % 2
                     # if left arrow or 'a' is pressed, move selection to the left
@@ -28,22 +27,19 @@ def show_confirm_quit(screen: pygame.Surface, model: MenuModel) -> bool:
                     return model.modal_selected_button == 0
                     # if enter or space is pressed, confirm selection
                 elif event.key == pygame.K_ESCAPE:
-                    return False
-                    
-            if event.type == pygame.MOUSEMOTION: # Update selection based on mouse position
+                    return False        
+            elif event.type == pygame.MOUSEMOTION: # Update selection based on mouse position
                 yes_rect = pygame.Rect(0, 0, 140, 50)
                 no_rect = pygame.Rect(0, 0, 140, 50)
                 box_y = SCREEN_HEIGHT//2 + int(SCREEN_HEIGHT*0.35*0.15)
                 yes_rect.center = (SCREEN_WIDTH//2 - 110, box_y)
                 no_rect.center = (SCREEN_WIDTH//2 + 110, box_y)
                 # define buttons for yes and no selection
-                
                 if yes_rect.collidepoint(event.pos):
                     model.modal_selected_button = 0 # Yes button selected
                 elif no_rect.collidepoint(event.pos):
                     model.modal_selected_button = 1 # No button selected
-                    
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 return model.modal_selected_button == 0 # Confirm selection on left mouse click
         
         screen.blit(blurred, (0, 0)) # Draw the blurred background

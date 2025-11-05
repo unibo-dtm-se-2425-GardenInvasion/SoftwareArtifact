@@ -87,13 +87,12 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
         if idx == model.selected_index:  # If this item is currently selected
             draw_selection_arrows(screen, rect, color=GREEN_SI)  # Draw arrows around selected item
 
-    inst_text = inst_font.render("Press ESC or close window to exit", True, WHITE_Instruction)  # Render instruction text
+    inst_text = inst_font.render("Press ESC or close window to exit", True, BLACK)  # Render instruction text
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))  # Position instructions at bottom
     screen.blit(inst_text, inst_rect)  # Draw instructions to screen
 
     pygame.display.flip()  # Update the display to show all drawn elements
     return label_rects  # Return menu item rects to controller for input detection
-
 
 def draw_selection_arrows(screen, target_rect, color=(98, 222, 109)):
     left_x = target_rect.left - 30  # Position left arrow
@@ -120,7 +119,7 @@ def draw_modal(screen, selected_button=1):
     pygame.draw.rect(screen, (40, 40, 40), box_rect, width=3, border_radius=10)  # Draw dark border around dialog
 
     font_title = pygame.font.SysFont("Arial", 30)  # Create font for confirmation question
-    text_surface = font_title.render("Do you want to close the game?", True, WHITE_Instruction)  # Render question text
+    text_surface = font_title.render("Do you want to close the game?", True, BLACK)  # Render question text
     text_rect = text_surface.get_rect(center=(box_rect.centerx, box_rect.top + box_height * 0.3))  # Position question
     screen.blit(text_surface, text_rect)  # Draw question text to screen
 
