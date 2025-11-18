@@ -47,7 +47,19 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
                     return 'resume'  # ESC in pause menu = resume
                     
             if event.type == pygame.MOUSEMOTION:
-                menu_rect, resume_rect, quit_rect = get_pause_menu_button_rects()
+                menu_rect, resume_rect, quit_rect = get_pause_menu_button_rects()# get button rects
+
+                # Calculate dialog box position (matching draw_pause_modal positioning)
+                box_width, box_height = int(SCREEN_WIDTH * 0.7), int(SCREEN_HEIGHT * 0.35)
+                box_rect = pygame.Rect(0, 0, box_width, box_height)
+                box_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+                
+                # Position buttons relative to dialog box
+                buttons_y = box_rect.top + int(box_height * 0.65)
+                menu_rect.center = (box_rect.centerx - 160, buttons_y)
+                resume_rect.center = (box_rect.centerx, buttons_y)
+                quit_rect.center = (box_rect.centerx + 160, buttons_y)
+
                 if menu_rect.collidepoint(event.pos):
                     pause_selected = 0
                 elif resume_rect.collidepoint(event.pos):
@@ -55,7 +67,8 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
                 elif quit_rect.collidepoint(event.pos):
                     pause_selected = 2
                     
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                menu_rect, resume_rect, quit_rect = get_pause_menu_button_rects()
                 if pause_selected == 0:
                     print ("Returning to Main Menu from Pause Menu via Mouse Click")
                     return 'menu'
@@ -73,6 +86,7 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
         draw_pause_modal(screen, pause_selected)
         pygame.display.flip()
         clock.tick(60)
+
 
 # ---------- game + options scenes ----------
 def run_game(screen: pygame.Surface, model: MenuModel) -> None:
