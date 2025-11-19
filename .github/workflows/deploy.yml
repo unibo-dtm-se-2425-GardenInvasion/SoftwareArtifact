@@ -8,9 +8,13 @@ jobs:
       # Only one release job at a time. Strictly sequential.
       group: deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0 # all history
 
