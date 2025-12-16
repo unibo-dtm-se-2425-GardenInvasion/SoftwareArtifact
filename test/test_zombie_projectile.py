@@ -5,8 +5,8 @@ import os
 
 # Setup dei path corretti
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-my_project_path = os.path.join(project_root, 'my_project')
-sys.path.insert(0, my_project_path)
+GardenInvasion_path = os.path.join(project_root, 'GardenInvasion')
+sys.path.insert(0, GardenInvasion_path)
 
 from Model.zombie_projectile_model import ZombieProjectile
 from Utilities.constants import SCREEN_HEIGHT

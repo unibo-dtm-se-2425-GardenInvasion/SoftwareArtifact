@@ -4,7 +4,7 @@ import pygame
 import os
 from pathlib import Path
 import tempfile
-from my_project.Model.menu_model import MenuModel, BackgroundModel, load_background_keep_ratio
+from GardenInvasion.Model.menu_model import MenuModel, BackgroundModel, load_background_keep_ratio
 
 
 class TestMenuModel(unittest.TestCase):

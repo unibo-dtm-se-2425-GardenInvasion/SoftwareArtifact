@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 import pygame
 import os
-from my_project.Model.plant_model import Player
+from GardenInvasion.Model.plant_model import Player
 
 class TestPlayer(unittest.TestCase):
     """Test suite for Player class"""

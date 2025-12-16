@@ -1,8 +1,8 @@
 import pygame, sys
 from pathlib import Path
-from my_project.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from my_project.Model.menu_model import BackgroundModel
-from my_project.Controller.menu_controller import main_menu_loop
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.Model.menu_model import BackgroundModel
+from GardenInvasion.Controller.menu_controller import main_menu_loop
 
 if __name__ == "__main__":
     pygame.init()

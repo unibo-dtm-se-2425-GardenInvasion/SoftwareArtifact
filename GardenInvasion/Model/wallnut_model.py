@@ -12,9 +12,9 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
         
         try:
             # Load original sprites
-            sprite_full=pygame.image.load(r"my_project/Assets/images/Wallnut_body_Undamaged.png").convert_alpha() # Full health
-            sprite_dmg1=pygame.image.load(r"my_project/Assets/images/Wallnut_Body_cracked1.png").convert_alpha()  # 1 hit taken
-            sprite_dmg2=pygame.image.load(r"my_project/Assets/images/Wallnut_body_cracked2.png").convert_alpha()  # 2 hits taken
+            sprite_full=pygame.image.load(r"GardenInvasion/Assets/images/Wallnut_body_Undamaged.png").convert_alpha() # Full health
+            sprite_dmg1=pygame.image.load(r"GardenInvasion/Assets/images/Wallnut_Body_cracked1.png").convert_alpha()  # 1 hit taken
+            sprite_dmg2=pygame.image.load(r"GardenInvasion/Assets/images/Wallnut_body_cracked2.png").convert_alpha()  # 2 hits taken
             
             # Scale sprites to desired size above
             self.sprites = {

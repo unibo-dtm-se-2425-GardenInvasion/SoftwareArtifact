@@ -1,9 +1,9 @@
 import unittest
 import pygame
 import os
-from my_project.View.menu_view import draw_menu, draw_pause_modal, get_pause_menu_button_rects, draw_modal
-from my_project.Model.menu_model import MenuModel
-from my_project.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.View.menu_view import draw_menu, draw_pause_modal, get_pause_menu_button_rects, draw_modal
+from GardenInvasion.Model.menu_model import MenuModel
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class TestMenuView(unittest.TestCase):

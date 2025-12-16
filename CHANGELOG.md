@@ -2,11 +2,11 @@
 All important changes in the project will be explained in this file.
 It has been used the "semantic versioning" format.
 
-## Current version -> [1.0.0](https://github.com/aequitas-aod/my_project) (2025-XX-XX)
+## Current version -> [1.0.0](https://github.com/aequitas-aod/GardenInvasion) (2025-XX-XX)
 
 ### Dependency updates
 
-* **deps:** update dependency text ([AbsoluteReferenceCommit](https://github.com/aequitas-aod/my_project/commit/CodiceCommit))
+* **deps:** update dependency text ([AbsoluteReferenceCommit](https://github.com/aequitas-aod/GardenInvasion/commit/CodiceCommit))
 
 ### Bug Fixes
 

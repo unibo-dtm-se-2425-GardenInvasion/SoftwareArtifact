@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 import pygame
 import os
-from my_project.Model.projectile_model import Projectile
+from GardenInvasion.Model.projectile_model import Projectile
 
 class TestProjectile(unittest.TestCase):
     """Test suite for Projectile class"""

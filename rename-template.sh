@@ -8,11 +8,11 @@ if [[ -z "$NEW_NAME" ]]; then
 fi
 
 for FILE in `find . -type f  -not -iname '*.pyc' -not -path '*.git*'`; do 
-    sed -i'.bak' -e "s/my_project/$NEW_NAME/g" $FILE
+    sed -i'.bak' -e "s/GardenInvasion/$NEW_NAME/g" $FILE
 done
 
 for FILE in `find .github -type f  -not -iname '*.pyc'`; do 
-    sed -i'.bak' -e "s/my_project/$NEW_NAME/g" $FILE
+    sed -i'.bak' -e "s/GardenInvasion/$NEW_NAME/g" $FILE
 done
 
 rm .github/**/*.bak **/*.bak .*.bak *.bak *.sh

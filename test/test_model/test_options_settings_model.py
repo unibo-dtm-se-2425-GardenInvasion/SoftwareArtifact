@@ -2,8 +2,8 @@ import unittest
 import os
 import json
 import tempfile
-from my_project.Model.options_model import OptionsModel, VolumeModel
-from my_project.Model.setting_volume_model import SettingsModel
+from GardenInvasion.Model.options_model import OptionsModel, VolumeModel
+from GardenInvasion.Model.setting_volume_model import SettingsModel
 
 
 class TestOptionsModel(unittest.TestCase):

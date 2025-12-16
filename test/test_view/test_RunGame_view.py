@@ -2,11 +2,11 @@ import unittest
 from unittest.mock import Mock, patch
 import pygame
 import os
-from my_project.View.RunGame_view import draw_game
-from my_project.Model.plant_model import Player
-from my_project.Model.wallnut_model import WallNut
-from my_project.Model.projectile_model import Projectile
-from my_project.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.View.RunGame_view import draw_game
+from GardenInvasion.Model.plant_model import Player
+from GardenInvasion.Model.wallnut_model import WallNut
+from GardenInvasion.Model.projectile_model import Projectile
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class TestRunGameView(unittest.TestCase):
     """Test suite for game view rendering functions"""

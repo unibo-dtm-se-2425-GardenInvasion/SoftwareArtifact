@@ -1,9 +1,9 @@
 import unittest
 import pygame
 import os
-from my_project.View.options_view import draw_options_menu, draw_contact_modal, draw_volume_menu
-from my_project.Model.options_model import OptionsModel, VolumeModel
-from my_project.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.View.options_view import draw_options_menu, draw_contact_modal, draw_volume_menu
+from GardenInvasion.Model.options_model import OptionsModel, VolumeModel
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 class TestOptionsView(unittest.TestCase):

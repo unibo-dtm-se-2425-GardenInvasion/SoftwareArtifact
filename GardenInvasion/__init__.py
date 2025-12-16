@@ -1,10 +1,10 @@
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('my_project')
+logger = logging.getLogger('GardenInvasion')
 
 # this is the initial module of your app
-# this is executed whenever some client-code is calling `import my_project` or `from my_project import ...`
+# this is executed whenever some client-code is calling `import GardenInvasion` or `from GardenInvasion import ...`
 # put your main classes here, eg:
 class MyClass:
     def my_method(self):

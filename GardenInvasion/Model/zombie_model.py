@@ -1,6 +1,6 @@
 import pygame
 import random
-from my_project.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Zombie(pygame.sprite.Sprite):
     def __init__(self, pos, color, health, speed_y, movement_pattern, spawn_point, wave_delay=0):

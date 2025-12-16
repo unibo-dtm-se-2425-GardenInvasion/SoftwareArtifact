@@ -1,10 +1,10 @@
-# To successfully run this visual test go to file: SoftwareArtifact/my_project/Model/plant_model.py and substitute line 2 with: from Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+# To successfully run this visual test go to file: SoftwareArtifact/GardenInvasion/Model/plant_model.py and substitute line 2 with: from Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 import pygame
 import sys
 import os
 
-# Aggiungi my_project al path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'my_project'))
+# Aggiungi GardenInvasion al path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'GardenInvasion'))
 
 # Ora importa
 from Model.wave_model import WaveManager
