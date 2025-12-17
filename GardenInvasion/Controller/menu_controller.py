@@ -15,7 +15,7 @@ settings_model.load()
 def main_menu_loop(screen: pygame.Surface,
                    background_surf: pygame.Surface | None,
                    background_rect: pygame.Rect | None,
-                   fonts: tuple):
+                   fonts: tuple,):
     # main menu loop, returns when user starts game or options
     # it handles user's input and enter either run_game or run_options
     model  = MenuModel()
@@ -38,7 +38,7 @@ def main_menu_loop(screen: pygame.Surface,
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if model.selected_index == 0:
                         print ("Starting Game from enter/space key")
-                        run_game(screen, model)
+                        run_game(screen, model, settings_model)
                     else:
                         print ("Opening Options from enter/space key")
                         run_options(screen, model, background_surf, background_rect, fonts, settings_model)
@@ -55,7 +55,7 @@ def main_menu_loop(screen: pygame.Surface,
                         model.selected_index = i
                         if i == 0:
                             print ("Starting Game from Mouse Click")
-                            run_game(screen, model)
+                            run_game(screen, model, settings_model)
                         else:
                             print ("Opening Options from Mouse Click")
                             run_options(screen, model, background_surf, background_rect, fonts, settings_model)
