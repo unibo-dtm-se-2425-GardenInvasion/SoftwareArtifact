@@ -1,14 +1,39 @@
 import pygame
+from pathlib import Path
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from .setting_volume_model import SettingsModel 
 
-class Player(pygame.sprite.Sprite): # sprite is used to represent game objects in the class
-    def __init__(self, pos, scale_factor=0.15):
-        super().__init__() # super() calls the constructor of the parent class (pygame.sprite.Sprite)
-        original_image = pygame.image.load(r"GardenInvasion/Assets/images/BasePlant01.png").convert_alpha() # load image with transparency
-        original_size = original_image.get_size()
-        new_size = (int(original_size[0] * scale_factor), int(original_size[1] * scale_factor))
-        self.image = pygame.transform.smoothscale(original_image, new_size)
+class Player(pygame.sprite.Sprite): 
+    def __init__(self, pos:tuple, settings_model: SettingsModel=None):
+        super().__init__() 
+        
+        # Determine which sprite to load
+        if settings_model:
+            # Import here to avoid circular dependency
+            from ..Model.skin_selection_model import SkinSelectionModel
+            skin_model = SkinSelectionModel()
+            selected_skin = skin_model.get_skin_by_id(settings_model.player_skin) # get selected skin
+            sprite_path = Path(selected_skin.sprite_path) # get path to the sprite
+        else:
+            # Default fallback
+            pkg_root = Path(__file__).resolve().parent.parent
+            sprite_path = pkg_root / "Assets" / "images" / "BasePlant01.png"
+        
+        try: # load and scale the image
+            original_image = pygame.image.load(str(sprite_path)).convert_alpha()
+            self.scale_factor = 0.15
+            new_size = (
+                max(1, int(original_image.get_width() * self.scale_factor)),
+                max(1, int(original_image.get_height() * self.scale_factor))
+            )
+            self.image = pygame.transform.smoothscale(original_image, new_size)
+        except (pygame.error, FileNotFoundError):
+            # Create placeholder if image doesn't exist
+            self.image = pygame.Surface((50, 50))
+            self.image.fill((100, 200, 100))
+        
         self.rect = self.image.get_rect(midbottom=pos)
+        
         # get original image of the plant and change its size keeping the aspect ratio
         self.speed = 5 # movement speed
 

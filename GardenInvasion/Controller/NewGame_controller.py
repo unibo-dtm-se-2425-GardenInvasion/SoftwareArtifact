@@ -10,7 +10,7 @@ from .plant_controller import handle_player_input
 from .wallnut_controller import handle_wallnut_placement, handle_wallnut_collisions
 from ..View.RunGame_view import draw_game
 from .menu_controller_utilities import show_confirm_quit
-
+from ..Model.setting_volume_model import SettingsModel
 
 # ---------- modal helper ----------
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
@@ -87,9 +87,8 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
         pygame.display.flip()
         clock.tick(60)
 
-
 # ---------- game + options scenes ----------
-def run_game(screen: pygame.Surface, model: MenuModel) -> None:
+def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel) -> None:
     #placeholder for actual game loop until the user quits
     clock = pygame.time.Clock()
 
@@ -97,9 +96,9 @@ def run_game(screen: pygame.Surface, model: MenuModel) -> None:
     RunGame_bg_path = pkg_root / "Assets" / "images" / "RunGame01.png"
     RunGame_background = BackgroundModel(RunGame_bg_path) # load game background image
 
-    # Create player sprite (plant) positioned at bottom center of screen
-    player = Player((SCREEN_WIDTH//2, SCREEN_HEIGHT*0.95)) # position at bottom center
-    player_group = pygame.sprite.GroupSingle(player) # group to manage the player sprite
+    # Create player with selected skin
+    player = Player((SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95), settings_model)  # Pass settings_model
+    player_group = pygame.sprite.GroupSingle(player)
     projectile_group = pygame.sprite.Group()
 
     # create wall-nut manager with 4 wall-nut slots
