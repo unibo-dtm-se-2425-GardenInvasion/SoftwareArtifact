@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 import pygame
 import os
 from GardenInvasion.Model.plant_model import Player
@@ -44,15 +44,27 @@ class TestPlayer(unittest.TestCase):
         print("✅ Player has last_shot timestamp attribute")
 
     def test_player_image_loaded_and_scaled(self):
-        #Test that Player image is loaded and scaled correctly
+        # Test that Player image is loaded and scaled correctly
+        # Mock the settings model with default skin
+        mock_settings = MagicMock()
+        mock_settings.player_skin = "default"
+        # Mock pygame.image.load to return our mock surface
         with patch('pygame.image.load', return_value=self.mock_surface):
-            player = Player(pos=(400, 500), scale_factor=0.15)
+            # Mock Path.exists() to return True (so it doesn't try fallback path)
+            with patch('pathlib.Path.exists', return_value=True):
+                # Create player with mocked settings
+                player = Player(pos=(400, 500), settings_model=mock_settings)
         
+        # Verify image attribute exists and is a pygame.Surface
         self.assertTrue(hasattr(player, 'image'))
         self.assertIsNotNone(player.image)
         self.assertIsInstance(player.image, pygame.Surface)
-        print("✅ Player image loaded and scaled successfully") # Verify image attribute extsts and it is a pygame.Surface
+        # Verify scale_factor is set correctly (now internal to Player class)
+        self.assertTrue(hasattr(player, 'scale_factor'))
+        self.assertEqual(player.scale_factor, 0.15)
+        print("✅ Player image loaded and scaled successfully")
 
+    
     def test_move_left_decreases_x_position(self):
         #Test that move_left() decreases player's x position
         with patch('pygame.image.load', return_value=self.mock_surface):

@@ -13,9 +13,9 @@ class TestOptionsModel(unittest.TestCase):
         #Test that OptionsModel initializes with correct options items
         
         model = OptionsModel()
-        # Verify options_items is a list with 3 items
+        # Verify options_items is a list with 4 items
         self.assertIsInstance(model.options_items, list)
-        self.assertEqual(len(model.options_items), 3)
+        self.assertEqual(len(model.options_items), 4)
         print(f"✅ OptionsModel initialized with {len(model.options_items)} items")
 
     def test_options_items_contains_volume(self):
