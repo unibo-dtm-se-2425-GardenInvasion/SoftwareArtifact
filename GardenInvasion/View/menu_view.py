@@ -87,7 +87,7 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
         if idx == model.selected_index:  # If this item is currently selected
             draw_selection_arrows(screen, rect, color=GREEN_SI)  # Draw arrows around selected item
 
-    inst_text = inst_font.render("Press ESC or close window to exit", True, BLACK)  # Render instruction text
+    inst_text = inst_font.render("Press ESC or close window to exit", True, WHITE_Instruction)  # Render instruction text
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))  # Position instructions at bottom
     screen.blit(inst_text, inst_rect)  # Draw instructions to screen
 
