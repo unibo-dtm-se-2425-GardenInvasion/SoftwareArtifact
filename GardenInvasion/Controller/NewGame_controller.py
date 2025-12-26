@@ -11,6 +11,7 @@ from .wallnut_controller import handle_wallnut_placement, handle_wallnut_collisi
 from ..View.RunGame_view import draw_game
 from .menu_controller_utilities import show_confirm_quit
 from ..Model.setting_volume_model import SettingsModel
+from ..Model.sound_manager_model import SoundManager
 
 # ---------- modal helper ----------
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
@@ -96,6 +97,8 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     RunGame_bg_path = pkg_root / "Assets" / "images" / "RunGame01.png"
     RunGame_background = BackgroundModel(RunGame_bg_path) # load game background image
 
+    sound_manager = SoundManager(settings_model)  # Initialize sound manager with settings
+
     # Create player with selected skin
     player = Player((SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95), settings_model)  # Pass settings_model
     player_group = pygame.sprite.GroupSingle(player)
@@ -105,7 +108,8 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     wallnut_manager = WallNutManager(
         player_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95),
         screen_width=SCREEN_WIDTH,
-        screen_height=SCREEN_HEIGHT
+        screen_height=SCREEN_HEIGHT,
+        sound_manager=sound_manager # Pass sound manager for sound effects
     )
     wallnut_manager.place_all_wallnuts()  # Place all 4 wall-nuts at game start
 
@@ -128,7 +132,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                     running = False  # Exit game loop, return to main menu
                 # If 'resume', continue the loop normally
 
-        handle_player_input(player,projectile_group) # handle player movement input and auto shooting    
+        handle_player_input(player,projectile_group, sound_manager) # handle player movement input and auto shooting    
         # Handle wall-nut placement (keys 1-4)
         keys = pygame.key.get_pressed()
         handle_wallnut_placement(keys, wallnut_manager)

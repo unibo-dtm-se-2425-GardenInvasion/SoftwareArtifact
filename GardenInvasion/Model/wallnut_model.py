@@ -1,12 +1,16 @@
 import pygame
 from ..Utilities.constants import Brown, Lighter_Brown, Even_Lighter_Brown
+from .sound_manager_model import SoundManager
 
 class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that protects the player.
-    def __init__(self, position: tuple, slot_index: int):
+    def __init__(self, position: tuple, slot_index: int, sound_manager: SoundManager = None):
         super().__init__()
         self.slot_index = slot_index  # Which of the 4 wall-nut slots (0-3)
         self.health = 3  # Wall-nut can take 3 hits
         self.max_health = 3
+
+        self.sound_manager = sound_manager  # Sound manager for playing sounds
+
         # Define wall-nut size (width, height)
         self.wallnut_size = (60, 60)
         
@@ -41,6 +45,9 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
         # Returns True if wall-nut is destroyed, False otherwise.
         self.health -= 1  # Decrease health
         if self.health <= 0:
+            if self.sound_manager:
+                self.sound_manager.play_sound('wallnut_destroyed') # Play destruction sound
+            
             self.kill()  # Remove from sprite groups
             return True  # Wall-nut destroyed
         else:
@@ -50,10 +57,13 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
 class WallNutManager:
     # Manages the 4 wall-nut slots in front of the player.
     # Handles placement, removal, and collision detection.
-    def __init__(self, player_position: tuple, screen_width: int, screen_height: int):
+    def __init__(self, player_position: tuple, screen_width: int, screen_height: int, sound_manager: SoundManager = None):
         self.player_position = player_position  # Player's position
         self.screen_width = screen_width
         self.screen_height = screen_height
+
+        self.sound_manager = sound_manager  # Sound manager for playing sounds
+
         self.wallnuts = pygame.sprite.Group()  # Group containing all active wall-nuts
         self.max_wallnuts = 4  # Maximum number of wall-nuts
         
@@ -81,7 +91,7 @@ class WallNutManager:
         
         return positions
     
-    def place_wallnut(self, slot_index: int) -> bool:
+    def place_wallnut(self, slot_index: int, sound_manager: SoundManager = None) -> bool:
         # Place a wall-nut in the specified slot (0-3).
         # Returns True if placement successful, False if slot occupied.
         
