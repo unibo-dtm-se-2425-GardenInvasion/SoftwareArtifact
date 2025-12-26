@@ -48,6 +48,8 @@ jobs:
   deploy:
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
     needs:
       - test
     uses: ./.github/workflows/deploy.yml
