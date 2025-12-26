@@ -9,6 +9,7 @@ pygame.display.set_mode((1, 1))
 from GardenInvasion.Controller.plant_controller import handle_player_input
 from GardenInvasion.Model.plant_model import Player
 from GardenInvasion.Model.setting_volume_model import SettingsModel
+from GardenInvasion.Model.sound_manager_model import SoundManager
 
 class TestPlantController(unittest.TestCase):
     # Test suite for plant controller
@@ -28,6 +29,8 @@ class TestPlantController(unittest.TestCase):
         self.settings = SettingsModel()
         self.player = Player((300, 570), self.settings)
         self.projectile_group = pygame.sprite.Group()
+
+        self.mock_sound_manager=MagicMock(spec=SoundManager) # Mock SoundManager
     
     def tearDown(self):
         self.image_patcher.stop()
@@ -111,5 +114,48 @@ class TestPlantController(unittest.TestCase):
         self.assertLessEqual(self.player.rect.right, 600)
         print("✅ Player stops at right boundary")
 
+    @patch('pygame.time.get_ticks') # Mock time to control shooting timing
+    def test_shoot_sound_plays_when_projectile_created(self, mock_ticks):
+        # Test that plant_shoot sound plays when player shoots
+
+        mock_ticks.return_value = 1000 # Simulate time
+        self.player.last_shot = 0 # Ensure shooting is allowed
+        
+        # Reset mock to clear any previous calls
+        self.mock_sound_manager.reset_mock()
+        
+        with patch('pygame.key.get_pressed', return_value={pygame.K_LEFT: False, pygame.K_RIGHT: False,
+                                                           pygame.K_a: False, pygame.K_d: False}):
+            handle_player_input(self.player, self.projectile_group, self.mock_sound_manager)
+        
+        # Verify sound was played
+        self.mock_sound_manager.play_sound.assert_called_once_with('plant_shoot')
+        print("✅ plant_shoot sound plays when projectile created")
+    
+    @patch('pygame.time.get_ticks')
+    def test_no_sound_during_cooldown(self, mock_ticks):
+        # Test that no sound plays when cooldown prevents shooting
+
+        mock_ticks.return_value = 1000
+        self.player.last_shot = 0
+        
+        # First shot
+        with patch('pygame.key.get_pressed', return_value={pygame.K_LEFT: False, pygame.K_RIGHT: False,
+                                                           pygame.K_a: False, pygame.K_d: False}):
+            handle_player_input(self.player, self.projectile_group, self.mock_sound_manager)
+        
+        # Reset mock
+        self.mock_sound_manager.reset_mock()
+        
+        # Try to shoot during cooldown (200ms)
+        mock_ticks.return_value = 200
+        with patch('pygame.key.get_pressed', return_value={pygame.K_LEFT: False, pygame.K_RIGHT: False,
+                                                           pygame.K_a: False, pygame.K_d: False}):
+            handle_player_input(self.player, self.projectile_group, self.mock_sound_manager)
+        
+        # Sound should NOT have been called
+        self.mock_sound_manager.play_sound.assert_not_called()
+        print("✅ No sound plays during shooting cooldown")
+    
 if __name__ == '__main__':
     unittest.main()
