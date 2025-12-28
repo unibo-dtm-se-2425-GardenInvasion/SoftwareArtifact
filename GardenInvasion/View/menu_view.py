@@ -1,6 +1,32 @@
 import pygame
 from ..Utilities.constants import *
 
+def render_text_with_outline(font, text, color, outline_color=BLACK, outline_width=2):
+    # Render text with a dark outline for better visibility on dark backgrounds.
+    
+    # Create outline surface
+    outline_text = font.render(text, True, outline_color) # Renders outline text
+    text_width = outline_text.get_width()
+    text_height = outline_text.get_height()
+    
+    # Create a surface large enough for outline
+    text_surface = pygame.Surface(
+        (text_width + outline_width * 2, text_height + outline_width * 2),
+        pygame.SRCALPHA
+    )
+    
+    # Draw outline in all 8 directions
+    for dx in range(-outline_width, outline_width + 1):
+        for dy in range(-outline_width, outline_width + 1):
+            if dx != 0 or dy != 0: # Skip center position
+                text_surface.blit(outline_text, (dx + outline_width, dy + outline_width)) # Blit outline text
+    
+    # Draw main text on top
+    main_text = font.render(text, True, color)
+    text_surface.blit(main_text, (outline_width, outline_width))
+    
+    return text_surface
+
 def draw_pause_modal(screen, selected_button=1):
 
     overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -74,20 +100,20 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
         screen.fill((0, 0, 50))  # Fill with dark blue if no background image available
 
     item_font, inst_font, title_font = fonts  # Unpack font tuple (item, instruction, title fonts)
-    title_text = title_font.render("Garden Invasion", True, GREEN_SI)  # Render game title
+    title_text = render_text_with_outline(title_font, "Garden Invasion", GREEN_SI, BLACK, 3)  # Render game title with outline
     title_rect = title_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.25))  # Position title at top center
     screen.blit(title_text, title_rect)  # Draw title to screen
     
     label_rects = []  # List to store menu item rectangles for click detection
     for idx, label in enumerate(model.menu_items):  # Loop through menu items (e.g., "New Game", "Options")
-        text_surf = item_font.render(label, True, GREEN_SI)  # Render menu item text
+        text_surf = render_text_with_outline(item_font, label, GREEN_SI, BLACK, 2)  # Render menu item text
         rect = text_surf.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.4 + idx * SCREEN_HEIGHT * 0.1))  # Position item vertically
         label_rects.append(rect)  # Store rect for controller to detect clicks/hovers
         screen.blit(text_surf, rect)  # Draw menu item text to screen
         if idx == model.selected_index:  # If this item is currently selected
             draw_selection_arrows(screen, rect, color=GREEN_SI)  # Draw arrows around selected item
 
-    inst_text = inst_font.render("Press ESC or close window to exit", True, WHITE_Instruction)  # Render instruction text
+    inst_text = render_text_with_outline(inst_font, "Press ESC or close window to exit", WHITE_Instruction, BLACK, 1)  # Render instruction text
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))  # Position instructions at bottom
     screen.blit(inst_text, inst_rect)  # Draw instructions to screen
 
@@ -147,3 +173,4 @@ def draw_modal(screen, selected_button=1):
     # Draw button labels centered on their respective buttons
     screen.blit(yes_label, yes_label.get_rect(center=yes_rect.center))  # Draw Yes label
     screen.blit(no_label, no_label.get_rect(center=no_rect.center))  # Draw No label
+

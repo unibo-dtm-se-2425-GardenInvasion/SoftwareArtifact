@@ -1,6 +1,33 @@
 import pygame
 from ..Utilities.constants import *
 
+def render_text_with_outline(font, text, color, outline_color=BLACK, outline_width=2):
+    # Render text with a dark outline for better visibility on dark backgrounds.
+    
+    # Create outline surface
+    outline_text = font.render(text, True, outline_color) # Renders outline text
+    text_width = outline_text.get_width()
+    text_height = outline_text.get_height()
+    
+    # Create a surface large enough for outline
+    text_surface = pygame.Surface(
+        (text_width + outline_width * 2, text_height + outline_width * 2),
+        pygame.SRCALPHA
+    )
+    
+    # Draw outline in all 8 directions
+    for dx in range(-outline_width, outline_width + 1):
+        for dy in range(-outline_width, outline_width + 1):
+            if dx != 0 or dy != 0: # Skip center position
+                text_surface.blit(outline_text, (dx + outline_width, dy + outline_width)) # Blit outline text
+    
+    # Draw main text on top
+    main_text = font.render(text, True, color)
+    text_surface.blit(main_text, (outline_width, outline_width))
+    
+    return text_surface
+
+
 def draw_options_menu(screen, model, background_surf, background_rect, fonts):
     if background_surf:
         screen.fill((0, 0, 0))  # Fills screen with black before drawing background
@@ -13,14 +40,14 @@ def draw_options_menu(screen, model, background_surf, background_rect, fonts):
     # Create smaller font used for options menu items
     options_font = pygame.font.SysFont("Arial", 20)
     # Draws the "Options" header at the top of the menu
-    title_text = title_font.render("Options", True, GREEN_SI) # Renders title text
+    title_text = render_text_with_outline(title_font, "Options", GREEN_SI, BLACK, 3) # Renders title text
     title_rect = title_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.25)) # Centers title
     screen.blit(title_text, title_rect)
 
     # Rendering each menu option (Volume, Contact Us, Back)
     label_rects = []
     for idx, label in enumerate(model.options_items):
-        text_surf = options_font.render(label, True, GREEN_SI)  # Renders menu item text
+        text_surf = render_text_with_outline(options_font, label, GREEN_SI, BLACK, 2)  # Renders menu item text
         rect = text_surf.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35 + idx * SCREEN_HEIGHT * 0.08))
         # Positions each option vertically
         label_rects.append(rect)  # Appends this option's placement for later reference
@@ -31,7 +58,7 @@ def draw_options_menu(screen, model, background_surf, background_rect, fonts):
             draw_selection_arrows(screen, rect, color=GREEN_SI)
 
     # Displays control instructions near the bottom
-    inst_text = inst_font.render("Press ESC or close window to exit", True, WHITE_Instruction)
+    inst_text = render_text_with_outline(inst_font, "Press ESC or close window to exit", WHITE_Instruction, BLACK, 1)
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))
     screen.blit(inst_text, inst_rect)
     return label_rects
@@ -47,13 +74,13 @@ def draw_volume_menu(screen, volume_model, background_surf, background_rect, fon
     item_font, inst_font, title_font = fonts  # Uses given fonts
 
     # Volume menu title
-    title_text = title_font.render("Volume", True, GREEN_SI)
+    title_text = render_text_with_outline(title_font, "Volume", GREEN_SI, BLACK, 3)
     title_rect = title_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.25))
     screen.blit(title_text, title_rect)
 
     # Current volume percentage, displayed below title
     percentage_font = pygame.font.SysFont("Arial", 28)
-    volume_text = percentage_font.render(f"{volume_model.volume}%", True, GREEN_SI)
+    volume_text = render_text_with_outline(percentage_font, f"{volume_model.volume}%", GREEN_SI, BLACK, 2)
     volume_rect = volume_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.38))
     screen.blit(volume_text, volume_rect)
 
@@ -75,20 +102,20 @@ def draw_volume_menu(screen, volume_model, background_surf, background_rect, fon
 
     # Directions beneath the slider for adjusting volume
     adjust_font = pygame.font.SysFont("Arial", 12)
-    adjust_text = adjust_font.render("Use LEFT/RIGHT arrows to adjust volume", True, WHITE_Instruction)
+    adjust_text = render_text_with_outline(adjust_font, "Use LEFT/RIGHT arrows to adjust volume", WHITE_Instruction, BLACK, 1)
     adjust_rect = adjust_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.52))
     screen.blit(adjust_text, adjust_rect)
 
     # Draws the back button below the slider
     back_font = pygame.font.SysFont("Arial", 18)
-    back_text = back_font.render("Back", True, GREEN_SI)
+    back_text = render_text_with_outline(back_font, "Back", GREEN_SI, BLACK, 2)
     back_rect = back_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.585))
     screen.blit(back_text, back_rect)
 
     draw_selection_arrows(screen, back_rect, color=GREEN_SI)
 
     # Instructions at the very bottom
-    inst_text = inst_font.render("Press ESC or close window to exit", True, WHITE_Instruction)
+    inst_text = render_text_with_outline(inst_font, "Press ESC or close window to exit", WHITE_Instruction, BLACK, 1)
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))
     screen.blit(inst_text, inst_rect)
 
