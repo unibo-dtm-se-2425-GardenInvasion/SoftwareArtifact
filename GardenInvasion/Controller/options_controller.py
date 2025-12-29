@@ -10,6 +10,7 @@ from ..Model.setting_volume_model import SettingsModel
 from ..View.options_view import draw_options_menu, draw_contact_modal, draw_volume_menu
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from .skin_selection_controller import run_skin_selection
+from ..Model.sound_manager_model import SoundManager
 
 def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsModel) -> bool:
     clock = pygame.time.Clock()
@@ -65,13 +66,10 @@ def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsMode
         pygame.display.flip()
         clock.tick(60)
 
-def run_volume_menu(screen: pygame.Surface, 
-                    model: MenuModel,
-                    background_surf, 
-                    background_rect, 
-                    fonts,
-                    initial_volume: int) -> int:
-   #Volume menu loop
+def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, background_rect, fonts,
+                    initial_volume: int,
+                    sound_manager: SoundManager,
+                    settings_model: SettingsModel) -> int:
     volume_model = VolumeModel(initial_volume) # Initialize volume model with the current volume
     clock = pygame.time.Clock()
     running = True
@@ -87,10 +85,16 @@ def run_volume_menu(screen: pygame.Surface,
                     sys.exit()
                     
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_LEFT, pygame.K_a):
-                    volume_model.volume = max(0, volume_model.volume - 5) # Adjust volume left
+                
+                if event.key in (pygame.K_LEFT, pygame.K_a): 
+                    volume_model.volume = max(0, volume_model.volume - 5)
+                    settings_model.volume = volume_model.volume # Update settings model volume
+                    sound_manager.update_volume_realtime() # Update sound manager volume in real-time
                 elif event.key in (pygame.K_RIGHT, pygame.K_d):
-                    volume_model.volume = min(100, volume_model.volume + 5) # adjust volume right
+                    volume_model.volume = min(100, volume_model.volume + 5)
+                    settings_model.volume = volume_model.volume
+                    sound_manager.update_volume_realtime()
+
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     print ("Enter/Space key detected in volume submenu, exiting volume menu")
                     running = False # Exit volume menu
@@ -125,7 +129,8 @@ def run_options(screen: pygame.Surface,
                 background_surf, 
                 background_rect, 
                 fonts,
-                settings_model: SettingsModel) -> None:
+                settings_model: SettingsModel,
+                sound_manager: SoundManager) -> None:
     # Options menu loop
     options_model = OptionsModel()
     options_model.volume = settings_model.volume
@@ -157,7 +162,7 @@ def run_options(screen: pygame.Surface,
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if options_model.selected_index == 0:  # Volume
                         print("Enter/Space key detected on Volume option, opening volume menu")
-                        options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume)
+                        options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume, sound_manager, settings_model)
                         settings_model.volume = options_model.volume
                         settings_model.save()
                     
@@ -201,7 +206,7 @@ def run_options(screen: pygame.Surface,
                         
                         if i == 0:  # Volume
                             print("Volume option clicked, opening volume menu")
-                            options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume)
+                            options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume, sound_manager, settings_model)
                             settings_model.volume = options_model.volume
                             settings_model.save()
 

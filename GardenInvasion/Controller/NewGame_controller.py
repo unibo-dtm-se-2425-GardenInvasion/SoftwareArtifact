@@ -89,7 +89,7 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
         clock.tick(60)
 
 # ---------- game + options scenes ----------
-def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel) -> None:
+def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel, sound_manager: SoundManager) -> None:
     #placeholder for actual game loop until the user quits
     clock = pygame.time.Clock()
 
@@ -111,7 +111,9 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         screen_height=SCREEN_HEIGHT,
         sound_manager=sound_manager # Pass sound manager for sound effects
     )
+
     wallnut_manager.place_all_wallnuts()  # Place all 4 wall-nuts at game start
+    sound_manager.play_music('gameplay', loops=-1, fade_ms=1000) # Play gameplay music with fade-in
 
     running = True
     while running:
@@ -119,19 +121,24 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
             if event.type == pygame.QUIT:
                 print ("Quit event detected in game loop")
                 if show_confirm_quit(screen, model):
+                    sound_manager.stop_music(fade_ms=500) # Fade out music
                     pygame.quit()
                     sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 # Show pause menu instead of quit dialog
                 print("Escape key pressed, Pause Menu shown")
+                sound_manager.pause_music() # Pause music when entering pause menu
                 action = show_pause_menu(screen, model)
                 if action == 'quit':
+                    sound_manager.stop_music(fade_ms=500) # Fade out music
                     pygame.quit()
                     sys.exit()
                 elif action == 'menu':
+                    sound_manager.stop_music(fade_ms=1000) # Fade out music
                     running = False  # Exit game loop, return to main menu
-                # If 'resume', continue the loop normally
-
+                else:
+                    sound_manager.unpause_music() # Resume music if game is resumed
+        
         handle_player_input(player,projectile_group, sound_manager) # handle player movement input and auto shooting    
         # Handle wall-nut placement (keys 1-4)
         keys = pygame.key.get_pressed()
