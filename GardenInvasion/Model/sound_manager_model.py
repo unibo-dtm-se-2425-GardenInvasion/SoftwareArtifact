@@ -1,6 +1,7 @@
 import pygame
 from pathlib import Path
-from typing import Optional
+from typing import Optional 
+import os
 
 class SoundManager:
     # Manages game sound effects with volume control
@@ -21,8 +22,35 @@ class SoundManager:
         if not pygame.mixer.get_init():
             pygame.mixer.init()
 
+        self.sounds= {} # Dictionary to hold sound effects
         self.music_tracks = {}  # Dictionary to hold music file paths
         self.current_music = None  # Track currently playing music
+
+        self.audio_available = True
+        
+        # Check if running in CI or headless environment
+        if os.environ.get('SDL_AUDIODRIVER') == 'dummy' or os.environ.get('CI'):
+            print("Running in headless environment, audio disabled")
+            self.audio_available = False
+        
+        # Initialize pygame mixer if not already initialized
+        if not pygame.mixer.get_init():
+            try:
+                # Try to initialize with dummy driver if needed
+                if not self.audio_available:
+                    os.environ['SDL_AUDIODRIVER'] = 'dummy'
+                
+                pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+                # print("Audio initialized successfully")
+            except pygame.error as e:
+                print(f"Audio initialization failed: {e}")
+                self.audio_available = False
+                # Set dummy driver and try again
+                os.environ['SDL_AUDIODRIVER'] = 'dummy'
+                try:
+                    pygame.mixer.init()
+                except:
+                    pass
         
         self._load_sounds() # Load all sound effects
         self._load_music() # Load music tracks
@@ -31,6 +59,10 @@ class SoundManager:
     
     def _load_sounds(self):
         # Load all game sound effects
+
+        if not self.audio_available:
+            print("Skipping sound loading -> no audio")
+            return
 
         pkg_root = Path(__file__).resolve().parent.parent
         sounds_path = pkg_root / "Assets" / "sounds"
@@ -53,6 +85,10 @@ class SoundManager:
 
     def _load_music(self):
         # Load background music file
+
+        if not self.audio_available:
+            print("Skipping music loading -> no audio")
+            return
         
         pkg_root = Path(__file__).resolve().parent.parent
         music_path = pkg_root / "Assets" / "sounds"
@@ -76,16 +112,25 @@ class SoundManager:
     def _update_volume(self):
         # Update volume for all sounds based on settings
 
+        if not self.audio_available: # No audio available
+            return
+
         volume = self.settings_model.volume / 100.0 # Convert to 0.0 - 1.0 range
         
         for sound in self.sounds.values(): # Update volume for each sound
             if sound:
                 sound.set_volume(volume)
 
-        pygame.mixer.music.set_volume(volume) # Update music volume too
+        try:
+            pygame.mixer.music.set_volume(volume)
+        except:
+            pass
     
     def play_sound(self, sound_name: str):
         # Play a sound effect
+
+        if not self.audio_available:
+            return
         
         self._update_volume()
         
@@ -96,7 +141,9 @@ class SoundManager:
 
     def play_music(self, music_name: str, loops: int = -1, fade_ms: int = 1000):
         # Play background music (looping by default)
-        
+
+        if not self.audio_available: 
+            return        
         
         if self.current_music == music_name and pygame.mixer.music.get_busy(): # If same music is already playing, don't restart
             return
@@ -115,25 +162,50 @@ class SoundManager:
     
     def stop_music(self, fade_ms: int = 1000):
         # Stop background music with optional fade out
+
+        if not self.audio_available:
+            return
+        try:
+            if fade_ms > 0:
+                pygame.mixer.music.fadeout(fade_ms)
+            else:
+                pygame.mixer.music.stop()
+        except:
+            pass
         
-        if fade_ms > 0: # Fade out if specified
-            pygame.mixer.music.fadeout(fade_ms) # Fade out music
-        else: # Immediate stop
-            pygame.mixer.music.stop() # Stop music immediately
         self.current_music = None # Clear currently playing music
         # print("Music stopped") # Log music stop
     
     def pause_music(self):
         # Pause the currently playing music
-        pygame.mixer.music.pause() # Pause music playback
+        if not self.audio_available:
+            return
+        try:
+            pygame.mixer.music.pause()
+            # print("Music paused")
+        except:
+            pass
     
     def unpause_music(self):
         # Resume paused music
-        pygame.mixer.music.unpause() # Resume music playback
+        if not self.audio_available:
+            return
+        try:
+            pygame.mixer.music.unpause()
+            # print("Music resumed")
+        except:
+            pass
     
     def stop_all(self):
         # Stop all currently playing sounds
-        pygame.mixer.stop()
+        if not self.audio_available:
+            return
+        try:
+            pygame.mixer.stop()
+            pygame.mixer.music.stop()
+            self.current_music = None
+        except:
+            pass
 
     def update_volume_realtime(self):
         self._update_volume() # Update volume based on current settings in real-time

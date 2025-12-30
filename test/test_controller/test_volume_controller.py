@@ -9,6 +9,7 @@ pygame.display.set_mode((1, 1))  # Dummy display
 
 from GardenInvasion.Controller.options_controller import run_volume_menu
 from GardenInvasion.Model.menu_model import MenuModel
+from GardenInvasion.Model.setting_volume_model import SettingsModel
 
 class TestVolumeController(unittest.TestCase):
     # Test suite for volume submenu controller
@@ -21,6 +22,8 @@ class TestVolumeController(unittest.TestCase):
         
         self.screen = pygame.Surface((600, 600))
         self.menu_model = MenuModel()
+        self.settings_model = SettingsModel() 
+        self.mock_sound_manager = MagicMock()
         self.background_surf = pygame.Surface((600, 600))
         self.background_rect = self.background_surf.get_rect()
         
@@ -62,7 +65,7 @@ class TestVolumeController(unittest.TestCase):
         with patch('pygame.event.get', side_effect=self.create_event_generator(events_sequence)):
             final_volume = run_volume_menu(self.screen, self.menu_model, 
                                           self.background_surf, self.background_rect, 
-                                          self.fonts, 50) # Start at volume 50
+                                          self.fonts, 50, self.mock_sound_manager, self.settings_model) # Start at volume 50
         
         self.assertEqual(final_volume, 45) # Expect volume to be 45
         print("✅ Left arrow decreases volume by 5")
@@ -86,7 +89,7 @@ class TestVolumeController(unittest.TestCase):
         with patch('pygame.event.get', side_effect=self.create_event_generator(events_sequence)):
             final_volume = run_volume_menu(self.screen, self.menu_model, 
                                           self.background_surf, self.background_rect, 
-                                          self.fonts, 50)
+                                          self.fonts, 50, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 55)
         print("✅ Right arrow increases volume by 5")
@@ -112,7 +115,7 @@ class TestVolumeController(unittest.TestCase):
         with patch('pygame.event.get', side_effect=self.create_event_generator(events_sequence)):
             final_volume = run_volume_menu(self.screen, self.menu_model, 
                                           self.background_surf, self.background_rect, 
-                                          self.fonts, 5)
+                                          self.fonts, 5, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 0)
         print("✅ Volume cannot go below 0")
@@ -138,7 +141,7 @@ class TestVolumeController(unittest.TestCase):
         with patch('pygame.event.get', side_effect=self.create_event_generator(events_sequence)):
             final_volume = run_volume_menu(self.screen, self.menu_model, 
                                           self.background_surf, self.background_rect, 
-                                          self.fonts, 95)
+                                          self.fonts, 95, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 100)
         print("✅ Volume cannot exceed 100")
@@ -161,7 +164,7 @@ class TestVolumeController(unittest.TestCase):
         with patch('pygame.event.get', side_effect=self.create_event_generator(events_sequence)):
             final_volume = run_volume_menu(self.screen, self.menu_model, 
                                           self.background_surf, self.background_rect, 
-                                          self.fonts, 50)
+                                          self.fonts, 50, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 50)
         print("✅ Back button click exits volume menu")
@@ -192,7 +195,7 @@ class TestVolumeController(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         run_volume_menu(self.screen, self.menu_model, 
                                       self.background_surf, self.background_rect, 
-                                      self.fonts, 50)
+                                      self.fonts, 50, self.mock_sound_manager, self.settings_model)
         
         mock_quit.assert_called_once()
         print("✅ ESC shows quit confirmation in volume menu")

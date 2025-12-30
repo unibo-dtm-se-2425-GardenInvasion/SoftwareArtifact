@@ -45,6 +45,10 @@ jobs:
 
       - name: Test
         run: python -m unittest discover -s test -t .
+        env:
+          SDL_AUDIODRIVER: dummy # Prevent audio initialization issues
+          SDL_VIDEODRIVER: dummy # Prevent video initialization issues
+          CI: true # Indicate running in CI environment
   deploy:
     permissions:
       contents: write

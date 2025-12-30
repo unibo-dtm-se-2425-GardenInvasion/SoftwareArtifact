@@ -2,10 +2,12 @@ import unittest
 import pygame
 from unittest.mock import patch, MagicMock
 import sys
+import os
 
 # Initialize pygame for event handling tests
 pygame.init()
 pygame.display.set_mode((1, 1))  # Dummy display
+os.environ['SDL_AUDIODRIVER'] = 'dummy' # Use dummy audio driver for tests
 
 from GardenInvasion.Controller.menu_controller import main_menu_loop
 from GardenInvasion.Model.menu_model import MenuModel

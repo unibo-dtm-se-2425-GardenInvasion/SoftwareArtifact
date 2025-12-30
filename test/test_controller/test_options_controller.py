@@ -25,7 +25,8 @@ class TestOptionsController(unittest.TestCase):
         # Create test objects
         self.screen = pygame.Surface((600, 600))
         self.menu_model = MenuModel()
-        self.settings_model = SettingsModel()
+        self.settings_model = SettingsModel() # Settings model instance
+        self.mock_sound_manager = MagicMock() # Mock sound manager
         self.settings_model.volume = 50
         
         self.background_surf = pygame.Surface((600, 600))
@@ -62,7 +63,7 @@ class TestOptionsController(unittest.TestCase):
         
         with patch('pygame.event.get', side_effect=events_sequence):
             run_options(self.screen, self.menu_model, self.background_surf, 
-                       self.background_rect, self.fonts, self.settings_model)
+                       self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         print("✅ UP/DOWN navigation through options works")
     
@@ -89,7 +90,7 @@ class TestOptionsController(unittest.TestCase):
         
         with patch('pygame.event.get', side_effect=events_sequence):
             run_options(self.screen, self.menu_model, self.background_surf, 
-                       self.background_rect, self.fonts, self.settings_model)
+                       self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         mock_volume.assert_called_once()
         print("✅ Enter opens volume submenu")
@@ -117,7 +118,7 @@ class TestOptionsController(unittest.TestCase):
         
         with patch('pygame.event.get', side_effect=events_sequence):
             run_options(self.screen, self.menu_model, self.background_surf, 
-                       self.background_rect, self.fonts, self.settings_model)
+                       self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         mock_skin.assert_called_once()
         print("✅ Enter opens skin personalization")
@@ -145,7 +146,7 @@ class TestOptionsController(unittest.TestCase):
         
         with patch('pygame.event.get', side_effect=events_sequence):
             run_options(self.screen, self.menu_model, self.background_surf, 
-                       self.background_rect, self.fonts, self.settings_model)
+                       self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         mock_contact.assert_called_once()
         print("✅ Enter opens contact modal")
@@ -169,7 +170,7 @@ class TestOptionsController(unittest.TestCase):
         
         with patch('pygame.event.get', side_effect=events_sequence):
             run_options(self.screen, self.menu_model, self.background_surf, 
-                       self.background_rect, self.fonts, self.settings_model)
+                       self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         print("✅ Back button returns to menu")
 
