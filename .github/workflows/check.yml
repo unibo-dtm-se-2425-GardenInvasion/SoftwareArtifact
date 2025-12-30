@@ -49,6 +49,7 @@ jobs:
           SDL_AUDIODRIVER: dummy # Prevent audio initialization issues
           SDL_VIDEODRIVER: dummy # Prevent video initialization issues
           CI: true # Indicate running in CI environment
+          PYTHONIOENCODING: utf-8 # Ensure UTF-8 encoding
   deploy:
     permissions:
       contents: write
