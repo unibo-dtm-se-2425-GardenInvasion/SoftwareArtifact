@@ -8,8 +8,8 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GardenInvasion_path = os.path.join(project_root, 'GardenInvasion')
 sys.path.insert(0, GardenInvasion_path)
 
-from Model.zombie_projectile_model import ZombieProjectile
-from Utilities.constants import SCREEN_HEIGHT
+from GardenInvasion.Model.zombie_projectile_model import ZombieProjectile
+from GardenInvasion.Utilities.constants import SCREEN_HEIGHT
 
 class TestZombieProjectileModel(unittest.TestCase):
     """Test per la classe ZombieProjectile"""

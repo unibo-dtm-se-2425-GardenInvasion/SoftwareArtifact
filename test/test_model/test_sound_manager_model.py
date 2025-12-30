@@ -2,6 +2,12 @@ import unittest
 import pygame
 from unittest.mock import patch, MagicMock
 from pathlib import Path
+import os
+
+if 'CI' in os.environ: # Handle CI environment for audio
+    del os.environ['CI'] # Remove CI variable to avoid issues with pygame
+if 'SDL_AUDIODRIVER' in os.environ: # Handle SDL_AUDIODRIVER for audio
+    del os.environ['SDL_AUDIODRIVER'] # Remove SDL_AUDIODRIVER to avoid issues with pygame
 
 # Initialize pygame
 pygame.init()
@@ -10,11 +16,15 @@ pygame.display.set_mode((1, 1))
 from GardenInvasion.Model.sound_manager_model import SoundManager
 from GardenInvasion.Model.setting_volume_model import SettingsModel
 
+
 class TestSoundManagerModel(unittest.TestCase):
     # Test suite for SoundManager model
     
     def setUp(self):
         # Set up test fixtures
+
+        self.mixer_init_patcher = patch('pygame.mixer.get_init', return_value=True)
+        self.mixer_init_patcher.start()
 
         # Create settings model with default volume
         self.settings_model = SettingsModel()
@@ -30,6 +40,7 @@ class TestSoundManagerModel(unittest.TestCase):
     
     def tearDown(self):
         # Clean up
+        self.mixer_init_patcher.stop()
         self.mixer_patcher.stop()
     
     def test_sound_manager_initialization(self):
@@ -70,13 +81,13 @@ class TestSoundManagerModel(unittest.TestCase):
     def test_volume_minimum(self):
         # Test volume at minimum (0)
 
-        self.settings_model.volume = 0 # Set volume to minimum
-        sound_manager = SoundManager(self.settings_model) # Create SoundManager
-        sound_manager._update_volume() # Manually trigger volume update
+        self.settings_model.volume = 0  # Set volume to minimum
+        sound_manager = SoundManager(self.settings_model)  # Create SoundManager
+        sound_manager._update_volume()  # Manually trigger volume update
         
-        if self.mock_sound.set_volume.called: # Check if set_volume was called
-            call_args = self.mock_sound.set_volume.call_args[0] # Get call arguments
-            self.assertEqual(call_args[0], 0.0) # Verify volume is set to 0.0
+        if self.mock_sound.set_volume.called:  # Check if set_volume was called
+            call_args = self.mock_sound.set_volume.call_args[0]  # Get call arguments
+            self.assertEqual(call_args[0], 0.0)  # Verify volume is set to 0.0
         
         print("✅ Volume minimum (0) converts to 0.0")
     
@@ -98,20 +109,26 @@ class TestSoundManagerModel(unittest.TestCase):
 
         sound_manager = SoundManager(self.settings_model)
         
-        sound_manager.sounds['plant_shoot'] = self.mock_sound # Mock sound
+        # ============= FIX: Force audio_available for testing =============
+        sound_manager.audio_available = True
+        # ==================================================================
         
-        sound_manager.play_sound('plant_shoot') # Call play_sound
+        sound_manager.sounds['plant_shoot'] = self.mock_sound  # Mock sound
+        
+        sound_manager.play_sound('plant_shoot')  # Call play_sound
         
         # Verify play was called
         self.mock_sound.play.assert_called()
         print("✅ play_sound() calls .play() on existing sound")
     
     @patch('pygame.mixer.stop')
-    def test_stop_all_sounds(self, mock_mixer_stop):
+    @patch('pygame.mixer.music.stop')  # ← NEW: Also patch music.stop
+    def test_stop_all_sounds(self, mock_music_stop, mock_mixer_stop):
         # Test stopping all sounds
 
-        sound_manager = SoundManager(self.settings_model)
-        sound_manager.stop_all() # Call stop_all
+        sound_manager = SoundManager(self.settings_model) # Create SoundManager
+        sound_manager.audio_available = True # Ensure audio is available
+        sound_manager.stop_all()  # Call stop_all
         
         # Verify pygame.mixer.stop was called
         mock_mixer_stop.assert_called_once()
@@ -121,11 +138,11 @@ class TestSoundManagerModel(unittest.TestCase):
         # Test that volume is updated before playing sound
         self.settings_model.volume = 30
         sound_manager = SoundManager(self.settings_model)
-        sound_manager.sounds['plant_shoot'] = self.mock_sound
         
-        self.settings_model.volume = 80 # Update volume to 80
-        
-        sound_manager.play_sound('plant_shoot') # Call play_sound
+        sound_manager.audio_available = True # Force audio_available for testing
+        sound_manager.sounds['plant_shoot'] = self.mock_sound # Mock sound
+        self.settings_model.volume = 80  # Update volume to 80
+        sound_manager.play_sound('plant_shoot')  # Call play_sound
         
         # Volume should have been updated
         self.mock_sound.set_volume.assert_called()

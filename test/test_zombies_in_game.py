@@ -7,9 +7,9 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'GardenInvasion'))
 
 # Ora importa
-from Model.wave_model import WaveManager
-from Model.plant_model import Player
-from Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.Model.wave_model import WaveManager
+from GardenInvasion.Model.plant_model import Player
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 def test_zombies_visual():
     """Test visivo degli zombie nel gioco"""

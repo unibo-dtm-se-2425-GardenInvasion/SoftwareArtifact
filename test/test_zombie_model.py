@@ -8,8 +8,8 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GardenInvasion_path = os.path.join(project_root, 'GardenInvasion')
 sys.path.insert(0, GardenInvasion_path)
 
-from Model.zombie_model import RedZombie, OrangeZombie
-from Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.Model.zombie_model import RedZombie, OrangeZombie
+from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class TestZombieModel(unittest.TestCase):
     """Test per le classi zombie con movimento simmetrico"""
