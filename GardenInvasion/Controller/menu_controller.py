@@ -53,6 +53,15 @@ def main_menu_loop(screen: pygame.Surface,
                         run_options(screen, model, background_surf, background_rect, fonts, settings_model, sound_manager)
             # this if handles the input from the keyboard (UP/W and DOWN/S to navigate, ENTER/SPACE to select)
             
+            elif event.type == pygame.MOUSEMOTION: # mouse hover detection
+                mx, my = event.pos # get mouse position
+                line_h = SCREEN_HEIGHT * 0.1
+                for i in range(len(model.menu_items)):
+                    cy = SCREEN_HEIGHT * 0.4 + i * line_h  # Center y of each menu item
+                    if abs(my - cy) < line_h * 0.4:  # Within 40% of line height
+                        model.selected_index = i  # Update selection on hover
+                        break
+
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # simple click detection using View-computed rects
                 mx, my = event.pos
