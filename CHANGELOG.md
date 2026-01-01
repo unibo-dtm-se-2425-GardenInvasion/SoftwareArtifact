@@ -1,3 +1,15 @@
+## [1.0.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.0.0...1.0.1) (2026-01-01)
+
+
+### Bug Fixes
+
+* **menu:** add mouse hover highlighting for main menu items ([358de4d](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/358de4d0b96b9fdcc4fa875e86b2b22778c00a05))
+
+
+### Documentation
+
+* **CHANGELOG.md:** clean up CHANGELOG.md and update workflow section ([047dbda](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/047dbda494adf3c7bc9190c68afced9553cb86e0))
+
 ## 1.0.0 (2025-12-30)
 
 
