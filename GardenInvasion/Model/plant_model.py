@@ -39,6 +39,10 @@ class Player(pygame.sprite.Sprite):
 
         self.shoot_SecondTime = 500  # 0.5 seconds
         self.last_shot = pygame.time.get_ticks()# track time of last shot
+        
+        # NEW: Life points system (2 life points)
+        self.life_points = 2  # Start with 2 life points
+        self.max_life_points = 2
 
     def move_left(self): # move left
         self.rect.x -= self.speed
@@ -56,3 +60,20 @@ class Player(pygame.sprite.Sprite):
             self.last_shot = current_time
             return True
         return False
+    
+    # NEW: Damage handling method
+    def take_damage(self):
+        """Reduce life points by 1 when hit.
+        Returns True if plant is destroyed, False otherwise."""
+        if self.life_points > 0:  # Only reduce if still alive
+            self.life_points -= 1
+        
+        # You can add visual/sound feedback here later
+        if self.life_points <= 0:
+            return True  # Plant destroyed
+        return False  # Plant still alive
+    
+    # NEW: Check if plant is alive
+    def is_alive(self):
+        """Check if plant still has life points"""
+        return self.life_points > 0
