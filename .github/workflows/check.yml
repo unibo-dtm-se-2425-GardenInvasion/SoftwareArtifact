@@ -1,0 +1,62 @@
+name: CI/CD
+on:
+  push:
+    branches-ignore:
+      - 'dependabot/**'
+    paths-ignore:
+      - '.gitignore'
+      - '.mergify.yml'
+      - 'CHANGELOG.md'
+      - 'LICENSE'
+      - 'README.md'
+      - 'renovate.json'
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        python-version:
+          - '3.12'
+          - '3.13'
+    runs-on: ${{ matrix.os }}
+    name: Run tests on Python ${{ matrix.python-version }}, on ${{ matrix.os }}
+    timeout-minutes: 45
+    concurrency:
+      group: ${{ github.workflow }}-run-unit-tests-${{ matrix.python-version }}-${{ matrix.os }}-${{ github.event.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Python dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: Test
+        run: python -m unittest discover -s test -t .
+        env:
+          SDL_AUDIODRIVER: dummy # Prevent audio initialization issues
+          SDL_VIDEODRIVER: dummy # Prevent video initialization issues
+          CI: true # Indicate running in CI environment
+          PYTHONIOENCODING: utf-8 # Ensure UTF-8 encoding
+  deploy:
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    needs:
+      - test
+    uses: ./.github/workflows/deploy.yml
+    if: github.ref_name == 'master' || github.ref_name == 'main'
+    secrets: inherit
