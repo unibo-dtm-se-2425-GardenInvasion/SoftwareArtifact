@@ -1,3 +1,15 @@
+## [1.1.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.0.1...1.1.0) (2026-01-15)
+
+
+### Features
+
+* implement 2-life-point system for plant and wallnuts ([4bdfa60](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/4bdfa605cfbf1a9346266ba79c0fd07e86a97575))
+
+
+### Bug Fixes
+
+* resolve merge conflicts from feature/wallnut merge ([39fdb62](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/39fdb6209ecd7678c8c61e4f92a6a842b929d21a))
+
 ## [1.0.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.0.0...1.0.1) (2026-01-01)
 
 
