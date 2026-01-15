@@ -22,7 +22,7 @@ git clone https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact.g
 ```     
 #### 2. Move into artifact:
 ```bash
-cd artifact
+cd SoftwareArtifact
 ```
 #### 3. Install the required dependencies (for tests and not):
 ```bash
