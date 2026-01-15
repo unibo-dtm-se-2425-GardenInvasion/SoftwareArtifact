@@ -101,7 +101,7 @@ def draw_volume_menu(screen, volume_model, background_surf, background_rect, fon
     pygame.draw.rect(screen, WHITE_Instruction, (slider_x, slider_y, slider_width, slider_height), width=2, border_radius=5)
 
     # Directions beneath the slider for adjusting volume
-    adjust_font = pygame.font.SysFont("Arial", 12)
+    adjust_font = pygame.font.SysFont("Arial", 16)
     adjust_text = render_text_with_outline(adjust_font, "Use LEFT/RIGHT arrows to adjust volume", WHITE_Instruction, BLACK, 1)
     adjust_rect = adjust_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.52))
     screen.blit(adjust_text, adjust_rect)
