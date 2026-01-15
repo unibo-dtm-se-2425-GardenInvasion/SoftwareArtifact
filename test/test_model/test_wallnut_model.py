@@ -183,36 +183,5 @@ class TestWallNut(unittest.TestCase):
         self.assertSetEqual(set(wallnut.sprites.keys()), {2, 1})
         print("✅ WallNut sprites dictionary has 2 entries (for 2 life points)")
 
-
-@unittest.skip("WallNutManager tests skipped - focusing on WallNut 2-life-point system verification")
-class TestWallNutManager(unittest.TestCase):
-    """Test suite for WallNutManager class - SKIPPED"""
-    
-    # All TestWallNutManager tests remain here but will be skipped
-    def test_manager_has_four_slots(self):
-        pass
-    
-    def test_manager_has_wallnuts_sprite_group(self):
-        pass
-    
-    def test_slot_positions_evenly_distributed(self):
-        pass
-    
-    def test_slot_positions_within_screen_bounds(self):
-        pass
-    
-    def test_place_wallnut_adds_to_sprite_group(self):
-        pass
-    
-    def test_check_projectile_collision_removes_projectile(self):
-        pass
-    
-    def test_collision_updates_slot_availability(self):
-        pass
-    
-    def test_no_collision_when_no_wallnuts(self):
-        pass
-
-
 if __name__ == '__main__':
     unittest.main()

@@ -95,7 +95,6 @@ class TestWallnutController(unittest.TestCase):
         self.mock_sound_manager.reset_mock()
         
         # Damage wallnut 3 times to destroy it
-        wallnut.take_damage()  # Health: 2
         wallnut.take_damage()  # Health: 1
         result = wallnut.take_damage()  # Health: 0 (destroyed)
         
