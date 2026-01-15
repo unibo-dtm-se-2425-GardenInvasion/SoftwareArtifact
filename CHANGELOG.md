@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.1.0...1.1.1) (2026-01-15)
+
+
+### Documentation
+
+* increase sentence length in options_view.py ([0117e62](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/0117e62b7df402b662a7f40988a379a3067a53fa))
+* update README with corrected link ([307ad99](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/307ad99dbca0410428145ba8ce88ae89adcc8e4b))
+
 ## [1.1.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.0.1...1.1.0) (2026-01-15)
 
 
