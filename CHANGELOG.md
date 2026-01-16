@@ -1,3 +1,10 @@
+## [1.2.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.1.1...1.2.0) (2026-01-16)
+
+
+### Features
+
+* implement collision system phase 1 - plant projectile vs zombie ([5b5c6cf](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/5b5c6cf1afe350ffd19960c02a88b22b823d644a))
+
 ## [1.1.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.1.0...1.1.1) (2026-01-15)
 
 
