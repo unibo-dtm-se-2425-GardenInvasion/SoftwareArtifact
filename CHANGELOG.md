@@ -1,3 +1,10 @@
+## [1.3.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.2.0...1.3.0) (2026-01-17)
+
+
+### Features
+
+* implement zombie projectile → plant collision ([522482f](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/522482fb2f35706fc09be44eeac0b617a14b23e7))
+
 ## [1.2.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.1.1...1.2.0) (2026-01-16)
 
 
