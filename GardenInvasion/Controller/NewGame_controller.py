@@ -90,7 +90,7 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
         clock.tick(60)
 
 
-# ---------- collision helper ----------
+# ---------- collision helpers ----------
 def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_manager=None):
     """Handle collisions between player projectiles and zombies"""
     collisions = pygame.sprite.groupcollide(
@@ -107,6 +107,47 @@ def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_m
     
     return len(collisions) > 0  # Return True if any collisions occurred
 
+
+def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, sound_manager=None):
+    """Handle collisions between zombie projectiles and plant"""
+    # DEBUG: Conta i proiettili
+    print(f"🔍 DEBUG: Zombie projectiles in group: {len(zombie_projectile_group)}")
+    
+    # Check collision between zombie projectiles and player
+    collisions = pygame.sprite.spritecollide(
+        player,                    # The plant/player sprite
+        zombie_projectile_group,   # Zombie projectiles group
+        True,                      # Remove zombie projectile on hit
+        pygame.sprite.collide_rect # Use rectangle collision
+    )
+    
+    # DEBUG: Conta collisioni
+    print(f"🔍 DEBUG: Collisions detected: {len(collisions)}")
+    
+    plant_was_destroyed = False
+    
+    # For each collision, make the plant take damage
+    for projectile in collisions:
+        print(f"🔍 DEBUG: Plant taking damage from zombie projectile!")
+        plant_destroyed = player.take_damage()
+        
+        # DEBUG: Stato della pianta
+        print(f"🔍 DEBUG: Plant destroyed? {plant_destroyed}")
+        
+        # Optional: Play hit sound
+        if sound_manager:
+            pass
+        
+        # Check if plant was destroyed
+        if plant_destroyed:
+            # Game over logic would go here
+            print("💀 PLANT DESTROYED! GAME OVER!")
+            plant_was_destroyed = True
+            # Break early since plant is already destroyed
+            break
+    
+    # Return True only if plant was actually destroyed, not just hit
+    return plant_was_destroyed
 
 # ---------- game + options scenes ----------
 def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel, sound_manager: SoundManager) -> None:
@@ -182,6 +223,19 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         # NUOVO: Handle collisions between player projectiles and zombies
         _handle_projectile_zombie_collisions(projectile_group, wave_manager.zombie_group, sound_manager)
+        
+        # NUOVO: Handle collisions between zombie projectiles and plant
+        plant_destroyed = _handle_zombie_projectile_plant_collisions(
+            wave_manager.zombie_projectile_group, 
+            player, 
+            sound_manager
+        )
+        
+        # Check if plant was destroyed (game over)
+        if plant_destroyed:
+            print("💀 GAME OVER - Plant destroyed!")
+            # TODO: Add proper game over screen/state
+            running = False  # Exit game loop for now
 
         # Draw black background or optionally your game background here
         draw_game(screen, RunGame_background, player_group, projectile_group, 

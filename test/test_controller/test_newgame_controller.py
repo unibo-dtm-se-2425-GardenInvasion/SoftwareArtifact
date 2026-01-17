@@ -6,7 +6,12 @@ import sys
 pygame.init()
 pygame.display.set_mode((1, 1))
 
-from GardenInvasion.Controller.NewGame_controller import show_pause_menu, run_game, _handle_projectile_zombie_collisions
+from GardenInvasion.Controller.NewGame_controller import (
+    show_pause_menu, 
+    run_game, 
+    _handle_projectile_zombie_collisions,
+    _handle_zombie_projectile_plant_collisions  # NUOVO IMPORT
+)
 from GardenInvasion.Model.menu_model import MenuModel
 from GardenInvasion.Model.setting_volume_model import SettingsModel
 
@@ -27,7 +32,149 @@ class TestNewGameController(unittest.TestCase):
         self.image_patcher.stop()
         pygame.event.clear()
 
-    # NUOVO TEST: Collisione proiettile-zombie
+    # NUOVO TEST: Collisione proiettile zombie → pianta
+    def test_zombie_projectile_hits_plant(self):
+        """Test che i proiettili zombie danneggiano la pianta"""
+        # Crea mock per gruppo proiettili zombie e player
+        zombie_projectile_group = pygame.sprite.Group()
+        mock_player = MagicMock()
+        mock_player.take_damage.return_value = False  # Pianta non distrutta
+        
+        # Crea mock proiettile zombie
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        # Mock pygame.sprite.spritecollide per restituire collisione
+        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
+            mock_spritecollide.return_value = [mock_projectile]
+            
+            # Esegui la funzione di collisione
+            plant_destroyed = _handle_zombie_projectile_plant_collisions(
+                zombie_projectile_group, 
+                mock_player
+            )
+            
+            # Verifica
+            self.assertFalse(plant_destroyed)  # Pianta non distrutta
+            mock_player.take_damage.assert_called_once()  # Dovrebbe infliggere danno
+            mock_spritecollide.assert_called_once_with(
+                mock_player,
+                zombie_projectile_group,
+                True,  # rimuovi proiettile
+                pygame.sprite.collide_rect
+            )
+            print("✅ Zombie projectile damages plant")
+
+    def test_zombie_projectile_destroys_plant(self):
+        """Test quando un proiettile zombie distrugge la pianta"""
+        zombie_projectile_group = pygame.sprite.Group()
+        mock_player = MagicMock()
+        mock_player.take_damage.return_value = True  # Pianta distrutta!
+        
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
+            mock_spritecollide.return_value = [mock_projectile]
+            
+            plant_destroyed = _handle_zombie_projectile_plant_collisions(
+                zombie_projectile_group, 
+                mock_player
+            )
+            
+            self.assertTrue(plant_destroyed)  # Pianta distrutta
+            mock_player.take_damage.assert_called_once()
+            print("✅ Zombie projectile destroys plant")
+
+    def test_multiple_zombie_projectiles_hit_plant(self):
+        """Test collisione con multiple proiettili zombie"""
+        zombie_projectile_group = pygame.sprite.Group()
+        mock_player = MagicMock()
+        mock_player.take_damage.return_value = False
+        
+        # Crea 3 proiettili mock
+        mock_projectiles = [MagicMock() for _ in range(3)]
+        for projectile in mock_projectiles:
+            zombie_projectile_group.add(projectile)
+        
+        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
+            mock_spritecollide.return_value = mock_projectiles
+            
+            plant_destroyed = _handle_zombie_projectile_plant_collisions(
+                zombie_projectile_group, 
+                mock_player
+            )
+            
+            self.assertFalse(plant_destroyed)
+            # take_damage dovrebbe essere chiamato 3 volte (uno per proiettile)
+            self.assertEqual(mock_player.take_damage.call_count, 3)
+            print("✅ Multiple zombie projectiles damage plant")
+
+    def test_no_zombie_projectile_collision_returns_false(self):
+        """Test che restituisce False quando non ci sono collisioni"""
+        zombie_projectile_group = pygame.sprite.Group()
+        mock_player = MagicMock()
+        
+        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
+            mock_spritecollide.return_value = []  # Nessuna collisione
+            
+            plant_destroyed = _handle_zombie_projectile_plant_collisions(
+                zombie_projectile_group, 
+                mock_player
+            )
+            
+            self.assertFalse(plant_destroyed)
+            mock_player.take_damage.assert_not_called()  # Nessun danno
+            print("✅ No zombie projectile collision returns False")
+
+    def test_zombie_projectile_removed_on_hit(self):
+        """Test che i proiettili zombie vengono rimossi dopo collisione"""
+        zombie_projectile_group = pygame.sprite.Group()
+        mock_player = MagicMock()
+        mock_player.take_damage.return_value = False
+        
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
+            mock_spritecollide.return_value = [mock_projectile]
+            
+            _handle_zombie_projectile_plant_collisions(zombie_projectile_group, mock_player)
+            
+            # Verifica che spritecollide sia chiamato con True per rimuovere proiettile
+            mock_spritecollide.assert_called_once_with(
+                mock_player,
+                zombie_projectile_group,
+                True,  # rimuovi proiettile
+                pygame.sprite.collide_rect
+            )
+            print("✅ Zombie projectile removed on plant hit")
+
+    # Test per sound manager (opzionale)
+    def test_zombie_projectile_collision_with_sound_manager(self):
+        """Test collisione con sound manager (se implementato in futuro)"""
+        zombie_projectile_group = pygame.sprite.Group()
+        mock_player = MagicMock()
+        mock_player.take_damage.return_value = False
+        
+        mock_sound_manager = MagicMock()
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
+            mock_spritecollide.return_value = [mock_projectile]
+            
+            plant_destroyed = _handle_zombie_projectile_plant_collisions(
+                zombie_projectile_group, 
+                mock_player,
+                mock_sound_manager
+            )
+            
+            self.assertFalse(plant_destroyed)
+            mock_player.take_damage.assert_called_once()
+            # Nota: al momento non viene chiamato play_sound, ma potrebbe in futuro
+            print("✅ Zombie projectile collision with sound manager parameter")
+
     def test_projectile_zombie_collision_damages_zombie(self):
         """Test che le collisioni proiettile-zombie infliggono danno"""
         # Crea gruppi mock
