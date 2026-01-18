@@ -1,3 +1,15 @@
+## [1.4.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.3.0...1.4.0) (2026-01-18)
+
+
+### Features
+
+* add game over screen with fade-in animation ([0fb0b80](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/0fb0b8048836726ee8f222e97741798bb4782f9a))
+
+
+### General maintenance
+
+* add zombie projectile sprite to assets ([2b91966](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/2b919666ad7f3cc735124dd278e0cddad9b80502))
+
 ## [1.3.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.2.0...1.3.0) (2026-01-17)
 
 
