@@ -6,13 +6,15 @@ from ..View.menu_view import draw_pause_modal, get_pause_menu_button_rects
 from ..Utilities.constants import*
 from ..Model.plant_model import Player
 from ..Model.wallnut_model import WallNutManager
-from ..Model.wave_model import WaveManager  # NUOVO IMPORT
+from ..Model.wave_model import WaveManager
 from .plant_controller import handle_player_input
 from .wallnut_controller import handle_wallnut_placement, handle_wallnut_collisions
 from ..View.RunGame_view import draw_game
 from .menu_controller_utilities import show_confirm_quit
 from ..Model.setting_volume_model import SettingsModel
 from ..Model.sound_manager_model import SoundManager
+from ..Model.game_over_model import GameOverModel
+from ..View.game_over_view import draw_game_over_screen
 
 # ---------- modal helper ----------
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
@@ -89,6 +91,83 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
         pygame.display.flip()
         clock.tick(60)
 
+def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_manager: SoundManager) -> str:
+    # Controller for game over screen with fade-in animation
+    
+    clock = pygame.time.Clock()
+    game_over_model = GameOverModel()
+    sound_manager.play_sound('game_over') 
+
+    # Capture and blur the background ONCE before the loop
+    background_snapshot = screen.copy() # Capture current screen
+    small_size = (screen.get_width() // 8, screen.get_height() // 8) # Reduce size for blurring
+    blurred_bg = pygame.transform.smoothscale(background_snapshot, small_size)
+    blurred_bg = pygame.transform.smoothscale(blurred_bg, (screen.get_width() // 6, screen.get_height() // 6))
+    blurred_bg = pygame.transform.smoothscale(blurred_bg, screen.get_size())
+    
+    # Store button rects (will be updated after first draw)
+    restart_rect = None
+    menu_rect = None
+    
+    # Fade-in animation variables
+    fade_alpha = 0  # Start fully transparent
+    fade_speed = 5  # Speed of fade (higher = faster)
+    fade_complete = False
+
+    while True:
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return 'quit'
+                
+            # Only allow input after fade completes
+            if fade_complete:
+                if event.type == pygame.KEYDOWN: # Handle keyboard input
+                    if event.key in (pygame.K_LEFT, pygame.K_a):
+                        game_over_model.select_previous()
+                    elif event.key in (pygame.K_RIGHT, pygame.K_d):
+                        game_over_model.select_next()
+                    elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                        selected = game_over_model.get_selected_option()
+                        if selected == "Start Again":
+                            print("Restarting game")
+                            return 'restart'
+                        else:
+                            print("Returning to main menu")
+                            return 'menu'
+                            
+                if event.type == pygame.MOUSEMOTION: # Handle mouse hover
+                    if restart_rect and menu_rect:
+                        if restart_rect.collidepoint(event.pos):
+                            game_over_model.selected_index = 0
+                        elif menu_rect.collidepoint(event.pos):
+                            game_over_model.selected_index = 1
+                        
+                if event.type == pygame.MOUSEBUTTONDOWN: # Handle mouse clicks
+                    selected = game_over_model.get_selected_option()
+                    if selected == "Start Again":
+                        return 'restart'
+                    else:
+                        return 'menu'
+        
+        # Draw blurred background first
+        screen.blit(blurred_bg, (0, 0))
+        # Draw dark overlay
+        overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150))
+        screen.blit(overlay, (0, 0))
+        
+        # Draw game over screen with current fade alpha
+        restart_rect, menu_rect = draw_game_over_screen(screen, game_over_model, fade_alpha)
+        
+        # Update fade-in animation
+        if fade_alpha < 255:
+            fade_alpha = min(255, fade_alpha + fade_speed)
+        else:
+            fade_complete = True
+        
+        pygame.display.flip()
+        clock.tick(60)
 
 # ---------- collision helpers ----------
 def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_manager=None):
@@ -106,7 +185,6 @@ def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_m
             zombie_destroyed = zombie.take_damage(1)  # Deal 1 damage
     
     return len(collisions) > 0  # Return True if any collisions occurred
-
 
 def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, sound_manager=None):
     """Handle collisions between zombie projectiles and plant"""
@@ -152,16 +230,17 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
 # ---------- game + options scenes ----------
 def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel, sound_manager: SoundManager) -> None:
     #placeholder for actual game loop until the user quits
+
     clock = pygame.time.Clock()
 
     pkg_root = Path(__file__).resolve().parent.parent
     RunGame_bg_path = pkg_root / "Assets" / "images" / "RunGame01.png"
-    RunGame_background = BackgroundModel(RunGame_bg_path) # load game background image
+    RunGame_background = BackgroundModel(RunGame_bg_path)
 
-    sound_manager = SoundManager(settings_model)  # Initialize sound manager with settings
+    sound_manager = SoundManager(settings_model)
 
     # Create player with selected skin
-    player = Player((SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95), settings_model)  # Pass settings_model
+    player = Player((SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95), settings_model)
     player_group = pygame.sprite.GroupSingle(player)
     projectile_group = pygame.sprite.Group()
 
@@ -170,77 +249,81 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         player_position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95),
         screen_width=SCREEN_WIDTH,
         screen_height=SCREEN_HEIGHT,
-        sound_manager=sound_manager # Pass sound manager for sound effects
+        sound_manager=sound_manager
     )
 
-    wallnut_manager.place_all_wallnuts()  # Place all 4 wall-nuts at game start
+    wallnut_manager.place_all_wallnuts()
     
-    # NUOVO: Create wave manager
+    # Create wave manager
     wave_manager = WaveManager()
-    wave_manager.start_first_wave()  # Start the first wave
+    wave_manager.start_first_wave()
     
-    sound_manager.play_music('gameplay', loops=-1, fade_ms=1000) # Play gameplay music with fade-in
+    sound_manager.play_music('gameplay', loops=-1, fade_ms=1000)
 
     running = True
     while running:
-        for event in pygame.event.get(): # event loop to handle user input
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 print ("Quit event detected in game loop")
                 if show_confirm_quit(screen, model):
-                    sound_manager.stop_music(fade_ms=500) # Fade out music
+                    sound_manager.stop_music(fade_ms=500)
                     pygame.quit()
                     sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                # Show pause menu instead of quit dialog
                 print("Escape key pressed, Pause Menu shown")
-                sound_manager.pause_music() # Pause music when entering pause menu
+                sound_manager.pause_music()
                 action = show_pause_menu(screen, model)
                 if action == 'quit':
-                    sound_manager.stop_music(fade_ms=500) # Fade out music
+                    sound_manager.stop_music(fade_ms=500)
                     pygame.quit()
                     sys.exit()
                 elif action == 'menu':
-                    sound_manager.stop_music(fade_ms=1000) # Fade out music
-                    running = False  # Exit game loop, return to main menu
+                    sound_manager.stop_music(fade_ms=1000)
+                    running = False
                 else:
-                    sound_manager.unpause_music() # Resume music if game is resumed
+                    sound_manager.unpause_music()
         
-        handle_player_input(player,projectile_group, sound_manager) # handle player movement input and auto shooting    
-        # Handle wall-nut placement (keys 1-4)
+        handle_player_input(player, projectile_group, sound_manager)
         keys = pygame.key.get_pressed()
         handle_wallnut_placement(keys, wallnut_manager)
 
-        # Update player (plant) and projectile position based on keyboard input
+        # Update all entities
         player_group.update()
         projectile_group.update()
         wallnut_manager.update()
-        
-        # NUOVO: Update wave manager (zombies and zombie projectiles)
         wave_manager.update()
         
-        # Handle collisions (player projectiles blocked by wall-nuts)
+        # Handle collisions
         handle_wallnut_collisions(wallnut_manager, projectile_group)
-        
-        # NUOVO: Handle collisions between player projectiles and zombies
         _handle_projectile_zombie_collisions(projectile_group, wave_manager.zombie_group, sound_manager)
         
-        # NUOVO: Handle collisions between zombie projectiles and plant
         plant_destroyed = _handle_zombie_projectile_plant_collisions(
             wave_manager.zombie_projectile_group, 
             player, 
             sound_manager
         )
         
+        # Draw everything ONCE per frame
+        draw_game(screen, RunGame_background, player_group, projectile_group, 
+                  wallnut_manager.get_wallnuts(), wave_manager.zombie_group)
+        
+        # Update display BEFORE checking game over
+        pygame.display.flip()
+        
         # Check if plant was destroyed (game over)
         if plant_destroyed:
             print("💀 GAME OVER - Plant destroyed!")
-            # TODO: Add proper game over screen/state
-            running = False  # Exit game loop for now
+            sound_manager.stop_music(fade_ms=500)
+            # Show game over screen
+            action = show_game_over_screen(screen, model, sound_manager)
+            
+            if action == 'restart': # Restart game
+                run_game(screen, model, settings_model, sound_manager)
+                return
+            elif action == 'menu': # return to main menu
+                running = False
+            else:  # quit
+                pygame.quit()
+                sys.exit()
 
-        # Draw black background or optionally your game background here
-        draw_game(screen, RunGame_background, player_group, projectile_group, 
-                  wallnut_manager.get_wallnuts(), wave_manager.zombie_group)  # AGGIUNTO zombie_group
-
-        # Update the full display surface
-        pygame.display.flip() # update the full display
-        clock.tick(60)  # Limit FPS to 60
+        clock.tick(60)

@@ -70,7 +70,8 @@ class SoundManager:
         # Define sound file mappings
         sound_files = {
             'plant_shoot': 'shoot_plant.wav',  # Sound when plant shoots
-            'wallnut_destroyed': 'wallnut_destroyed.wav'  # Sound when wallnut destroyed
+            'wallnut_destroyed': 'wallnut_destroyed.wav',  # Sound when wallnut destroyed
+            'game_over': 'gameover_sound.ogg'  # Game over sound   
         }
         
         # Load each sound file
