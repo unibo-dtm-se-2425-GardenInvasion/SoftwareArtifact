@@ -251,6 +251,41 @@ def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnu
     
     return len(collisions) > 0  # Return True if any collisions occurred
 
+def _handle_zombie_wallnut_collisions(zombie_group, wallnut_manager, sound_manager=None):
+    """Handle collisions between zombies and wallnuts.
+    Zombie is destroyed on contact, wallnut takes damage."""
+    # Get the wallnut sprite group
+    wallnut_group = wallnut_manager.get_wallnuts()
+    
+    # Check collisions between zombies and wallnuts
+    # True = remove zombie on collision (it gets destroyed)
+    # False = don't auto-remove wallnut (it takes damage via take_damage())
+    collisions = pygame.sprite.groupcollide(
+        zombie_group,      # Zombies
+        wallnut_group,     # Wallnut sprites
+        True,              # REMOVE zombie on collision (destroyed)
+        False              # DON'T auto-remove wallnut (it takes damage instead)
+    )
+    
+    wallnut_destroyed_count = 0
+    
+    # For each collision, make the wallnut take damage
+    for zombie, wallnuts_hit in collisions.items():
+        for wallnut in wallnuts_hit:
+            wallnut_destroyed = wallnut.take_damage()
+            if wallnut_destroyed:
+                wallnut_destroyed_count += 1
+                print(f"💥 Wallnut {wallnut.slot_index} destroyed by zombie!")
+            else:
+                print(f"💥 Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
+    
+    # Optional: Play sound if any wallnuts were destroyed
+    if sound_manager and wallnut_destroyed_count > 0:
+        # Sound is already played in wallnut.take_damage() method
+        pass
+    
+    return len(collisions) > 0  # Return True if any collisions occurred
+
 # ---------- game + options scenes ----------
 def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel, sound_manager: SoundManager) -> None:
     #placeholder for actual game loop until the user quits
@@ -329,6 +364,12 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         _handle_zombie_projectile_wallnut_collisions(
             wave_manager.zombie_projectile_group,
+            wallnut_manager,
+            sound_manager
+        )
+        
+        _handle_zombie_wallnut_collisions(
+            wave_manager.zombie_group,
             wallnut_manager,
             sound_manager
         )
