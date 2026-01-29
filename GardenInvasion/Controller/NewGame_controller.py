@@ -227,6 +227,30 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
     # Return True only if plant was actually destroyed, not just hit
     return plant_was_destroyed
 
+def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnut_manager, sound_manager=None):
+    """Handle collisions between zombie projectiles and wallnuts"""
+    # Get the wallnut sprite group
+    wallnut_group = wallnut_manager.get_wallnuts()
+    
+    # Check collisions between zombie projectiles and wallnuts
+    collisions = pygame.sprite.groupcollide(
+        zombie_projectile_group,  # Zombie projectiles
+        wallnut_group,            # Wallnut sprites
+        True,                     # Remove zombie projectile on hit
+        False                     # Don't remove wallnut (it takes damage instead)
+    )
+    
+    wallnut_destroyed_count = 0
+    
+    # For each collision, make the wallnut take damage
+    for projectile, wallnuts_hit in collisions.items():
+        for wallnut in wallnuts_hit:
+            wallnut_destroyed = wallnut.take_damage()
+            if wallnut_destroyed:
+                wallnut_destroyed_count += 1
+    
+    return len(collisions) > 0  # Return True if any collisions occurred
+
 # ---------- game + options scenes ----------
 def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel, sound_manager: SoundManager) -> None:
     #placeholder for actual game loop until the user quits
@@ -300,6 +324,12 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         plant_destroyed = _handle_zombie_projectile_plant_collisions(
             wave_manager.zombie_projectile_group, 
             player, 
+            sound_manager
+        )
+        
+        _handle_zombie_projectile_wallnut_collisions(
+            wave_manager.zombie_projectile_group,
+            wallnut_manager,
             sound_manager
         )
         

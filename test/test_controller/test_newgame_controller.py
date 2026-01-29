@@ -10,7 +10,8 @@ from GardenInvasion.Controller.NewGame_controller import (
     show_pause_menu, 
     run_game, 
     _handle_projectile_zombie_collisions,
-    _handle_zombie_projectile_plant_collisions  # NUOVO IMPORT
+    _handle_zombie_projectile_plant_collisions,
+    _handle_zombie_projectile_wallnut_collisions
 )
 from GardenInvasion.Model.menu_model import MenuModel
 from GardenInvasion.Model.setting_volume_model import SettingsModel
@@ -31,6 +32,245 @@ class TestNewGameController(unittest.TestCase):
     def tearDown(self):
         self.image_patcher.stop()
         pygame.event.clear()
+
+    # TESTS FOR POINT 3: Zombie projectile → Wallnut collision
+    def test_zombie_projectile_hits_wallnut(self):
+        """Test che i proiettili zombie danneggiano i wallnut"""
+        # Crea mock per gruppo proiettili zombie e wallnut manager
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        # Mock wallnut manager e wallnut group
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        # Crea mock wallnut
+        mock_wallnut = MagicMock()
+        mock_wallnut.take_damage.return_value = False  # Wallnut non distrutto
+        mock_wallnut.slot_index = 0
+        mock_wallnut_group.add(mock_wallnut)
+        
+        # Crea mock proiettile zombie
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        # Mock pygame.sprite.groupcollide per restituire collisione
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            mock_collide.return_value = {
+                mock_projectile: [mock_wallnut]
+            }
+            
+            # Esegui la funzione di collisione
+            collision_occurred = _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager
+            )
+            
+            # Verifica
+            self.assertTrue(collision_occurred)  # Collisione avvenuta
+            mock_wallnut.take_damage.assert_called_once()  # Dovrebbe infliggere danno
+            mock_collide.assert_called_once_with(
+                zombie_projectile_group,
+                mock_wallnut_group,
+                True,   # rimuovi proiettile
+                False   # non rimuovere wallnut (prendi danno invece)
+            )
+            print("✅ Zombie projectile damages wallnut")
+
+    def test_zombie_projectile_destroys_wallnut(self):
+        """Test quando un proiettile zombie distrugge il wallnut"""
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        mock_wallnut = MagicMock()
+        mock_wallnut.take_damage.return_value = True  # Wallnut distrutto!
+        mock_wallnut.slot_index = 1
+        mock_wallnut_group.add(mock_wallnut)
+        
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            mock_collide.return_value = {
+                mock_projectile: [mock_wallnut]
+            }
+            
+            collision_occurred = _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager
+            )
+            
+            self.assertTrue(collision_occurred)
+            mock_wallnut.take_damage.assert_called_once()
+            print("✅ Zombie projectile destroys wallnut")
+
+    def test_multiple_zombie_projectiles_hit_wallnut(self):
+        """Test collisione con multiple proiettili zombie su wallnut"""
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        mock_wallnut = MagicMock()
+        mock_wallnut.take_damage.return_value = False
+        mock_wallnut.slot_index = 2
+        mock_wallnut_group.add(mock_wallnut)
+        
+        # Crea 3 proiettili mock
+        mock_projectiles = [MagicMock() for _ in range(3)]
+        for projectile in mock_projectiles:
+            zombie_projectile_group.add(projectile)
+        
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            # Tutti i proiettili colpiscono lo stesso wallnut
+            mock_collide.return_value = {
+                mock_projectiles[0]: [mock_wallnut],
+                mock_projectiles[1]: [mock_wallnut],
+                mock_projectiles[2]: [mock_wallnut]
+            }
+            
+            collision_occurred = _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager
+            )
+            
+            self.assertTrue(collision_occurred)
+            # take_damage dovrebbe essere chiamato 3 volte
+            self.assertEqual(mock_wallnut.take_damage.call_count, 3)
+            print("✅ Multiple zombie projectiles damage wallnut")
+
+    def test_no_zombie_projectile_wallnut_collision_returns_false(self):
+        """Test che restituisce False quando non ci sono collisioni con wallnut"""
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            mock_collide.return_value = {}  # Nessuna collisione
+            
+            collision_occurred = _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager
+            )
+            
+            self.assertFalse(collision_occurred)
+            mock_collide.assert_called_once()
+            print("✅ No zombie projectile-wallnut collision returns False")
+
+    def test_zombie_projectile_hits_multiple_wallnuts(self):
+        """Test collisione proiettile zombie con multiple wallnuts (edge case)"""
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        # Crea 3 wallnut mock
+        mock_wallnut1 = MagicMock()
+        mock_wallnut1.take_damage.return_value = False
+        mock_wallnut1.slot_index = 0
+        
+        mock_wallnut2 = MagicMock()
+        mock_wallnut2.take_damage.return_value = True  # Distrutto
+        mock_wallnut2.slot_index = 1
+        
+        mock_wallnut3 = MagicMock()
+        mock_wallnut3.take_damage.return_value = False
+        mock_wallnut3.slot_index = 2
+        
+        mock_wallnut_group.add(mock_wallnut1, mock_wallnut2, mock_wallnut3)
+        
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            mock_collide.return_value = {
+                mock_projectile: [mock_wallnut1, mock_wallnut2, mock_wallnut3]
+            }
+            
+            collision_occurred = _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager
+            )
+            
+            self.assertTrue(collision_occurred)
+            # Ogni wallnut dovrebbe prendere danno
+            mock_wallnut1.take_damage.assert_called_once()
+            mock_wallnut2.take_damage.assert_called_once()
+            mock_wallnut3.take_damage.assert_called_once()
+            print("✅ Zombie projectile hits multiple wallnuts")
+
+    def test_zombie_projectile_wallnut_collision_with_sound_manager(self):
+        """Test collisione con sound manager (il suono è gestito in wallnut.take_damage())"""
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        mock_wallnut = MagicMock()
+        mock_wallnut.take_damage.return_value = False
+        mock_wallnut.slot_index = 3
+        mock_wallnut_group.add(mock_wallnut)
+        
+        mock_sound_manager = MagicMock()
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            mock_collide.return_value = {
+                mock_projectile: [mock_wallnut]
+            }
+            
+            collision_occurred = _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager,
+                mock_sound_manager
+            )
+            
+            self.assertTrue(collision_occurred)
+            mock_wallnut.take_damage.assert_called_once()
+            print("✅ Zombie projectile-wallnut collision with sound manager parameter")
+
+    def test_zombie_projectile_removed_on_wallnut_hit(self):
+        """Test che i proiettili zombie vengono rimossi dopo collisione con wallnut"""
+        zombie_projectile_group = pygame.sprite.Group()
+        
+        mock_wallnut_manager = MagicMock()
+        mock_wallnut_group = pygame.sprite.Group()
+        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
+        
+        mock_wallnut = MagicMock()
+        mock_wallnut.take_damage.return_value = False
+        mock_wallnut_group.add(mock_wallnut)
+        
+        mock_projectile = MagicMock()
+        zombie_projectile_group.add(mock_projectile)
+        
+        with patch('pygame.sprite.groupcollide') as mock_collide:
+            mock_collide.return_value = {
+                mock_projectile: [mock_wallnut]
+            }
+            
+            _handle_zombie_projectile_wallnut_collisions(
+                zombie_projectile_group, 
+                mock_wallnut_manager
+            )
+            
+            # Verifica che groupcollide sia chiamato con True per rimuovere proiettile
+            mock_collide.assert_called_once_with(
+                zombie_projectile_group,
+                mock_wallnut_group,
+                True,   # rimuovi proiettile
+                False   # non rimuovere wallnut
+            )
+            print("✅ Zombie projectile removed on wallnut hit")
 
     # NUOVO TEST: Collisione proiettile zombie → pianta
     def test_zombie_projectile_hits_plant(self):
