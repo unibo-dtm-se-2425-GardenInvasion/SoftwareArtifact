@@ -12,7 +12,7 @@ def draw_game(screen: pygame.Surface,
               player_group: pygame.sprite.Group, 
               projectile_group: pygame.sprite.Group,
               wallnut_group: pygame.sprite.Group,
-              zombie_group, zombie_projectile_group=None):
+              zombie_group=None, zombie_projectile_group=None):
     # Draw background
     if game_background.surface:
         screen.fill((0, 0, 0))

@@ -7,6 +7,7 @@ from GardenInvasion.Model.plant_model import Player
 from GardenInvasion.Model.wallnut_model import WallNut
 from GardenInvasion.Model.projectile_model import Projectile
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from GardenInvasion.Model.setting_volume_model import SettingsModel
 
 class TestRunGameView(unittest.TestCase):
     """Test suite for game view rendering functions"""
@@ -15,8 +16,9 @@ class TestRunGameView(unittest.TestCase):
     def setUpClass(cls):
         #Initialize pygame once for all tests
         os.environ['SDL_VIDEODRIVER'] = 'dummy' # Use dummy video driver for headless testing
+        os.environ['SDL_AUDIODRIVER'] = 'dummy' # Use dummy audio driver for headless testing
         pygame.init()
-        cls.display = pygame.display.set_mode((SCREEN_HEIGHT, SCREEN_WIDTH))
+        cls.display = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     @classmethod
     def tearDownClass(cls):
@@ -32,10 +34,14 @@ class TestRunGameView(unittest.TestCase):
         self.projectile_group = pygame.sprite.Group() # Group for projectile sprites
         self.wallnut_group = pygame.sprite.Group() # Group for wallnut sprites
         self.zombie_group = pygame.sprite.Group()  # NUOVO: Group for zombie sprites
+        self.zombie_projectile_group = pygame.sprite.Group()
         
+    #Create settings model for Player
+        self.settings_model = SettingsModel()
+
         # Create mock background
         self.game_background = Mock() # Mock background object
-        self.game_background.surface = pygame.Surface((SCREEN_HEIGHT, SCREEN_WIDTH))
+        self.game_background.surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.game_background.rect = self.game_background.surface.get_rect()
 
     def test_draw_game_does_not_crash(self):
@@ -54,7 +60,7 @@ class TestRunGameView(unittest.TestCase):
         mock_surface = mock_surface.convert_alpha() # Ensure it has alpha channel
         # Add a player to the group
         with patch('pygame.image.load', return_value=mock_surface):
-            player = Player(pos=(400, 500)) # Create player instance
+            player = Player(pos=(400, 500), settings_model=self.settings_model) # Create player instance
             self.player_group.add(player) # Add player to group
         try:
             draw_game(self.screen, self.game_background, self.player_group, 
@@ -119,21 +125,19 @@ class TestRunGameView(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ draw_game failed with zombie sprites: {e}")
 
-    # NUOVO TEST: Verifica che draw_game funzioni anche senza zombie_group (backward compatibility)
     def test_draw_game_without_zombies(self):
         """Test that draw_game works without zombie_group parameter (backward compatibility)"""
         try:
-            # Chiamata con solo 5 parametri (senza zombie_group)
+            # ✅ FIXED: Call with only 5 parameters (without zombie groups) - this is what the test name says!
             draw_game(self.screen, self.game_background, self.player_group,
-                     self.projectile_group, self.wallnut_group)
+                    self.projectile_group, self.wallnut_group)
             print("✅ draw_game works without zombie_group (backward compatible)")
         except TypeError as e:
             self.fail(f"❌ draw_game not backward compatible: {e}")
         except Exception as e:
             self.fail(f"❌ Other error: {e}")
 
-    @unittest.skip("Test avanzato di layering visivo - richiede mock complessi di pygame Surface.blit. "
-                   "Da implementare quando il sistema di rendering sarà più stabile.")
+
     def test_draw_game_layering_order(self):
         """Test that draw_game maintains correct visual layering"""
         # NOTE: Questo test verrà implementato successivamente quando
