@@ -12,18 +12,16 @@ from GardenInvasion.Model.zombie_model import RedZombie, OrangeZombie
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class TestZombieModel(unittest.TestCase):
-    """Test per le classi zombie con movimento simmetrico"""
     
     def setUp(self):
-        """Setup prima di ogni test"""
+        os.environ['SDL_AUDIODRIVER'] = 'dummy'
         pygame.init()
         
     def tearDown(self):
-        """Cleanup dopo ogni test"""
         pygame.quit()
     
     def test_red_zombie_creation(self):
-        """Test creazione zombie rosso"""
+        # creation zombie base 1
         zombie = RedZombie((100, 50), 'straight', 'A')
         
         self.assertEqual(zombie.health, 1)
@@ -31,9 +29,11 @@ class TestZombieModel(unittest.TestCase):
         self.assertEqual(zombie.movement_pattern, 'straight')
         self.assertFalse(zombie.can_shoot)
         self.assertEqual(zombie.spawn_point, 'A')
+        self.assertIsNotNone(zombie.image)
+        self.assertIsNotNone(zombie.rect)
     
     def test_orange_zombie_creation(self):
-        """Test creazione zombie arancione"""
+        # creation zombie base 2
         zombie = OrangeZombie((200, 100), 'B')
         
         self.assertEqual(zombie.health, 2)
@@ -41,103 +41,90 @@ class TestZombieModel(unittest.TestCase):
         self.assertEqual(zombie.movement_pattern, 'zigzag')
         self.assertTrue(zombie.can_shoot)
         self.assertEqual(zombie.spawn_point, 'B')
+        self.assertIsNotNone(zombie.image)
     
     def test_zombie_take_damage(self):
-        """Test sistema danni zombie"""
+        # test for taking damage
         red_zombie = RedZombie((100, 50), 'straight', 'A')
         orange_zombie = OrangeZombie((200, 100), 'B')
         
-        # Test zombie rosso (1 colpo)
+        # zombie base 1 gets 1 hit
         is_dead = red_zombie.take_damage()
         self.assertTrue(is_dead)
         
-        # Test zombie arancione (2 colpi)
+        # zombie base 2 gest 2 hits
         is_dead = orange_zombie.take_damage()
-        self.assertFalse(is_dead)  # Non dovrebbe morire al primo colpo
+        self.assertFalse(is_dead)
         self.assertEqual(orange_zombie.health, 1)
-        
         is_dead = orange_zombie.take_damage()
-        self.assertTrue(is_dead)  # Dovrebbe morire al secondo colpo
+        self.assertTrue(is_dead)
     
     def test_zombie_movement_straight(self):
-        """Test movimento zombie in linea retta"""
+        
         zombie = RedZombie((100, 50), 'straight', 'A')
         initial_y = zombie.rect.y
-        initial_midtop_x = zombie.rect.midtop[0]  # Usa midtop come riferimento
+        initial_midtop_x = zombie.rect.midtop[0]
         
         zombie.update()
         
         self.assertEqual(zombie.rect.y, initial_y + zombie.speed_y)
-        self.assertEqual(zombie.rect.midtop[0], initial_midtop_x)  # X del midtop non cambia
+        self.assertEqual(zombie.rect.midtop[0], initial_midtop_x) # No horizontal movement
     
     def test_red_zombie_zigzag_movement(self):
-        """Test movimento zigzag contenuto per zombie rossi"""
         zombie_b = RedZombie((SCREEN_WIDTH // 3, 50), 'zigzag', 'B')
         zombie_c = RedZombie((SCREEN_WIDTH * 2 // 3, 50), 'zigzag', 'C')
         
         initial_x_b = zombie_b.rect.x
         initial_x_c = zombie_c.rect.x
         
-        # Simula alcuni update
         for _ in range(10):
             zombie_b.update()
             zombie_c.update()
         
-        # Verifica che si siano mossi orizzontalmente
-        self.assertNotEqual(zombie_b.rect.x, initial_x_b)
+        self.assertNotEqual(zombie_b.rect.x, initial_x_b) # verify horizontal movement
         self.assertNotEqual(zombie_c.rect.x, initial_x_c)
         
-        # Verifica che siano rimasti nelle loro metà schermo
-        self.assertLess(zombie_b.rect.x, SCREEN_WIDTH // 2)
-        self.assertGreater(zombie_c.rect.x, SCREEN_WIDTH // 2)
+        self.assertLess(zombie_b.rect.x, SCREEN_WIDTH // 2) # zombie B should move left
+        self.assertGreater(zombie_c.rect.x, SCREEN_WIDTH // 2) # zombie C should move right
     
     def test_orange_zombie_full_screen_movement(self):
-        """Test movimento a schermo intero per zombie arancioni"""
+        
         zombie_b = OrangeZombie((SCREEN_WIDTH // 3, 50), 'B')
         zombie_c = OrangeZombie((SCREEN_WIDTH * 2 // 3, 50), 'C')
         
         initial_x_b = zombie_b.rect.x
         initial_x_c = zombie_c.rect.x
         
-        # Simula molti update per vedere il movimento completo
         for _ in range(50):
             zombie_b.update()
             zombie_c.update()
         
-        # Verifica movimento ampio
+        # assess horizontal movement within screen bounds
         self.assertNotEqual(zombie_b.rect.x, initial_x_b)
         self.assertNotEqual(zombie_c.rect.x, initial_x_c)
         
-        # Verifica che possano raggiungere i bordi
-        self.assertGreaterEqual(zombie_b.rect.x, 10)
-        self.assertLessEqual(zombie_b.rect.x, SCREEN_WIDTH - 40)
-        self.assertGreaterEqual(zombie_c.rect.x, 10)
-        self.assertLessEqual(zombie_c.rect.x, SCREEN_WIDTH - 40)
+        # assess they stay within screen bounds
+        self.assertGreaterEqual(zombie_b.rect.x, 0)
+        self.assertLessEqual(zombie_b.rect.x, SCREEN_WIDTH - 50)
+        self.assertGreaterEqual(zombie_c.rect.x, 0)
+        self.assertLessEqual(zombie_c.rect.x, SCREEN_WIDTH - 50)
     
     def test_zombie_wave_delay(self):
-        """Test sistema delay per spawn ritardati"""
         zombie = RedZombie((100, 50), 'straight', 'A', wave_delay=1000)
         
-        # Inizialmente non dovrebbe essere attivo
         self.assertFalse(zombie.active)
         
-        # Simula che il tempo passi
         zombie.spawn_time = pygame.time.get_ticks() - 1500
         zombie.update()
         
-        # Ora dovrebbe essere attivo
+        # Now it should be active
         self.assertTrue(zombie.active)
     
     def test_zombie_boundary_removal(self):
-        """Test rimozione zombie quando escono dallo schermo"""
         zombie = RedZombie((SCREEN_WIDTH // 2, SCREEN_HEIGHT + 100), 'straight', 'A')
-        
-        # Dovrebbe essere rimosso dopo l'update
         zombie.update()
-        # Non possiamo testare kill() direttamente, ma verifichiamo la logica
-
+        
 class TestZombieIntegration(unittest.TestCase):
-    """Test di integrazione per il sistema zombie"""
     
     def setUp(self):
         pygame.init()
@@ -146,7 +133,7 @@ class TestZombieIntegration(unittest.TestCase):
         pygame.quit()
     
     def test_multiple_zombies_movement(self):
-        """Test che più zombie possano muoversi senza collisioni"""
+        # assess multiple zombies moving simultaneously
         zombies = [
             RedZombie((SCREEN_WIDTH // 3, 50), 'zigzag', 'B'),
             RedZombie((SCREEN_WIDTH * 2 // 3, 50), 'zigzag', 'C'),
@@ -154,13 +141,11 @@ class TestZombieIntegration(unittest.TestCase):
             OrangeZombie((SCREEN_WIDTH * 3 // 4, 100), 'C')
         ]
         
-        # Simula movimento
         for _ in range(30):
             for zombie in zombies:
                 zombie.update()
         
-        # Verifica che tutti si siano mossi
-        for zombie in zombies:
+        for zombie in zombies: # verify they have moved
             self.assertNotEqual(zombie.rect.y, 50 if zombie.color == (255,0,0) else 100)
 
 if __name__ == '__main__':

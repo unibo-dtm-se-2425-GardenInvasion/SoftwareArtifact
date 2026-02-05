@@ -1,7 +1,7 @@
-# To successfully run this visual test go to file: SoftwareArtifact/GardenInvasion/Model/plant_model.py and substitute line 2 with: from Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 import pygame
 import sys
 import os
+from GardenInvasion.Model.setting_volume_model import SettingsModel
 
 # Aggiungi GardenInvasion al path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'GardenInvasion'))
@@ -12,30 +12,24 @@ from GardenInvasion.Model.plant_model import Player
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 def test_zombies_visual():
-    """Test visivo degli zombie nel gioco"""
+    # Test visivo degli zombie nel gioco
+    os.environ['SDL_AUDIODRIVER'] = 'dummy'
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Test Zombie Visual")
     clock = pygame.time.Clock()
     
-    # Crea wave manager e avvia ondata 1 immediatamente
+    # create wave manager and spawn wave 1
     wave_manager = WaveManager()
     wave_manager.current_wave = 1
     wave_manager.wave_complete = False
-    wave_manager._wave_1()  # Spawna ondata 1
+    wave_manager._wave_1()  # Spawna wave 1
     
-    # Crea giocatore
-    player = Player((SCREEN_WIDTH//2, SCREEN_HEIGHT*0.95))
+    # Create player with settings_model
+    settings_model = SettingsModel()
+    player = Player((SCREEN_WIDTH//2, SCREEN_HEIGHT*0.95), settings_model)
     player_group = pygame.sprite.GroupSingle(player)
-    
-    print("🧪 TEST VISIVO ZOMBIE")
-    print("Controlla che:")
-    print("  - Zombie rossi (rettangoli rossi) siano visibili")
-    print("  - Zombie si muovano verso il basso")
-    print("  - Zombie arancioni (rettangoli arancioni) siano visibili")
-    print("  - Zombie arancioni si muovano a zigzag")
-    print("Premi ESC per uscire")
-    
+   
     running = True
     while running:
         for event in pygame.event.get():
@@ -44,20 +38,22 @@ def test_zombies_visual():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
         
-        # Aggiorna
+        # update
         player_group.update()
         wave_manager.update()
         
-        # Disegna
+        # draw
         screen.fill((0, 0, 0))  # Sfondo nero
         
-        # Disegna zombie
+        # draw zombies
         wave_manager.zombie_group.draw(screen)
         
-        # Disegna giocatore
+        if wave_manager.zombie_projectile_group:
+            wave_manager.zombie_projectile_group.draw(screen)
+
+        # draw player
         player_group.draw(screen)
         
-        # Info testo
         font = pygame.font.SysFont("Arial", 20)
         info_text = f"Zombie: {len(wave_manager.zombie_group)} - Premi ESC per uscire"
         text_surface = font.render(info_text, True, (255, 255, 255))
@@ -67,7 +63,7 @@ def test_zombies_visual():
         clock.tick(60)
     
     pygame.quit()
-    print("✅ Test visivo completato!")
+    print("Visual test completed.")
 
 if __name__ == "__main__":
     test_zombies_visual()
