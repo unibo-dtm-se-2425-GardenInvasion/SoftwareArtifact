@@ -1,3 +1,16 @@
+## [1.5.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.4.0...1.5.0) (2026-02-05)
+
+
+### Features
+
+* add sprite rendering for zombies and projectiles ([0fc783b](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/0fc783baaca9e5b95aa4019b26344f88bb814292))
+
+
+### Tests
+
+* fix zombie and projectile tests for sprite rendering ([958c1de](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/958c1de393e9bc90a3e87a397c9a62fd444f6cdc))
+* make zombie parameters optional in draw_game for backward compatibility ([ddf3a54](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/ddf3a54a142b23d53029a4c2ff039ab81f1c1091))
+
 ## [1.4.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.3.0...1.4.0) (2026-01-18)
 
 
