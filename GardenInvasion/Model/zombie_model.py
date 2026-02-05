@@ -1,15 +1,15 @@
 import pygame
-import random
+from pathlib import Path
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Zombie(pygame.sprite.Sprite):
     def __init__(self, pos, color, health, speed_y, movement_pattern, spawn_point, wave_delay=0):
         super().__init__()
         
-        self.image = pygame.Surface((30, 50))
-        self.image.fill(color)
-        self.rect = self.image.get_rect(midtop=pos)
+        self.color = color
+        self._load_sprite()
         
+        self.rect = self.image.get_rect(midtop=pos)
         self.health = health
         self.max_health = health
         self.speed_y = speed_y
@@ -17,7 +17,6 @@ class Zombie(pygame.sprite.Sprite):
         self.spawn_point = spawn_point
         self.wave_delay = wave_delay
         self.active = wave_delay == 0
-        self.color = color
         
         # Variabili per movimento - velocità di base 2.5
         self.horizontal_speed = 2.5  # Velocità base per tutti i zombie
@@ -34,10 +33,49 @@ class Zombie(pygame.sprite.Sprite):
             
         # Sistema di sparo
         self.can_shoot = False
-        self.shoot_cooldown = 500
+        self.shoot_cooldown = 1000  # milliseconds
         self.last_shot = pygame.time.get_ticks()
         self.spawn_time = pygame.time.get_ticks()
+
+    def _load_sprite(self):
+        # Load zombie sprite based on color type
+        pkg_root = Path(__file__).resolve().parent.parent
+        sprites_path = pkg_root / "Assets" / "images"
         
+        # Determine which sprite to load based on color
+        if self.color == (255, 0, 0):  # Red zombie
+            sprite_file = sprites_path / "BaseZombie01.png"
+        elif self.color == (255, 165, 0):  # Orange zombie
+            sprite_file = sprites_path / "BaseZombie02.png"
+        else:  # Default fallback
+            sprite_file = sprites_path / "BaseZombie01.png"
+        
+        try:
+            # Load and scale sprite
+            self.image = pygame.image.load(str(sprite_file)).convert_alpha()
+             # Load the original image
+            original_image = pygame.image.load(str(sprite_file)).convert_alpha()
+            # Get original dimensions to preserve aspect ratio
+            original_width, original_height = original_image.get_size()
+            # Calculate target size maintaining aspect ratio
+            target_height = 70  # Your desired height
+            aspect_ratio = original_width / original_height
+            target_width = int(target_height * aspect_ratio)
+            
+            # Use smoothscale with larger intermediate size for better quality
+            intermediate_size = (target_width * 2, target_height * 2) # Scale up first
+            temp_image = pygame.transform.smoothscale(original_image, intermediate_size) # Scale up
+            
+            # Then scale down to final size (produces smoother result)
+            self.image = pygame.transform.smoothscale(temp_image, (target_width, target_height))
+            print(f"Loaded sprite: {sprite_file.name}")
+
+        except (pygame.error, FileNotFoundError):
+            # Fallback to colored surface
+            print(f"Warning: Could not load sprite {sprite_file}, using colored surface")
+            self.image = pygame.Surface((40,70))
+            self.image.fill(self.color)
+
     def update(self):
         # Gestione delay
         current_time = pygame.time.get_ticks()
@@ -65,7 +103,7 @@ class Zombie(pygame.sprite.Sprite):
             self.kill()
     
     def _move_zigzag(self):
-        """Movimento zigzag esistente"""
+        # existing zigzag movement with improved fluidity and better boundary handling
         self.movement_counter += 1
         
         if self.movement_counter >= 32:
@@ -80,7 +118,6 @@ class Zombie(pygame.sprite.Sprite):
         # Usa accumulatore per movimento fluido
         self.x_accumulator += self.horizontal_direction * zigzag_amplitude
         
-        # Applica limiti
         if self.color == (255, 165, 0):
             min_x = 15
             max_x = SCREEN_WIDTH - 45
@@ -102,8 +139,7 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.x = int(self.x_accumulator)
     
     def _move_roam_half_screen(self, side):
-        """Movimento simmetrico con meeting point esatto al centro senza overlap"""
-        # Calcola velocità effettiva - orange zombie in wave 4 ha velocità speciale
+        # movement pattern that roams across half the screen with smooth bouncing at edges, meeting at center without overlap
         effective_speed = self.horizontal_speed
         if (self.color == (255, 165, 0) and 
             self.movement_pattern == 'roam_full' and 
@@ -136,8 +172,7 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.x = int(self.x_accumulator)
     
     def _move_roam_full_screen(self):
-        """Movimento su tutto lo schermo"""
-        # Calcola velocità effettiva - orange zombie in wave 4 ha velocità speciale
+        # movement pattern that roams across the entire screen with smooth bouncing at edges
         effective_speed = self.horizontal_speed
         if (self.color == (255, 165, 0) and 
             self.movement_pattern == 'roam_full' and 
@@ -174,7 +209,7 @@ class Zombie(pygame.sprite.Sprite):
             return True
         return False
 
-class RedZombie(Zombie):
+class RedZombie(Zombie): # base zombie class 1
     def __init__(self, pos, movement_pattern='straight', spawn_point='A', wave_delay=0):
         super().__init__(
             pos=pos,
@@ -187,7 +222,7 @@ class RedZombie(Zombie):
         )
         self.can_shoot = False
 
-class OrangeZombie(Zombie):
+class OrangeZombie(Zombie): # base zombie class 2, can shoot and has zigzag movement by default
     def __init__(self, pos, spawn_point='A', wave_delay=0, movement_pattern='zigzag'):
         super().__init__(
             pos=pos,

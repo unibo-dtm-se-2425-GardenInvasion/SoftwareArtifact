@@ -187,9 +187,9 @@ def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_m
     return len(collisions) > 0  # Return True if any collisions occurred
 
 def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, sound_manager=None):
-    """Handle collisions between zombie projectiles and plant"""
-    # DEBUG: Conta i proiettili
-    print(f"🔍 DEBUG: Zombie projectiles in group: {len(zombie_projectile_group)}")
+    # Handle collisions between zombie projectiles and plant
+
+    # print(f"DEBUG: Zombie projectiles in group: {len(zombie_projectile_group)}")
     
     # Check collision between zombie projectiles and player
     collisions = pygame.sprite.spritecollide(
@@ -199,18 +199,16 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
         pygame.sprite.collide_rect # Use rectangle collision
     )
     
-    # DEBUG: Conta collisioni
-    print(f"🔍 DEBUG: Collisions detected: {len(collisions)}")
+    # print(f"DEBUG: Collisions detected: {len(collisions)}")
     
     plant_was_destroyed = False
     
     # For each collision, make the plant take damage
     for projectile in collisions:
-        print(f"🔍 DEBUG: Plant taking damage from zombie projectile!")
+        print(f"DEBUG: Plant taking damage from zombie projectile!")
         plant_destroyed = player.take_damage()
         
-        # DEBUG: Stato della pianta
-        print(f"🔍 DEBUG: Plant destroyed? {plant_destroyed}")
+        # print(f"DEBUG: Plant destroyed? {plant_destroyed}")
         
         # Optional: Play hit sound
         if sound_manager:
@@ -228,7 +226,7 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
     return plant_was_destroyed
 
 def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnut_manager, sound_manager=None):
-    """Handle collisions between zombie projectiles and wallnuts"""
+    # Handle collisions between zombie projectiles and wallnuts
     # Get the wallnut sprite group
     wallnut_group = wallnut_manager.get_wallnuts()
     
@@ -252,9 +250,9 @@ def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnu
     return len(collisions) > 0  # Return True if any collisions occurred
 
 def _handle_zombie_wallnut_collisions(zombie_group, wallnut_manager, sound_manager=None):
-    """Handle collisions between zombies and wallnuts.
-    Zombie is destroyed on contact, wallnut takes damage."""
-    # Get the wallnut sprite group
+    # Handle collisions between zombies and wallnuts
+    # Zombie is destroyed on contact, wallnut takes damage
+    
     wallnut_group = wallnut_manager.get_wallnuts()
     
     # Check collisions between zombies and wallnuts
@@ -275,9 +273,9 @@ def _handle_zombie_wallnut_collisions(zombie_group, wallnut_manager, sound_manag
             wallnut_destroyed = wallnut.take_damage()
             if wallnut_destroyed:
                 wallnut_destroyed_count += 1
-                print(f"💥 Wallnut {wallnut.slot_index} destroyed by zombie!")
+                print(f"Wallnut {wallnut.slot_index} destroyed by zombie!")
             else:
-                print(f"💥 Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
+                print(f"Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
     
     # Optional: Play sound if any wallnuts were destroyed
     if sound_manager and wallnut_destroyed_count > 0:
@@ -376,7 +374,8 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         # Draw everything ONCE per frame
         draw_game(screen, RunGame_background, player_group, projectile_group, 
-                  wallnut_manager.get_wallnuts(), wave_manager.zombie_group)
+                  wallnut_manager.get_wallnuts(),
+                  wave_manager.zombie_group, wave_manager.zombie_projectile_group)
         
         # Update display BEFORE checking game over
         pygame.display.flip()
