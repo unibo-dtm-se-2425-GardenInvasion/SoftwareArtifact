@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
         # get original image of the plant and change its size keeping the aspect ratio
         self.speed = 5 # movement speed
 
-        self.shoot_SecondTime = 2000  # 0.5 seconds
+        self.shoot_SecondTime = 1000  # 0.5 seconds
         self.last_shot = pygame.time.get_ticks()# track time of last shot
         
         # NEW: Life points system (2 life points)
