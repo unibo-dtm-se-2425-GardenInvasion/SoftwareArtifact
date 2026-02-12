@@ -1,3 +1,10 @@
+## [1.6.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.5.1...1.6.0) (2026-02-12)
+
+
+### Features
+
+* remove wallnut-projectile collision detection ([0579583](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/0579583f45f6a6fd112df5a1cc633966f4f60b4e))
+
 ## [1.5.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.5.0...1.5.1) (2026-02-12)
 
 
