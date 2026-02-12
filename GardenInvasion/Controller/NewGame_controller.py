@@ -8,7 +8,7 @@ from ..Model.plant_model import Player
 from ..Model.wallnut_model import WallNutManager
 from ..Model.wave_model import WaveManager
 from .plant_controller import handle_player_input
-from .wallnut_controller import handle_wallnut_placement, handle_wallnut_collisions
+from .wallnut_controller import handle_wallnut_placement
 from ..View.RunGame_view import draw_game
 from .menu_controller_utilities import show_confirm_quit
 from ..Model.setting_volume_model import SettingsModel
@@ -390,8 +390,6 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         wave_manager.update()
         
         # ---------- HANDLE ALL COLLISIONS ----------
-        # Player projectiles → wallnuts (block, no damage)
-        handle_wallnut_collisions(wallnut_manager, projectile_group)
         
         # PUNTO 1: Player projectiles → zombies
         _handle_projectile_zombie_collisions(projectile_group, wave_manager.zombie_group, sound_manager)

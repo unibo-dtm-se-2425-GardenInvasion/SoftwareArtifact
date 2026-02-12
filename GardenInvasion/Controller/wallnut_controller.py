@@ -11,9 +11,3 @@ def handle_wallnut_placement(keys, wallnut_manager: WallNutManager):
         wallnut_manager.place_wallnut(2)
     elif keys[pygame.K_4]:
         wallnut_manager.place_wallnut(3)
-
-
-def handle_wallnut_collisions(wallnut_manager: WallNutManager, 
-                               player_projectiles: pygame.sprite.Group):
-    # Block player projectiles (they can't pass through wall-nuts)
-    wallnut_manager.check_projectile_collision(player_projectiles)

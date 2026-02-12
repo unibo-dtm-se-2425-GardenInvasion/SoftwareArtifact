@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 pygame.init()
 pygame.display.set_mode((1, 1))
 
-from GardenInvasion.Controller.wallnut_controller import handle_wallnut_placement, handle_wallnut_collisions
+from GardenInvasion.Controller.wallnut_controller import handle_wallnut_placement
 from GardenInvasion.Model.wallnut_model import WallNut, WallNutManager
 from GardenInvasion.Model.projectile_model import Projectile
 from GardenInvasion.Model.sound_manager_model import SoundManager
@@ -42,30 +42,6 @@ class TestWallnutController(unittest.TestCase):
         self.image_patcher.stop()
         pygame.event.clear()
     
-    def test_projectile_collision_blocks_projectile(self):
-        # Test that projectiles are blocked by wallnuts
-
-        # Place a wallnut
-        self.wallnut_manager.place_wallnut(0)
-        
-        # Create a projectile
-        projectile = Projectile((100, 300))
-        self.projectile_group.add(projectile)
-        
-        initial_projectile_count = len(self.projectile_group)
-        self.assertEqual(initial_projectile_count, 1)
-        
-        # Manually position projectile to collide with wallnut
-        wallnut = list(self.wallnut_manager.wallnuts)[0]
-        projectile.rect.center = wallnut.rect.center
-        
-        # Handle collision
-        collisions = handle_wallnut_collisions(self.wallnut_manager, self.projectile_group)
-        
-        # Projectile should be removed
-        self.assertEqual(len(self.projectile_group), 0)
-        print("✅ Projectiles are blocked by wallnuts")
-    
     def test_wallnut_not_damaged_by_player_projectile(self):
         # Test that wallnuts are not damaged by player projectiles (friendly fire disabled)
         
@@ -77,10 +53,7 @@ class TestWallnutController(unittest.TestCase):
         # Create a projectile at same position
         projectile = Projectile(wallnut.rect.center)
         self.projectile_group.add(projectile)
-        
-        # Handle collision
-        handle_wallnut_collisions(self.wallnut_manager, self.projectile_group)
-        
+
         # Wallnut health should be unchanged (no friendly fire)
         self.assertEqual(wallnut.health, initial_health)
         print("✅ Wallnuts not damaged by player projectiles (friendly fire disabled)")

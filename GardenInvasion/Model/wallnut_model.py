@@ -109,18 +109,6 @@ class WallNutManager:
         self.wallnuts.add(new_wallnut)
         self.slot_occupied[slot_index] = True
         return True
-    
-    def check_projectile_collision(self, projectile_group: pygame.sprite.Group):
-        # Check if any player projectiles collide with wall-nuts.
-        # Projectiles are blocked (removed) but wall-nuts are not damaged by friendly fire.
-        
-        collisions = pygame.sprite.groupcollide(
-            projectile_group,  # Player's projectiles
-            self.wallnuts,  # Wall-nuts
-            True,  # Remove projectile on collision
-            False  # Don't remove wall-nut (it blocks, not takes damage from player)
-        )
-        return collisions
 
     def update(self):
         # Update all wall-nuts.
