@@ -1,3 +1,15 @@
+## [1.5.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.5.0...1.5.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* restore plant shooting cooldown to original ([53e129f](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/53e129fd600e22a885719ac3aa0d88b596dd3c39))
+
+
+### Tests
+
+* fix plant shooting cooldown test timing ([b2b3b68](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/b2b3b68c5484478bf93e67f264d08d1f5c1acaf0))
+
 ## [1.5.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.4.0...1.5.0) (2026-02-05)
 
 
