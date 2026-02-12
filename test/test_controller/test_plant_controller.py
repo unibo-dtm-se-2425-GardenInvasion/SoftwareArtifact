@@ -61,10 +61,10 @@ class TestPlantController(unittest.TestCase):
     
     @patch('pygame.time.get_ticks')
     def test_player_auto_shooting_with_cooldown(self, mock_ticks):
-        # Test that projectile creation respects 500ms cooldown
+        # Test that projectile creation respects 1000ms cooldown
 
         # First shot at time 0
-        mock_ticks.return_value = 0
+        mock_ticks.return_value = 1000
         self.player.last_shot = 0
         
         with patch('pygame.key.get_pressed', return_value={pygame.K_LEFT: False, pygame.K_RIGHT: False,
@@ -72,22 +72,23 @@ class TestPlantController(unittest.TestCase):
             handle_player_input(self.player, self.projectile_group)
         
         first_count = len(self.projectile_group)
+        self.assertGreater(first_count, 0, "First shot should create a projectile")
         
         # Second attempt at 200ms - should not shoot (cooldown not elapsed)
-        mock_ticks.return_value = 200
+        mock_ticks.return_value = 1200
         with patch('pygame.key.get_pressed', return_value={pygame.K_LEFT: False, pygame.K_RIGHT: False,
                                                            pygame.K_a: False, pygame.K_d: False}):
             handle_player_input(self.player, self.projectile_group)
         self.assertEqual(len(self.projectile_group), first_count)
         
         # Third attempt at 600ms - should shoot (cooldown elapsed)
-        mock_ticks.return_value = 600
+        mock_ticks.return_value = 2000
         with patch('pygame.key.get_pressed', return_value={pygame.K_LEFT: False, pygame.K_RIGHT: False,
                                                            pygame.K_a: False, pygame.K_d: False}):
             handle_player_input(self.player, self.projectile_group)
         self.assertGreater(len(self.projectile_group), first_count)
         
-        print("✅ Projectile creation respects 500ms cooldown")
+        print("✅ Projectile creation respects 1000ms cooldown")
     
     def test_player_stops_at_left_boundary(self):
         # Test that player cannot move beyond left screen boundary
