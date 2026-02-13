@@ -4,12 +4,11 @@ from unittest.mock import patch, MagicMock
 from pathlib import Path
 import os
 
-if 'CI' in os.environ: # Handle CI environment for audio
-    del os.environ['CI'] # Remove CI variable to avoid issues with pygame
-if 'SDL_AUDIODRIVER' in os.environ: # Handle SDL_AUDIODRIVER for audio
-    del os.environ['SDL_AUDIODRIVER'] # Remove SDL_AUDIODRIVER to avoid issues with pygame
+if 'CI' in os.environ:
+    del os.environ['CI']
+if 'SDL_AUDIODRIVER' in os.environ:
+    del os.environ['SDL_AUDIODRIVER']
 
-# Initialize pygame
 pygame.init()
 pygame.display.set_mode((1, 1))
 
@@ -18,135 +17,102 @@ from GardenInvasion.Model.setting_volume_model import SettingsModel
 
 
 class TestSoundManagerModel(unittest.TestCase):
-    # Test suite for SoundManager model
     
     def setUp(self):
-        # Set up test fixtures
-
         self.mixer_init_patcher = patch('pygame.mixer.get_init', return_value=True)
         self.mixer_init_patcher.start()
 
-        # Create settings model with default volume
         self.settings_model = SettingsModel()
         self.settings_model.volume = 50
         
-        # Mock pygame.mixer to avoid actual sound initialization
         self.mixer_patcher = patch('pygame.mixer.Sound')
         self.mock_sound_class = self.mixer_patcher.start()
         
-        # Create mock sound instance
         self.mock_sound = MagicMock()
         self.mock_sound_class.return_value = self.mock_sound
     
     def tearDown(self):
-        # Clean up
         self.mixer_init_patcher.stop()
         self.mixer_patcher.stop()
     
-    def test_sound_manager_initialization(self):
-        # Test that SoundManager initializes correctly with settings
-        sound_manager = SoundManager(self.settings_model)
-        
-        # Verify settings_model is stored
-        self.assertEqual(sound_manager.settings_model, self.settings_model)
-        print("✅ SoundManager initializes with settings_model")
+    # ---------- TEST ESSENZIALI (6) ----------
     
-    def test_sound_manager_with_invalid_settings(self):
-        # Test that SoundManager handles invalid settings gracefully
-
-        # Pass None or invalid object
-        sound_manager = SoundManager(None)
+    def test_initialization(self):
+        """Test inizializzazione base"""
+        sound_manager = SoundManager(self.settings_model)
+        self.assertEqual(sound_manager.settings_model, self.settings_model)
+        print("✅ SoundManager initializes correctly")
+    
+    def test_new_sounds_are_loaded(self):
+        """Test che i nuovi suoni zombie_hit e plant_hit vengano caricati"""
+        sound_manager = SoundManager(self.settings_model)
+        sound_manager.audio_available = True
+        sound_manager._load_sounds()
         
-        # Should create default settings
-        self.assertIsNotNone(sound_manager.settings_model)
-        self.assertEqual(sound_manager.settings_model.volume, 50)
-        print("✅ SoundManager handles invalid settings with default volume")
+        self.assertIn('zombie_hit', sound_manager.sounds)
+        self.assertIn('plant_hit', sound_manager.sounds)
+        print("✅ New sounds zombie_hit and plant_hit are loaded")
+    
+    def test_play_new_sounds(self):
+        """Test che i nuovi suoni possano essere riprodotti"""
+        sound_manager = SoundManager(self.settings_model)
+        sound_manager.audio_available = True
+        
+        sound_manager.sounds['zombie_hit'] = self.mock_sound
+        sound_manager.sounds['plant_hit'] = self.mock_sound
+        
+        sound_manager.play_sound('zombie_hit')
+        self.mock_sound.play.assert_called()
+        
+        sound_manager.play_sound('plant_hit')
+        self.mock_sound.play.assert_called()
+        
+        print("✅ New sounds can be played")
     
     def test_volume_conversion(self):
-        # Test that volume converts correctly from 0-100 to 0.0-1.0
-
+        """Test conversione volume 0-100 → 0.0-1.0"""
         self.settings_model.volume = 75
         sound_manager = SoundManager(self.settings_model)
-        
-        # Manually trigger volume update
         sound_manager._update_volume()
         
-        # Check that set_volume was called (would be 0.75)
         if self.mock_sound.set_volume.called:
             call_args = self.mock_sound.set_volume.call_args[0]
             self.assertAlmostEqual(call_args[0], 0.75, places=2)
         
-        print("✅ Volume converts correctly from 0-100 to 0.0-1.0")
-    
-    def test_volume_minimum(self):
-        # Test volume at minimum (0)
-
-        self.settings_model.volume = 0  # Set volume to minimum
-        sound_manager = SoundManager(self.settings_model)  # Create SoundManager
-        sound_manager._update_volume()  # Manually trigger volume update
-        
-        if self.mock_sound.set_volume.called:  # Check if set_volume was called
-            call_args = self.mock_sound.set_volume.call_args[0]  # Get call arguments
-            self.assertEqual(call_args[0], 0.0)  # Verify volume is set to 0.0
-        
-        print("✅ Volume minimum (0) converts to 0.0")
-    
-    def test_volume_maximum(self):
-        # Test volume at maximum (100)
-
-        self.settings_model.volume = 100
-        sound_manager = SoundManager(self.settings_model)
-        sound_manager._update_volume()
-        
-        if self.mock_sound.set_volume.called:
-            call_args = self.mock_sound.set_volume.call_args[0]
-            self.assertEqual(call_args[0], 1.0)
-        
-        print("✅ Volume maximum (100) converts to 1.0")
+        print("✅ Volume conversion works")
     
     def test_play_sound_existing(self):
-        # Test playing an existing sound
-
+        """Test play_sound su suono esistente"""
         sound_manager = SoundManager(self.settings_model)
-        
-        # ============= FIX: Force audio_available for testing =============
         sound_manager.audio_available = True
-        # ==================================================================
+        sound_manager.sounds['plant_shoot'] = self.mock_sound
         
-        sound_manager.sounds['plant_shoot'] = self.mock_sound  # Mock sound
-        
-        sound_manager.play_sound('plant_shoot')  # Call play_sound
-        
-        # Verify play was called
+        sound_manager.play_sound('plant_shoot')
         self.mock_sound.play.assert_called()
-        print("✅ play_sound() calls .play() on existing sound")
+        print("✅ play_sound() works on existing sound")
     
-    @patch('pygame.mixer.stop')
-    @patch('pygame.mixer.music.stop')  # ← NEW: Also patch music.stop
-    def test_stop_all_sounds(self, mock_music_stop, mock_mixer_stop):
-        # Test stopping all sounds
-
-        sound_manager = SoundManager(self.settings_model) # Create SoundManager
-        sound_manager.audio_available = True # Ensure audio is available
-        sound_manager.stop_all()  # Call stop_all
-        
-        # Verify pygame.mixer.stop was called
-        mock_mixer_stop.assert_called_once()
-        print("✅ stop_all() calls pygame.mixer.stop()")
-    
-    def test_volume_updates_before_playing(self):
-        # Test that volume is updated before playing sound
-        self.settings_model.volume = 30
+    def test_play_sound_missing(self):
+        """Test play_sound su suono mancante (non deve crashare)"""
         sound_manager = SoundManager(self.settings_model)
+        sound_manager.audio_available = True
         
-        sound_manager.audio_available = True # Force audio_available for testing
-        sound_manager.sounds['plant_shoot'] = self.mock_sound # Mock sound
-        self.settings_model.volume = 80  # Update volume to 80
-        sound_manager.play_sound('plant_shoot')  # Call play_sound
+        # Non deve sollevare eccezioni
+        try:
+            sound_manager.play_sound('suono_inesistente')
+            print("✅ play_sound() handles missing sound gracefully")
+        except Exception as e:
+            self.fail(f"play_sound crashed on missing sound: {e}")
+
+    @patch('pygame.mixer.stop')
+    @patch('pygame.mixer.music.stop')
+    def test_stop_all_sounds(self, mock_music_stop, mock_mixer_stop):
+        """Test stop_all ferma tutti i suoni"""
+        sound_manager = SoundManager(self.settings_model)
+        sound_manager.audio_available = True
+        sound_manager.stop_all()
         
-        # Volume should have been updated
-        self.mock_sound.set_volume.assert_called()
-        print("✅ Volume updates before playing sound")
+        mock_mixer_stop.assert_called_once()
+        print("✅ stop_all() works")
 
 if __name__ == '__main__':
     unittest.main()

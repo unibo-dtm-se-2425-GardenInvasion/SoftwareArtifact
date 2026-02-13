@@ -184,6 +184,9 @@ def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_m
     for projectile, zombies_hit in collisions.items():
         for zombie in zombies_hit:
             zombie_destroyed = zombie.take_damage(1)  # Deal 1 damage
+            # 🔥 SUONO: Zombie hit sound
+            if sound_manager:
+                sound_manager.play_sound('zombie_hit')
     
     return len(collisions) > 0  # Return True if any collisions occurred
 
@@ -208,6 +211,11 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
     # For each collision, make the plant take damage
     for projectile in collisions:
         print(f"DEBUG: Plant taking damage from zombie projectile!")
+        
+        # 🔥 SUONO: Plant hit by projectile
+        if sound_manager:
+            sound_manager.play_sound('plant_hit')
+        
         plant_destroyed = player.take_damage()
         
         # print(f"DEBUG: Plant destroyed? {plant_destroyed}")
@@ -311,6 +319,11 @@ def _handle_zombie_plant_collisions(zombie_group, player, sound_manager=None):
     # For each collision, make the plant take damage
     for zombie in collisions:
         print(f"💥 Zombie hits plant! Plant life before: {player.life_points}")
+        
+        # 🔥 SUONO: Plant hit by zombie
+        if sound_manager:
+            sound_manager.play_sound('plant_hit')
+        
         plant_destroyed = player.take_damage()
         print(f"💥 Plant life after: {player.life_points}")
         

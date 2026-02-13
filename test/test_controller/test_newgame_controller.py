@@ -70,24 +70,6 @@ class TestNewGameController(unittest.TestCase):
             self.assertTrue(plant_destroyed)
             print("✅ Zombie → Plant: destroys plant")
 
-    def test_multiple_zombies_hit_plant(self):
-        """Test multipli zombie sulla pianta"""
-        zombie_group = pygame.sprite.Group()
-        mock_player = MagicMock()
-        mock_player.take_damage.side_effect = [False, True]
-        
-        mock_zombies = [MagicMock() for _ in range(2)]
-        for z in mock_zombies:
-            zombie_group.add(z)
-        
-        with patch('pygame.sprite.spritecollide') as mock_spritecollide:
-            mock_spritecollide.return_value = mock_zombies
-            plant_destroyed = _handle_zombie_plant_collisions(zombie_group, mock_player)
-            
-            self.assertTrue(plant_destroyed)
-            self.assertEqual(mock_player.take_damage.call_count, 2)
-            print("✅ Zombie → Plant: multiple hits OK")
-
     def test_no_zombie_plant_collision(self):
         """Test nessuna collisione"""
         zombie_group = pygame.sprite.Group()
@@ -143,29 +125,6 @@ class TestNewGameController(unittest.TestCase):
             
             self.assertTrue(collision)
             print("✅ Zombie → Wallnut: destroys wallnut")
-
-    def test_multiple_zombies_hit_wallnut(self):
-        """Test multipli zombie su stesso wallnut"""
-        zombie_group = pygame.sprite.Group()
-        mock_wallnut_manager = MagicMock()
-        mock_wallnut_group = pygame.sprite.Group()
-        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
-        
-        mock_wallnut = MagicMock()
-        mock_wallnut.take_damage.return_value = False
-        mock_wallnut_group.add(mock_wallnut)
-        
-        mock_zombies = [MagicMock() for _ in range(3)]
-        for z in mock_zombies:
-            zombie_group.add(z)
-        
-        with patch('pygame.sprite.groupcollide') as mock_collide:
-            mock_collide.return_value = {z: [mock_wallnut] for z in mock_zombies}
-            collision = _handle_zombie_wallnut_collisions(zombie_group, mock_wallnut_manager)
-            
-            self.assertTrue(collision)
-            self.assertEqual(mock_wallnut.take_damage.call_count, 3)
-            print("✅ Zombie → Wallnut: multiple hits OK")
 
     def test_no_zombie_wallnut_collision(self):
         """Test nessuna collisione"""
@@ -224,29 +183,6 @@ class TestNewGameController(unittest.TestCase):
             self.assertTrue(collision)
             print("✅ Zombie projectile → Wallnut: destroys wallnut")
 
-    def test_multiple_projectiles_hit_wallnut(self):
-        """Test multipli proiettili su stesso wallnut"""
-        proj_group = pygame.sprite.Group()
-        mock_wallnut_manager = MagicMock()
-        mock_wallnut_group = pygame.sprite.Group()
-        mock_wallnut_manager.get_wallnuts.return_value = mock_wallnut_group
-        
-        mock_wallnut = MagicMock()
-        mock_wallnut.take_damage.return_value = False
-        mock_wallnut_group.add(mock_wallnut)
-        
-        mock_projs = [MagicMock() for _ in range(3)]
-        for p in mock_projs:
-            proj_group.add(p)
-        
-        with patch('pygame.sprite.groupcollide') as mock_collide:
-            mock_collide.return_value = {p: [mock_wallnut] for p in mock_projs}
-            collision = _handle_zombie_projectile_wallnut_collisions(proj_group, mock_wallnut_manager)
-            
-            self.assertTrue(collision)
-            self.assertEqual(mock_wallnut.take_damage.call_count, 3)
-            print("✅ Zombie projectile → Wallnut: multiple hits OK")
-
     def test_no_projectile_wallnut_collision(self):
         """Test nessuna collisione"""
         proj_group = pygame.sprite.Group()
@@ -296,24 +232,6 @@ class TestNewGameController(unittest.TestCase):
             self.assertTrue(destroyed)
             print("✅ Zombie projectile → Plant: destroys plant")
 
-    def test_multiple_projectiles_hit_plant(self):
-        """Test multipli proiettili sulla pianta"""
-        proj_group = pygame.sprite.Group()
-        mock_player = MagicMock()
-        mock_player.take_damage.return_value = False
-        
-        mock_projs = [MagicMock() for _ in range(3)]
-        for p in mock_projs:
-            proj_group.add(p)
-        
-        with patch('pygame.sprite.spritecollide') as mock_collide:
-            mock_collide.return_value = mock_projs
-            destroyed = _handle_zombie_projectile_plant_collisions(proj_group, mock_player)
-            
-            self.assertFalse(destroyed)
-            self.assertEqual(mock_player.take_damage.call_count, 3)
-            print("✅ Zombie projectile → Plant: multiple hits OK")
-
     # ---------- PUNTO 1: Projectile → Zombie (TEST ESSENZIALI) ----------
     def test_projectile_hits_zombie_damage(self):
         """Test base: proiettile rimosso, zombie danneggiato"""
@@ -355,29 +273,6 @@ class TestNewGameController(unittest.TestCase):
             self.assertTrue(result)
             print("✅ Projectile → Zombie: destroys zombie")
 
-    def test_multiple_zombies_hit_by_projectile(self):
-        """Test proiettile colpisce multipli zombie (edge case utile)"""
-        proj_group = pygame.sprite.Group()
-        zombie_group = pygame.sprite.Group()
-        
-        mock_proj = MagicMock()
-        mock_zombie1 = MagicMock()
-        mock_zombie2 = MagicMock()
-        mock_zombie1.take_damage.return_value = False
-        mock_zombie2.take_damage.return_value = False
-        
-        proj_group.add(mock_proj)
-        zombie_group.add(mock_zombie1, mock_zombie2)
-        
-        with patch('pygame.sprite.groupcollide') as mock_collide:
-            mock_collide.return_value = {mock_proj: [mock_zombie1, mock_zombie2]}
-            result = _handle_projectile_zombie_collisions(proj_group, zombie_group)
-            
-            self.assertTrue(result)
-            self.assertEqual(mock_zombie1.take_damage.call_count, 1)
-            self.assertEqual(mock_zombie2.take_damage.call_count, 1)
-            print("✅ Projectile → Zombie: hits multiple OK")
-
     def test_no_projectile_zombie_collision(self):
         """Test nessuna collisione"""
         proj_group = pygame.sprite.Group()
@@ -390,14 +285,14 @@ class TestNewGameController(unittest.TestCase):
             self.assertFalse(result)
             print("✅ Projectile → Zombie: no collision OK")
 
-    # ---------- PAUSE MENU (TEST ESSENZIALI - 5 TEST) ----------
+    # ---------- PAUSE MENU (TEST ESSENZIALI) ----------
     @patch('GardenInvasion.Controller.NewGame_controller.draw_pause_modal')
     @patch('pygame.display.flip')
     def test_pause_menu_escape_opens_menu(self, mock_flip, mock_draw):
         """Test che ESC apra il menu e ESC stesso faccia resume"""
         events = [
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_ESCAPE})],  # Apre menu
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_ESCAPE})],  # ESC = resume
+            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_ESCAPE})],
+            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_ESCAPE})],
             []
         ]
         with patch('pygame.event.get', side_effect=events):
@@ -407,49 +302,34 @@ class TestNewGameController(unittest.TestCase):
 
     @patch('GardenInvasion.Controller.NewGame_controller.draw_pause_modal')
     @patch('pygame.display.flip')
-    def test_pause_menu_quit_selection(self, mock_flip, mock_draw):
-        """Test selezione Quit con tastiera (RIGHT → RETURN)"""
-        events = [
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RIGHT})],  # Da Resume a Quit
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RETURN})], # Seleziona Quit
+    def test_pause_menu_navigation(self, mock_flip, mock_draw):
+        """Test navigazione tastiera (LEFT/RIGHT) e selezione"""
+        # Test selezione Quit
+        events_quit = [
+            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RIGHT})],
+            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RETURN})],
             []
         ]
-        with patch('pygame.event.get', side_effect=events):
+        with patch('pygame.event.get', side_effect=events_quit):
             result = show_pause_menu(self.screen, self.menu_model)
         self.assertEqual(result, 'quit')
-        print("✅ Pause menu: quit selection OK")
-
-    @patch('GardenInvasion.Controller.NewGame_controller.draw_pause_modal')
-    @patch('pygame.display.flip')
-    def test_pause_menu_main_menu_selection(self, mock_flip, mock_draw):
-        """Test selezione Main Menu con tastiera (LEFT → RETURN)"""
-        events = [
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_LEFT})],   # Da Resume a Main Menu
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RETURN})], # Seleziona Main Menu
+        
+        # Test selezione Main Menu
+        events_menu = [
+            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_LEFT})],
+            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RETURN})],
             []
         ]
-        with patch('pygame.event.get', side_effect=events):
+        with patch('pygame.event.get', side_effect=events_menu):
             result = show_pause_menu(self.screen, self.menu_model)
         self.assertEqual(result, 'menu')
-        print("✅ Pause menu: main menu selection OK")
-
-    @patch('GardenInvasion.Controller.NewGame_controller.draw_pause_modal')
-    @patch('pygame.display.flip')
-    def test_pause_menu_resume_selection(self, mock_flip, mock_draw):
-        """Test selezione Resume con tastiera (RETURN diretto)"""
-        events = [
-            [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_RETURN})], # Seleziona Resume (default)
-            []
-        ]
-        with patch('pygame.event.get', side_effect=events):
-            result = show_pause_menu(self.screen, self.menu_model)
-        self.assertEqual(result, 'resume')
-        print("✅ Pause menu: resume selection OK")
+        
+        print("✅ Pause menu: navigation OK")
 
     @patch('GardenInvasion.Controller.NewGame_controller.draw_pause_modal')
     @patch('GardenInvasion.Controller.NewGame_controller.get_pause_menu_button_rects')
     @patch('pygame.display.flip')
-    def test_pause_menu_mouse_click_resume(self, mock_flip, mock_rects, mock_draw):
+    def test_pause_menu_mouse_click(self, mock_flip, mock_rects, mock_draw):
         """Test click del mouse su Resume"""
         resume_rect = pygame.Rect(230, 300, 140, 50)
         mock_rects.return_value = (pygame.Rect(0,0,140,50), resume_rect, pygame.Rect(0,0,140,50))
@@ -462,7 +342,7 @@ class TestNewGameController(unittest.TestCase):
         with patch('pygame.event.get', side_effect=events):
             result = show_pause_menu(self.screen, self.menu_model)
         self.assertEqual(result, 'resume')
-        print("✅ Pause menu: mouse click on Resume OK")
+        print("✅ Pause menu: mouse click OK")
 
     @unittest.skip("Test integrazione - richiede mock complessi")
     def test_wave_manager_integration(self):

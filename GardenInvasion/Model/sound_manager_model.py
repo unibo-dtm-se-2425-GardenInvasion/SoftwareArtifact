@@ -67,23 +67,25 @@ class SoundManager:
         pkg_root = Path(__file__).resolve().parent.parent
         sounds_path = pkg_root / "Assets" / "sounds"
         
-        # Define sound file mappings
+        # Define sound file mappings - AGGIUNGI I NUOVI SUONI
         sound_files = {
-            'plant_shoot': 'shoot_plant.wav',  # Sound when plant shoots
-            'wallnut_destroyed': 'wallnut_destroyed.wav',  # Sound when wallnut destroyed
-            'game_over': 'gameover_sound.ogg'  # Game over sound   
+            'plant_shoot': 'shoot_plant.wav',           # Sound when plant shoots
+            'wallnut_destroyed': 'wallnut_destroyed.wav', # Sound when wallnut destroyed
+            'game_over': 'gameover_sound.ogg',           # Game over sound
+            'zombie_hit': 'zombie_hit.ogg',              # NUOVO: quando proiettile colpisce zombie
+            'plant_hit': 'plant_hit.ogg'                  # NUOVO: quando pianta viene colpita
         }
-        
+    
         # Load each sound file
         for sound_name, filename in sound_files.items(): # Load sounds
             sound_file = sounds_path / filename 
             try:
                 self.sounds[sound_name] = pygame.mixer.Sound(str(sound_file)) 
-                # print(f"Loaded sound: {sound_name}")
+                print(f"Loaded sound: {sound_name}")  # Aggiungi print per debug
             except (pygame.error, FileNotFoundError) as e: # Handle loading errors
                 print(f"Warning: Could not load sound '{filename}': {e}")
                 self.sounds[sound_name] = None # Silent sound fallback
-
+            
     def _load_music(self):
         # Load background music file
 
