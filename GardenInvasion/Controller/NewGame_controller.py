@@ -172,7 +172,7 @@ def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_m
 # ---------- COLLISION HELPERS ----------
 # PUNTO 1: Plant projectile → Zombie
 def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_manager=None):
-    """Handle collisions between player projectiles and zombies"""
+    # Handle collisions between player projectiles and zombies
     collisions = pygame.sprite.groupcollide(
         projectile_group,  # Player projectiles
         zombie_group,      # Zombies
@@ -346,6 +346,15 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     RunGame_bg_path = pkg_root / "Assets" / "images" / "RunGame01.png"
     RunGame_background = BackgroundModel(RunGame_bg_path)
 
+    heart_path = pkg_root / "Assets" / "images" / "HeartShape.png"
+    try:
+        heart_image = pygame.image.load(heart_path).convert_alpha()
+    except pygame.error as e:
+        print(f"Error loading heart image: {e}")
+        # Create a fallback red heart rectangle if image not found
+        heart_image = pygame.Surface((40, 40))
+        heart_image.fill((255, 0, 0))
+
     sound_manager = SoundManager(settings_model)
 
     # Create player with selected skin
@@ -443,7 +452,10 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         # Draw everything ONCE per frame
         draw_game(screen, RunGame_background, player_group, projectile_group, 
                   wallnut_manager.get_wallnuts(),
-                  wave_manager.zombie_group, wave_manager.zombie_projectile_group)
+                  player.life_points,
+                  heart_image,
+                  wave_manager.zombie_group,
+                  wave_manager.zombie_projectile_group)
         
         # Update display BEFORE checking game over
         pygame.display.flip()

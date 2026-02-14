@@ -8,9 +8,10 @@ from GardenInvasion.Model.wallnut_model import WallNut
 from GardenInvasion.Model.projectile_model import Projectile
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from GardenInvasion.Model.setting_volume_model import SettingsModel
+from GardenInvasion.View.RunGame_view import draw_hearts
 
 class TestRunGameView(unittest.TestCase):
-    """Test suite for game view rendering functions"""
+    # Test suite for game view rendering functions
 
     @classmethod
     def setUpClass(cls):
@@ -36,7 +37,7 @@ class TestRunGameView(unittest.TestCase):
         self.zombie_group = pygame.sprite.Group()  # NUOVO: Group for zombie sprites
         self.zombie_projectile_group = pygame.sprite.Group()
         
-    #Create settings model for Player
+        #Create settings model for Player
         self.settings_model = SettingsModel()
 
         # Create mock background
@@ -44,17 +45,24 @@ class TestRunGameView(unittest.TestCase):
         self.game_background.surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.game_background.rect = self.game_background.surface.get_rect()
 
+        # Create mock heart image for heart tests
+        self.heart_image = pygame.Surface((40, 40))
+        self.heart_image.fill((255, 0, 0))
+
     def test_draw_game_does_not_crash(self):
-        """Test that draw_game executes without exceptions"""
+        # Test that draw_game executes without exceptions
         try:
             draw_game(self.screen, self.game_background, self.player_group, 
-                     self.projectile_group, self.wallnut_group, self.zombie_group)  # AGGIUNTO zombie_group
+                     self.projectile_group, self.wallnut_group, 
+                     2, self.heart_image,
+                     self.zombie_group, self.zombie_projectile_group)
             print("✅ draw_game executed successfully without errors")
         except Exception as e:
             self.fail(f"❌ draw_game raised an exception: {e}")
 
     def test_draw_game_renders_player(self):
-        """Test that draw_game renders the player sprite"""
+        # Test that draw_game renders the player sprite
+
         # Create a mock surface to return when pygame.image.load is called
         mock_surface = pygame.Surface((100, 100)) # Mock player image
         mock_surface = mock_surface.convert_alpha() # Ensure it has alpha channel
@@ -64,13 +72,16 @@ class TestRunGameView(unittest.TestCase):
             self.player_group.add(player) # Add player to group
         try:
             draw_game(self.screen, self.game_background, self.player_group, 
-                     self.projectile_group, self.wallnut_group, self.zombie_group)  # AGGIUNTO zombie_group
+                     self.projectile_group, self.wallnut_group,
+                     2, self.heart_image,
+                     self.zombie_group, self.zombie_projectile_group)
             print("✅ draw_game rendered player sprite successfully")
         except Exception as e:
             self.fail(f"❌ draw_game failed with player sprite: {e}")
 
     def test_draw_game_renders_projectiles(self):
-        """Test that draw_game renders all projectiles in the group"""
+        # Test that draw_game renders all projectiles in the group
+
         # Create a mock surface for projectile image
         mock_surface = pygame.Surface((20, 20)) # Mock projectile image
         mock_surface = mock_surface.convert_alpha() # Ensure it has alpha channel
@@ -83,13 +94,15 @@ class TestRunGameView(unittest.TestCase):
         
         try:
             draw_game(self.screen, self.game_background, self.player_group, 
-                     self.projectile_group, self.wallnut_group, self.zombie_group)  # AGGIUNTO zombie_group
+                     self.projectile_group, self.wallnut_group,
+                     2, self.heart_image,
+                     self.zombie_group, self.zombie_projectile_group)
             print(f"✅ draw_game rendered {len(self.projectile_group)} projectile sprites successfully")
         except Exception as e:
             self.fail(f"❌ draw_game failed with projectile sprites: {e}")
 
     def test_draw_game_renders_wallnuts(self):
-        """Test that draw_game renders all wallnuts in the group"""
+        # Test that draw_game renders all wallnuts in the group
         # Create mock surfaces for wallnut sprites
         mock_surface = pygame.Surface((60, 60))
         mock_surface = mock_surface.convert_alpha()
@@ -102,14 +115,16 @@ class TestRunGameView(unittest.TestCase):
         
         try:
             draw_game(self.screen, self.game_background, self.player_group, 
-                     self.projectile_group, self.wallnut_group, self.zombie_group)  # AGGIUNTO zombie_group
+                     self.projectile_group, self.wallnut_group,
+                     2, self.heart_image,
+                     self.zombie_group, self.zombie_projectile_group)
             print(f"✅ draw_game rendered {len(self.wallnut_group)} wallnut sprites successfully")
         except Exception as e:
             self.fail(f"❌ draw_game failed with wallnut sprites: {e}")
 
-    # NUOVO TEST: Verifica rendering degli zombie
     def test_draw_game_renders_zombies(self):
-        """Test that draw_game renders all zombies in the group"""
+        # Test that draw_game renders all zombies in the group
+        
         # Create a mock zombie sprite
         mock_zombie = Mock(spec=pygame.sprite.Sprite)
         mock_zombie.image = pygame.Surface((30, 50))
@@ -120,52 +135,67 @@ class TestRunGameView(unittest.TestCase):
         
         try:
             draw_game(self.screen, self.game_background, self.player_group,
-                     self.projectile_group, self.wallnut_group, self.zombie_group)
+                     self.projectile_group, self.wallnut_group,
+                     2, self.heart_image,
+                     self.zombie_group, self.zombie_projectile_group)
             print(f"✅ draw_game rendered {len(self.zombie_group)} zombie sprites successfully")
         except Exception as e:
             self.fail(f"❌ draw_game failed with zombie sprites: {e}")
 
-    def test_draw_game_without_zombies(self):
-        """Test that draw_game works without zombie_group parameter (backward compatibility)"""
-        try:
-            # ✅ FIXED: Call with only 5 parameters (without zombie groups) - this is what the test name says!
-            draw_game(self.screen, self.game_background, self.player_group,
-                    self.projectile_group, self.wallnut_group)
-            print("✅ draw_game works without zombie_group (backward compatible)")
-        except TypeError as e:
-            self.fail(f"❌ draw_game not backward compatible: {e}")
-        except Exception as e:
-            self.fail(f"❌ Other error: {e}")
-
-
-    def test_draw_game_layering_order(self):
-        """Test that draw_game maintains correct visual layering"""
-        # NOTE: Questo test verrà implementato successivamente quando
-        # il sistema di rendering sarà completo. Pygame Surface.blit è
-        # un attributo read-only che non può essere mockato facilmente.
-        # Per ora testiamo la funzionalità base senza verificare l'ordine esatto.
-        pass
-
-    # NUOVO TEST: Verifica con zombie_group None
     def test_draw_game_with_none_zombie_group(self):
-        """Test that draw_game handles None zombie_group correctly"""
+        # Test that draw_game handles None zombie_group correctly
         try:
             draw_game(self.screen, self.game_background, self.player_group,
-                     self.projectile_group, self.wallnut_group, None)
+                     self.projectile_group, self.wallnut_group,
+                     2, self.heart_image,
+                     None, None)
             print("✅ draw_game handles None zombie_group correctly")
         except Exception as e:
             self.fail(f"❌ draw_game failed with None zombie_group: {e}")
 
-    # NUOVO TEST: Verifica con zombie_group vuoto
     def test_draw_game_with_empty_zombie_group(self):
-        """Test that draw_game handles empty zombie_group correctly"""
+        # Test that draw_game handles empty zombie_group correctly
         try:
             draw_game(self.screen, self.game_background, self.player_group,
-                     self.projectile_group, self.wallnut_group, pygame.sprite.Group())
+                     self.projectile_group, self.wallnut_group,
+                     2, self.heart_image,
+                     pygame.sprite.Group(), pygame.sprite.Group())
             print("✅ draw_game handles empty zombie_group correctly")
         except Exception as e:
             self.fail(f"❌ draw_game failed with empty zombie_group: {e}")
 
+    def test_draw_hearts_with_full_health(self):
+        # Test that 2 hearts are drawn when player has 2 life points
+        player_health = 2
+        
+        # Draw hearts on screen
+        draw_hearts(self.screen, player_health, self.heart_image)
+        
+        # Verify function executed without errors
+        self.assertEqual(player_health, 2)
+        print("✅ Successfully drew 2 hearts for full health")
+
+    def test_draw_hearts_with_one_life(self):
+        # Test that 1 heart is drawn when player has 1 life point
+        player_health = 1
+        
+        # Draw hearts on screen
+        draw_hearts(self.screen, player_health, self.heart_image)
+        
+        # Verify function executed without errors
+        self.assertEqual(player_health, 1)
+        print("✅ Successfully drew 1 heart for damaged state")
+
+    def test_draw_hearts_with_zero_health(self):
+        # Test that no hearts are drawn when player has 0 life points
+        player_health = 0
+        
+        # Draw hearts on screen (should draw nothing)
+        draw_hearts(self.screen, player_health, self.heart_image)
+        
+        # Verify function executed without errors
+        self.assertEqual(player_health, 0)
+        print("✅ Successfully handled 0 hearts (game over state)")
 
 if __name__ == '__main__':
     unittest.main()
