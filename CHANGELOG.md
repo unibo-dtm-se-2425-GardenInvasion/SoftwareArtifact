@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.7.0...1.7.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* **ci:** add build and twine to requirements-dev.txt ([2ebc6c8](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/2ebc6c806c169514ffa2c16bb2947ea35e63c03e))
+
 ## [1.7.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.6.0...1.7.0) (2026-02-14)
 
 
