@@ -1,3 +1,10 @@
+## [1.7.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.6.0...1.7.0) (2026-02-14)
+
+
+### Features
+
+* add heart display to show player health in game ([5210ce4](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/5210ce44345002b08a7d88d37867ec5310dfa8ff))
+
 ## [1.6.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.5.1...1.6.0) (2026-02-12)
 
 
