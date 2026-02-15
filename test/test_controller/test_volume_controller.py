@@ -1,10 +1,13 @@
 import unittest
 import pygame
 from unittest.mock import patch, MagicMock
-import sys
+import os
 
 # Initialize pygame for event handling tests
+os.environ['SDL_VIDEODRIVER'] = 'dummy'  # Use dummy video driver
+os.environ['SDL_AUDIODRIVER'] = 'dummy'  # Use dummy audio driver
 pygame.init()
+pygame.font.init()
 pygame.display.set_mode((1, 1))  # Dummy display
 
 from GardenInvasion.Controller.options_controller import run_volume_menu
@@ -14,8 +17,35 @@ from GardenInvasion.Model.setting_volume_model import SettingsModel
 class TestVolumeController(unittest.TestCase):
     # Test suite for volume submenu controller
     
+    @classmethod
+    def setUpClass(cls):
+        
+        os.environ['SDL_VIDEODRIVER'] = 'dummy'
+        os.environ['SDL_AUDIODRIVER'] = 'dummy'
+        
+        # Initialize pygame if not already initialized
+        if not pygame.get_init():
+            pygame.init()
+        
+        # Initialize font module if not already initialized
+        if not pygame.font.get_init():
+            pygame.font.init()
+        
+        # Create display if needed
+        if not pygame.display.get_surface():
+            pygame.display.set_mode((1, 1))
+    
+   
     def setUp(self):
         # Set up test fixtures before each test
+        
+        if not pygame.get_init():
+            pygame.init()
+        if not pygame.font.get_init():
+            pygame.font.init()
+        if not pygame.display.get_surface():
+            pygame.display.set_mode((1, 1))
+        
         self.mock_surface = pygame.Surface((100, 100))
         self.image_patcher = patch('pygame.image.load', return_value=self.mock_surface)
         self.image_patcher.start()
@@ -33,11 +63,12 @@ class TestVolumeController(unittest.TestCase):
         self.fonts = (self.item_font, self.inst_font, self.title_font)
     
     def tearDown(self):
+        # Clean up after each test
         self.image_patcher.stop()
-        pygame.event.clear()
+        if pygame.get_init():
+            pygame.event.clear()
     
     def create_event_generator(self, events_sequence):
-        # Create an event generator that yields events then empty lists indefinitely
         def generator():
             for events in events_sequence:
                 yield events

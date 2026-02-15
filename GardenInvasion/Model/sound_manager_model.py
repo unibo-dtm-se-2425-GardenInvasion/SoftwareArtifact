@@ -73,7 +73,8 @@ class SoundManager:
             'wallnut_destroyed': 'wallnut_destroyed.wav', # Sound when wallnut destroyed
             'game_over': 'gameover_sound.ogg',           # Game over sound
             'zombie_hit': 'zombie_hit.ogg',              # NUOVO: quando proiettile colpisce zombie
-            'plant_hit': 'plant_hit.ogg'                  # NUOVO: quando pianta viene colpita
+            'plant_hit': 'plant_hit.ogg',                  # NUOVO: quando pianta viene colpita
+            'victory': 'victory.mp3'                      # victory sound
         }
     
         # Load each sound file

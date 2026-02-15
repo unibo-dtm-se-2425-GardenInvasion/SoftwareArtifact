@@ -15,6 +15,8 @@ from ..Model.setting_volume_model import SettingsModel
 from ..Model.sound_manager_model import SoundManager
 from ..Model.game_over_model import GameOverModel
 from ..View.game_over_view import draw_game_over_screen
+from ..Model.victory_model import VictoryModel
+from ..View.victory_view import draw_victory_screen
 
 # ---------- modal helper ----------
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
@@ -168,6 +170,85 @@ def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_m
         
         pygame.display.flip()
         clock.tick(60)
+
+def show_victory_screen(screen: pygame.Surface, menu_model: MenuModel, sound_manager: SoundManager) -> str:
+    
+    clock = pygame.time.Clock()
+    victory_model = VictoryModel()
+    sound_manager.play_sound('victory')
+    
+    # Capture and blur the background ONCE before the loop
+    background_snapshot = screen.copy()
+    small_size = (screen.get_width() // 8, screen.get_height() // 8)
+    blurred_bg = pygame.transform.smoothscale(background_snapshot, small_size)
+    blurred_bg = pygame.transform.smoothscale(blurred_bg, (screen.get_width() // 6, screen.get_height() // 6))
+    blurred_bg = pygame.transform.smoothscale(blurred_bg, screen.get_size())
+    
+    # Store button rects
+    play_again_rect = None
+    menu_rect = None
+    
+    # Fade-in animation variables
+    fade_alpha = 0
+    fade_speed = 5
+    fade_complete = False
+    
+    while True:
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return 'quit'
+            
+            # Only allow input after fade completes
+            if fade_complete:
+                if event.type == pygame.KEYDOWN:
+                    if event.key in (pygame.K_LEFT, pygame.K_a):
+                        victory_model.select_previous()
+                    elif event.key in (pygame.K_RIGHT, pygame.K_d):
+                        victory_model.select_next()
+                    elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                        selected = victory_model.get_selected_option()
+                        if selected == "Play Again":
+                            # print("Restarting game from victory screen")
+                            return 'restart'
+                        else:
+                            # print("Returning to main menu from victory screen")
+                            return 'menu'
+                
+                if event.type == pygame.MOUSEMOTION:
+                    if play_again_rect and menu_rect:
+                        if play_again_rect.collidepoint(event.pos):
+                            victory_model.selected_index = 0
+                        elif menu_rect.collidepoint(event.pos):
+                            victory_model.selected_index = 1
+                
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    selected = victory_model.get_selected_option()
+                    if selected == "Play Again":
+                        return 'restart'
+                    else:
+                        return 'menu'
+        
+        # Draw blurred background
+        screen.blit(blurred_bg, (0, 0))
+        
+        # Draw dark overlay
+        overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 100))  # Lighter overlay for victory (less dark)
+        screen.blit(overlay, (0, 0))
+        
+        # Draw victory screen with current fade alpha
+        play_again_rect, menu_rect = draw_victory_screen(screen, victory_model, fade_alpha)
+        
+        # Update fade-in animation
+        if fade_alpha < 255:
+            fade_alpha = min(255, fade_alpha + fade_speed)
+        else:
+            fade_complete = True
+        
+        pygame.display.flip()
+        clock.tick(60)
+
 
 # ---------- COLLISION HELPERS ----------
 # PUNTO 1: Plant projectile → Zombie
@@ -471,6 +552,20 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                 run_game(screen, model, settings_model, sound_manager)
                 return
             elif action == 'menu': # return to main menu
+                running = False
+            else:  # quit
+                pygame.quit()
+                sys.exit()
+        
+        if wave_manager.is_victory():
+            print("🎉 VICTORY - All waves defeated!")
+            sound_manager.stop_music(fade_ms=500)
+            action = show_victory_screen(screen, model, sound_manager)
+            
+            if action == 'restart':
+                run_game(screen, model, settings_model, sound_manager)
+                return
+            elif action == 'menu':
                 running = False
             else:  # quit
                 pygame.quit()

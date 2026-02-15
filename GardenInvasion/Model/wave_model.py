@@ -197,3 +197,10 @@ class WaveManager:
             return f"Ondata {self.current_wave} completata"
         else:
             return f"Ondata {self.current_wave} - Zombie: {len(self.zombie_group)}"
+    
+    def is_victory(self) -> bool: # check if player won by completing all waves and defeating all zombies
+        all_waves_completed = self.current_wave >= self.total_waves
+        no_zombies_remaining = len(self.zombie_group) == 0
+        no_pending_spawns = len(self.wave_timers) == 0
+        
+        return all_waves_completed and no_zombies_remaining and no_pending_spawns

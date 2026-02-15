@@ -1,8 +1,11 @@
 import unittest
 import pygame
 from unittest.mock import patch, MagicMock
+import os
 
 # Initialize pygame
+os.environ['SDL_VIDEODRIVER'] = 'dummy'  # Use dummy video driver
+os.environ['SDL_AUDIODRIVER'] = 'dummy'  # Use dummy audio driver
 pygame.init()
 pygame.display.set_mode((1, 1))
 
