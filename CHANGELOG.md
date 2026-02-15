@@ -1,3 +1,10 @@
+## [1.8.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.7.1...1.8.0) (2026-02-15)
+
+
+### Features
+
+* add victory screen with fade-in animation and sound ([97e1e5e](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/97e1e5ebee7b54a56a37be4e3a4d547e2c2bf224))
+
 ## [1.7.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.7.0...1.7.1) (2026-02-14)
 
 
