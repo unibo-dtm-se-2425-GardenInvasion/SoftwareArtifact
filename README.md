@@ -57,17 +57,10 @@ Overview:
 │   └── workflows/          # configuration of GitHub Workflows
 │       ├── check.yml       # runs tests on multiple OS and versions of Python
 │       └── deploy.yml      # if check succeeds, and the current branch is one of {main, master}, triggers automatic releas on PyPi
-├── .gitignore              # XXX
-├── .python-version         # XXX
-├── CHANGELOG.md            # XXX
+├── CHANGELOG.md            # project's history for each version
 ├── LICENSE                 # license file (Apache 2.0 by default)
 ├── MANIFEST.in             # file stating what to include/exclude in releases 
-├── package-lock.json       # XXX
-├── package.json            # XXX
 ├── pyproject.toml          # declares build dependencies
-├── README.md               # XXX
-├── release.config.js       # XXX
-├── rename-template.sh      # XXX
 ├── renovate.json           # configuration of Renovate bot, for automatic dependency updates
 ├── requirements-dev.txt    # declares development dependencies
 ├── requirements.txt        # declares runtime dependencies
@@ -90,7 +83,9 @@ Notes:
 - X button or ESC + Quit exits the game with confirmation dialog
 
 ## Links 
-TO UPDATE ONCE DECIDED WHAT TO ADD HERE
-- Report link
+- ['Report'](https://unibo-dtm-se-2425-gardeninvasion.github.io/Project-work/)
+- ['Documentation repository'](https://github.com/unibo-dtm-se-2425-GardenInvasion/Project-work)
 
 ## Version History
+
+TBD
