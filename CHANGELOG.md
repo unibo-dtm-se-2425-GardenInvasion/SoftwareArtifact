@@ -1,3 +1,15 @@
+## [1.9.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.8.0...1.9.0) (2026-02-22)
+
+
+### Features
+
+* add power-up system with fire rate boost and wallnut repair ([3837084](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/38370843121cd498a69c60388507e4cd94c13958))
+
+
+### Documentation
+
+* update root-graph and README links ([71d58be](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/71d58bee2eeeeacb4489489440b1e8b3a1be8e2b))
+
 ## [1.8.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.7.1...1.8.0) (2026-02-15)
 
 
