@@ -37,12 +37,35 @@ class Player(pygame.sprite.Sprite):
         # get original image of the plant and change its size keeping the aspect ratio
         self.speed = 5 # movement speed
 
-        self.shoot_SecondTime = 1000  # 0.5 seconds
-        self.last_shot = pygame.time.get_ticks()# track time of last shot
+        self.base_shoot_cooldown = 1000          
+        # Current cooldown (can be modified by power‑ups)
+        self.shoot_SecondTime = self.base_shoot_cooldown
+        self.last_shot = pygame.time.get_ticks()
+
+        # Power‑up related: when does the fire‑rate boost end? 0 = no boost active
+        self.fire_rate_boost_end_time = 0
         
         # NEW: Life points system (2 life points)
         self.life_points = 2  # Start with 2 life points
         self.max_life_points = 2
+
+    def apply_fire_rate_boost(self, cooldown_multiplier: float, duration_ms: int):
+        # Temporarily increases fire rate by reducing shooting cooldown.
+
+        now = pygame.time.get_ticks()
+        # Reduce cooldown, but keep a small lower bound to avoid zero/negative
+        new_cooldown = int(self.base_shoot_cooldown * cooldown_multiplier)
+        self.shoot_SecondTime = max(100, new_cooldown)
+        # Extend boost time if another power‑up is collected while active
+        self.fire_rate_boost_end_time = max(self.fire_rate_boost_end_time, now + duration_ms)
+
+    def update(self):
+        
+        now = pygame.time.get_ticks() # Check if fire‑rate boost has expired
+        if self.fire_rate_boost_end_time and now >= self.fire_rate_boost_end_time:
+            # Boost expired → restore normal fire rate
+            self.fire_rate_boost_end_time = 0
+            self.shoot_SecondTime = self.base_shoot_cooldown
 
     def move_left(self): # move left
         self.rect.x -= self.speed

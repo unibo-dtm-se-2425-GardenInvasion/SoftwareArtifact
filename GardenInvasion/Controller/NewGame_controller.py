@@ -1,6 +1,7 @@
 import pygame
 import sys
 from pathlib import Path
+import random
 from ..Model.menu_model import MenuModel, BackgroundModel
 from ..View.menu_view import draw_pause_modal, get_pause_menu_button_rects
 from ..Utilities.constants import*
@@ -17,6 +18,8 @@ from ..Model.game_over_model import GameOverModel
 from ..View.game_over_view import draw_game_over_screen
 from ..Model.victory_model import VictoryModel
 from ..View.victory_view import draw_victory_screen
+from ..Model.PowerUp_model import PowerUpManager, IncreasingFirePU, RepairWallnutPU
+
 
 # ---------- modal helper ----------
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
@@ -252,7 +255,7 @@ def show_victory_screen(screen: pygame.Surface, menu_model: MenuModel, sound_man
 
 # ---------- COLLISION HELPERS ----------
 # PUNTO 1: Plant projectile → Zombie
-def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_manager=None):
+def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_manager=None, powerup_manager=None):
     # Handle collisions between player projectiles and zombies
     collisions = pygame.sprite.groupcollide(
         projectile_group,  # Player projectiles
@@ -268,7 +271,11 @@ def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_m
             # 🔥 SUONO: Zombie hit sound
             if sound_manager:
                 sound_manager.play_sound('zombie_hit')
-    
+            
+            if zombie_destroyed and powerup_manager is not None: # spawn power-up with 50% probability if zombie was destroyed
+                if random.random() < 0.5:
+                    powerup_manager.spawn_random_powerup(zombie.rect.center)
+                    
     return len(collisions) > 0  # Return True if any collisions occurred
 
 # PUNTO 2: Zombie projectile → Plant
@@ -452,11 +459,15 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     )
 
     wallnut_manager.place_all_wallnuts()
+
+    # Create power-up manager
+    powerup_manager = PowerUpManager()
+    powerup_group = powerup_manager.powerup_group
     
     # Create wave manager
     wave_manager = WaveManager()
     wave_manager.start_first_wave()
-    
+        
     sound_manager.play_music('gameplay', loops=-1, fade_ms=1000)
 
     running = True
@@ -491,11 +502,12 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         projectile_group.update()
         wallnut_manager.update()
         wave_manager.update()
+        powerup_manager.update()
         
         # ---------- HANDLE ALL COLLISIONS ----------
         
         # PUNTO 1: Player projectiles → zombies
-        _handle_projectile_zombie_collisions(projectile_group, wave_manager.zombie_group, sound_manager)
+        _handle_projectile_zombie_collisions(projectile_group, wave_manager.zombie_group, sound_manager, powerup_manager)
         
         # PUNTO 2: Zombie projectiles → plant
         plant_destroyed_by_projectile = _handle_zombie_projectile_plant_collisions(
@@ -529,6 +541,20 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         # Combined plant destruction check (from any source)
         plant_destroyed = plant_destroyed_by_projectile or plant_destroyed_by_zombie
+
+        # power-up collection
+        collected_powerups = pygame.sprite.spritecollide(
+            player,
+            powerup_group,
+            dokill=True  # remove collected power-ups from the game
+        )
+        for pu in collected_powerups:
+            # Fire-rate power-up
+            if isinstance(pu, IncreasingFirePU):
+                pu.apply(player)
+            # Repair all wallnuts
+            elif isinstance(pu, RepairWallnutPU):
+                pu.apply(wallnut_manager) 
         
         # Draw everything ONCE per frame
         draw_game(screen, RunGame_background, player_group, projectile_group, 
@@ -536,7 +562,8 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                   player.life_points,
                   heart_image,
                   wave_manager.zombie_group,
-                  wave_manager.zombie_projectile_group)
+                  wave_manager.zombie_projectile_group,
+                  powerup_group)
         
         # Update display BEFORE checking game over
         pygame.display.flip()

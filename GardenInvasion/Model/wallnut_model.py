@@ -39,6 +39,10 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
         self.image = self.sprites[self.health]
         self.rect = self.image.get_rect()
         self.rect.center = position  # Position of wall-nut
+    
+    def update_image_by_health(self):
+        if self.health in self.sprites:
+            self.image = self.sprites[self.health]
         
     def take_damage(self):
         # Reduces health by 1 and updates sprite.
@@ -53,8 +57,8 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
             self.kill()  # Remove from sprite groups
             return True  # Wall-nut destroyed
         else:
-            self.image = self.sprites[self.health]  # Update sprite to show damage
-            return False  # Wall-nut still standing
+            self.update_image_by_health()  # ✨ CHANGE 3: reuse same method here
+            return False  # Wall-nut still alive
     
 class WallNutManager:
     # Manages the 4 wall-nut slots in front of the player.
@@ -73,6 +77,23 @@ class WallNutManager:
         self.slot_positions = self._calculate_slot_positions()
         self.slot_occupied = [False] * self.max_wallnuts  # Track which slots are filled
     
+    
+    def repair_all_wallnuts(self):
+        # Build a set of slot indices that are currently alive
+        alive_slots = {wn.slot_index for wn in self.wallnuts}
+
+        for slot_index in range(self.max_wallnuts):
+            if slot_index in alive_slots:
+                # Wallnut is alive but damaged → heal + refresh image
+                for wn in self.wallnuts:
+                    if wn.slot_index == slot_index and wn.health < wn.max_health:
+                        wn.health = wn.max_health
+                        wn.update_image_by_health()  # ✨ visual refresh
+            else:
+                # Wallnut was destroyed → re-spawn it
+                self.slot_occupied[slot_index] = False  # ✨ reset flag so place_wallnut accepts it
+                self.place_wallnut(slot_index, self.sound_manager)
+
     def _calculate_slot_positions(self):
         # Calculate the 4 positions where wall-nuts can be placed.
         player_x, player_y = self.player_position
