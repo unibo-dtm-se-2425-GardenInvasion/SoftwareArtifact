@@ -30,9 +30,7 @@ class ZombieProjectile(pygame.sprite.Sprite):
             # Use rotozoom for best quality
             scale_factor = target_height / original_height
             self.image = pygame.transform.rotozoom(original_image, 0, scale_factor)
-            
-            print(f"Projectile sprite loaded")
-                        
+                                    
         except (pygame.error, FileNotFoundError):
             # Fallback to colored surface
             print(f"Warning: Could not load sprite {sprite_file}, using yellow rectangle")

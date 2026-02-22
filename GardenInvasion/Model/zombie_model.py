@@ -68,7 +68,7 @@ class Zombie(pygame.sprite.Sprite):
             
             # Then scale down to final size (produces smoother result)
             self.image = pygame.transform.smoothscale(temp_image, (target_width, target_height))
-            print(f"Loaded sprite: {sprite_file.name}")
+            # print(f"Loaded sprite: {sprite_file.name}")
 
         except (pygame.error, FileNotFoundError):
             # Fallback to colored surface

@@ -56,11 +56,9 @@ class WaveManager:
         
         # DEBUG: Mostra stato corrente (ogni 2 secondi)
         if current_time % 2000 < 16:  # Ogni 2 secondi circa
-            print(f"DEBUG: Wave {self.current_wave}, Zombies: {len(self.zombie_group)}, Projectiles: {len(self.zombie_projectile_group)}")
+            # print(f"DEBUG: Wave {self.current_wave}, Zombies: {len(self.zombie_group)}, Projectiles: {len(self.zombie_projectile_group)}")
             # Show which zombies can shoot
             shooters = sum(1 for z in self.zombie_group if hasattr(z, 'can_shoot') and z.can_shoot)
-            if shooters > 0:
-                print(f"Zombies that can shoot: {shooters}")           
             
         # Controlla se ondata corrente è completata
         if (not self.wave_complete and 
@@ -69,13 +67,13 @@ class WaveManager:
             len(self.wave_timers) == 0):
             
             self.wave_complete = True
-            print(f"Ondata {self.current_wave} completata!")
+            # print(f"Ondata {self.current_wave} completata!")
             
             # Prepara automaticamente la prossima ondata
             if self.current_wave < self.total_waves:
                 self._prepare_next_wave()
-            else:
-                print("TUTTE LE ONDATE COMPLETATE!")
+            # else:
+                # print("TUTTE LE ONDATE COMPLETATE!")
                 
     def _prepare_next_wave(self):
         # prepare next wave with 3 second timer
@@ -89,7 +87,7 @@ class WaveManager:
         self.wave_complete = False
         self.wave_timers = []
         
-        print(f"ONDATA {self.current_wave} INIZIATA!")
+        print(f"Wave {self.current_wave} begins")
         
         # Esegue l'ondata corrispondente
         if self.current_wave == 1:
@@ -121,7 +119,7 @@ class WaveManager:
             zombie = RedZombie(self.spawn_points[spawn_point], movement_pattern, spawn_point, wave_delay)
             self.zombie_group.add(zombie)
             delay_msg = f" (delay: {wave_delay}ms)" if wave_delay > 0 else ""
-            print(f"Zombie base 1 spawnato in {spawn_point} ({movement_pattern}){delay_msg}")
+            # print(f"Zombie base 1 spawnato in {spawn_point} ({movement_pattern}){delay_msg}")
         
     def _spawn_orange(self, spawn_point, movement_pattern='straight', wave_delay=0):
         # spqna zombie base 2
@@ -129,7 +127,7 @@ class WaveManager:
             zombie = OrangeZombie(self.spawn_points[spawn_point], spawn_point, wave_delay, movement_pattern)
             self.zombie_group.add(zombie)
             delay_msg = f" (delay: {wave_delay}ms)" if wave_delay > 0 else ""
-            print(f"Zombie base 2 spawnato in {spawn_point} ({movement_pattern}){delay_msg}")
+            #print(f"Zombie base 2 spawnato in {spawn_point} ({movement_pattern}){delay_msg}")
     
     # --- DEFINIZIONE ONDATE ---
     def _wave_1(self):
@@ -172,12 +170,10 @@ class WaveManager:
         })
 
     def _wave_5_phase2(self):
-        print("  🌊 Ondata 5 - Fase 2: 2 Rossi Simmetrici")
         self._spawn_red('B', 'roam_left')   # Stesso comportamento di wave 2
         self._spawn_red('C', 'roam_right')  # Stesso comportamento di wave 2
     
     def _wave_5_phase3(self):
-        print("  🌊 Ondata 5 - Fase 3: 2 Arancioni Simmetrici")
         # Arancioni con movimento speculare perfetto
         self._spawn_orange('B', 'roam_left')   # Si muove da sinistra verso destra
         self._spawn_orange('C', 'roam_right')  # Si muove da destra verso sinistra

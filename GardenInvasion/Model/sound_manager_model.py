@@ -82,7 +82,7 @@ class SoundManager:
             sound_file = sounds_path / filename 
             try:
                 self.sounds[sound_name] = pygame.mixer.Sound(str(sound_file)) 
-                print(f"Loaded sound: {sound_name}")  # Aggiungi print per debug
+                # print(f"Loaded sound: {sound_name}")  # Aggiungi print per debug
             except (pygame.error, FileNotFoundError) as e: # Handle loading errors
                 print(f"Warning: Could not load sound '{filename}': {e}")
                 self.sounds[sound_name] = None # Silent sound fallback

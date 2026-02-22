@@ -298,9 +298,9 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
     
     # For each collision, make the plant take damage
     for projectile in collisions:
-        print(f"DEBUG: Plant taking damage from zombie projectile!")
+        # print(f"DEBUG: Plant taking damage from zombie projectile!")
         
-        # 🔥 SUONO: Plant hit by projectile
+        # Plant hit by projectile
         if sound_manager:
             sound_manager.play_sound('plant_hit')
         
@@ -310,9 +310,8 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
         
         # Check if plant was destroyed
         if plant_destroyed:
-            print("💀 PLANT DESTROYED BY PROJECTILE! GAME OVER!")
+            print("PLANT DESTROYED BY PROJECTILE! GAME OVER!")
             plant_was_destroyed = True
-            # Break early since plant is already destroyed
             break
     
     # Return True only if plant was actually destroyed, not just hit
@@ -340,9 +339,9 @@ def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnu
             wallnut_destroyed = wallnut.take_damage()
             if wallnut_destroyed:
                 wallnut_destroyed_count += 1
-                print(f"💥 Wallnut {wallnut.slot_index} destroyed by zombie projectile!")
+                print(f"Wallnut {wallnut.slot_index} destroyed by zombie projectile!")
             else:
-                print(f"💥 Wallnut {wallnut.slot_index} hit by zombie projectile! Health: {wallnut.health}")
+                print(f"Wallnut {wallnut.slot_index} hit by zombie projectile! Health: {wallnut.health}")
     
     return len(collisions) > 0  # Return True if any collisions occurred
 
@@ -382,10 +381,9 @@ def _handle_zombie_plant_collisions(zombie_group, player, sound_manager=None):
     """Handle collisions between zombies and the plant.
     Zombie is destroyed on contact, plant takes damage."""
     
-    print(f"\n🔍 DEBUG ZOMBIE-PLANT: ========== CHECKING COLLISION ==========")
-    print(f"🔍 DEBUG ZOMBIE-PLANT: Checking {len(zombie_group)} zombies against plant at {player.rect.center}")
-    print(f"🔍 DEBUG ZOMBIE-PLANT: Plant life: {player.life_points}/{player.max_life_points}")
-    print(f"🔍 DEBUG ZOMBIE-PLANT: Plant rect: {player.rect}")
+    #print(f" DEBUG ZOMBIE-PLANT: Checking {len(zombie_group)} zombies against plant at {player.rect.center}")
+    # print(f" DEBUG ZOMBIE-PLANT: Plant life: {player.life_points}/{player.max_life_points}")
+    # print(f" DEBUG ZOMBIE-PLANT: Plant rect: {player.rect}")
     
     # Check collisions between zombies and player
     # True = remove zombie on collision (it gets destroyed)
@@ -396,32 +394,32 @@ def _handle_zombie_plant_collisions(zombie_group, player, sound_manager=None):
         pygame.sprite.collide_rect  # Use rectangle collision
     )
     
-    print(f"🔍 DEBUG ZOMBIE-PLANT: Collisions detected: {len(collisions)}")
+    # print(f" DEBUG ZOMBIE-PLANT: Collisions detected: {len(collisions)}")
     
-    if len(collisions) > 0:
-        for i, zombie in enumerate(collisions):
-            print(f"🔍 DEBUG ZOMBIE-PLANT: Zombie {i+1} rect: {zombie.rect}")
+    # if len(collisions) > 0:
+        #for i, zombie in enumerate(collisions):
+            # print(f" DEBUG ZOMBIE-PLANT: Zombie {i+1} rect: {zombie.rect}")
     
     plant_was_destroyed = False
     
     # For each collision, make the plant take damage
     for zombie in collisions:
-        print(f"💥 Zombie hits plant! Plant life before: {player.life_points}")
+        print(f"Zombie hits plant! Plant life before: {player.life_points}")
         
         # 🔥 SUONO: Plant hit by zombie
         if sound_manager:
             sound_manager.play_sound('plant_hit')
         
         plant_destroyed = player.take_damage()
-        print(f"💥 Plant life after: {player.life_points}")
+        print(f"Plant life after: {player.life_points}")
         
         if plant_destroyed:
-            print("💀 PLANT DESTROYED BY ZOMBIE! GAME OVER!")
+            print("PLANT DESTROYED BY ZOMBIE! GAME OVER!")
             plant_was_destroyed = True
         else:
             print(f"🌱 Plant health: {player.life_points}/{player.max_life_points}")
     
-    print(f"🔍 DEBUG ZOMBIE-PLANT: ========== END CHECK ==========\n")
+    # print(f" DEBUG ZOMBIE-PLANT: ========== END CHECK ==========\n")
     return plant_was_destroyed  # Return True if plant was destroyed
 
 # ---------- game + options scenes ----------
@@ -524,13 +522,13 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         )
         
         # PUNTO 5: Zombies → plant (PRIMA - priorità massima!)
-        print(f"\n🔍 DEBUG: Before zombie-plant collision - {len(wave_manager.zombie_group)} zombies alive")
+        # print(f"\n DEBUG: Before zombie-plant collision - {len(wave_manager.zombie_group)} zombies alive")
         plant_destroyed_by_zombie = _handle_zombie_plant_collisions(
             wave_manager.zombie_group,
             player,
             sound_manager
         )
-        print(f"🔍 DEBUG: After zombie-plant collision - {len(wave_manager.zombie_group)} zombies alive")
+        # print(f" DEBUG: After zombie-plant collision - {len(wave_manager.zombie_group)} zombies alive")
         
         # PUNTO 4: Zombies → wallnuts (DOPO - solo zombie sopravvissuti)
         _handle_zombie_wallnut_collisions(
@@ -570,7 +568,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         # Check if plant was destroyed (game over)
         if plant_destroyed:
-            print("💀 GAME OVER - Plant destroyed!")
+            print("GAME OVER - Plant destroyed!")
             sound_manager.stop_music(fade_ms=500)
             # Show game over screen
             action = show_game_over_screen(screen, model, sound_manager)
