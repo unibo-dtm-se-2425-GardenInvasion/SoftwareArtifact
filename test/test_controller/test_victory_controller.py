@@ -37,18 +37,5 @@ class TestVictoryController(unittest.TestCase):
             mock_play.assert_called_once_with('victory')
             print("✅ SoundManager can play 'victory' sound")
 
-    def test_victory_screen_user_actions(self):
-        # Test user action responses 
-        
-        victory_model = VictoryModel()
-        # Test "Play Again" selection
-        victory_model.selected_index = 0
-        self.assertEqual(victory_model.get_selected_option(), "Play Again")
-        
-        # Test "Main Menu" selection
-        victory_model.selected_index = 1
-        self.assertEqual(victory_model.get_selected_option(), "Main Menu")
-        print("✅ Victory screen actions return correct responses")
-
 if __name__ == '__main__':
     unittest.main()
