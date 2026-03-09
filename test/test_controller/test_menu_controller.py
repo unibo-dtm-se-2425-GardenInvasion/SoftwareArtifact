@@ -62,7 +62,7 @@ class TestMenuController(unittest.TestCase):
         
         # Verify run_game was called
         mock_run_game.assert_called_once()
-        print("✅ Enter key starts new game")
+        print("Enter key starts new game")
     
     @patch('GardenInvasion.Controller.menu_controller.run_options')
     @patch('GardenInvasion.Controller.menu_controller._global_quit', return_value=False)
@@ -90,7 +90,7 @@ class TestMenuController(unittest.TestCase):
         
         # Verify run_options was called
         mock_run_options.assert_called_once()
-        print("✅ Space key opens options")
+        print("Space key opens options")
 
     @patch('GardenInvasion.Controller.menu_controller.run_game')
     @patch('GardenInvasion.Controller.menu_controller._global_quit', return_value=False)
@@ -116,7 +116,7 @@ class TestMenuController(unittest.TestCase):
             main_menu_loop(self.screen, self.background_surf, self.background_rect, self.fonts)
         
         mock_run_game.assert_called_once()
-        print("✅ Mouse click on New Game launches game")
+        print("Mouse click on New Game launches game")
     
     @patch('GardenInvasion.Controller.menu_controller.run_options')
     @patch('GardenInvasion.Controller.menu_controller._global_quit', return_value=False)
@@ -142,7 +142,7 @@ class TestMenuController(unittest.TestCase):
             main_menu_loop(self.screen, self.background_surf, self.background_rect, self.fonts)
         
         mock_run_options.assert_called_once()
-        print("✅ Mouse click on Options opens options menu")
+        print("Mouse click on Options opens options menu")
     
     @patch('GardenInvasion.Controller.menu_controller._global_quit')
     @patch('GardenInvasion.Controller.menu_controller.draw_menu')
@@ -162,7 +162,7 @@ class TestMenuController(unittest.TestCase):
             main_menu_loop(self.screen, self.background_surf, self.background_rect, self.fonts)
         
         mock_global_quit.assert_called_once()
-        print("✅ ESC shows quit confirmation modal")
+        print("ESC shows quit confirmation modal")
 
 if __name__ == '__main__':
     unittest.main()

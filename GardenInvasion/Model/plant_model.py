@@ -84,10 +84,8 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
     
-    # NEW: Damage handling method
     def take_damage(self):
-        """Reduce life points by 1 when hit.
-        Returns True if plant is destroyed, False otherwise."""
+        # Reduce life points by 1 when hit.
         if self.life_points > 0:  # Only reduce if still alive
             self.life_points -= 1
         
@@ -98,5 +96,5 @@ class Player(pygame.sprite.Sprite):
     
     # NEW: Check if plant is alive
     def is_alive(self):
-        """Check if plant still has life points"""
+        # Check if plant still has life points
         return self.life_points > 0

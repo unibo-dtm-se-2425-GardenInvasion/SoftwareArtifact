@@ -6,9 +6,9 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
     def __init__(self, position: tuple, slot_index: int, sound_manager: SoundManager = None):
         super().__init__()
         self.slot_index = slot_index  # Which of the 4 wall-nut slots (0-3)
-        self.health = 2  # CHANGED: Wall-nut now has 2 life points (was 3)
-        self.max_health = 2  # CHANGED: Max health is now 2
-
+        self.health = 2  
+        self.max_health = 2
+        
         self.sound_manager = sound_manager  # Sound manager for playing sounds
 
         # Define wall-nut size (width, height)
@@ -20,11 +20,9 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
             sprite_dmg1=pygame.image.load(r"GardenInvasion/Assets/images/Wallnut_Body_cracked1.png").convert_alpha()  # 1 hit taken
             
             # Scale sprites to desired size above
-            # CHANGED: Now only use 2 states (2 and 1 life points)
             self.sprites = {
                 2: pygame.transform.smoothscale(sprite_full, self.wallnut_size),  # Full health (2 life points)
                 1: pygame.transform.smoothscale(sprite_dmg1, self.wallnut_size),  # Damaged (1 life point)
-                # Note: sprite_dmg2 is unused now since we only have 2 life points
             }
         except pygame.error as e:
             print(f"Error loading wallnut sprites: {e}")
@@ -57,7 +55,7 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
             self.kill()  # Remove from sprite groups
             return True  # Wall-nut destroyed
         else:
-            self.update_image_by_health()  # ✨ CHANGE 3: reuse same method here
+            self.update_image_by_health()  
             return False  # Wall-nut still alive
     
 class WallNutManager:
@@ -77,7 +75,6 @@ class WallNutManager:
         self.slot_positions = self._calculate_slot_positions()
         self.slot_occupied = [False] * self.max_wallnuts  # Track which slots are filled
     
-    
     def repair_all_wallnuts(self):
         # Build a set of slot indices that are currently alive
         alive_slots = {wn.slot_index for wn in self.wallnuts}
@@ -88,10 +85,10 @@ class WallNutManager:
                 for wn in self.wallnuts:
                     if wn.slot_index == slot_index and wn.health < wn.max_health:
                         wn.health = wn.max_health
-                        wn.update_image_by_health()  # ✨ visual refresh
+                        wn.update_image_by_health()
             else:
                 # Wallnut was destroyed → re-spawn it
-                self.slot_occupied[slot_index] = False  # ✨ reset flag so place_wallnut accepts it
+                self.slot_occupied[slot_index] = False # Mark slot as unoccupied so it can be re-filled
                 self.place_wallnut(slot_index, self.sound_manager)
 
     def _calculate_slot_positions(self):

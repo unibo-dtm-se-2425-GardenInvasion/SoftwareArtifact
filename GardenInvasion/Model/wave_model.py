@@ -13,11 +13,10 @@ class WaveManager:
         self.zombie_projectile_group = pygame.sprite.Group()
         self.wave_timers = []
         
-        # Timer per prossima ondata (3 secondi)
-        self.next_wave_timer = 0
+        self.next_wave_timer = 0 # timer for next wave start
         self.waiting_for_next_wave = False
         
-        # Punti di spawn (sopra lo schermo)
+        # spawn points for zombies
         self.spawn_points = {
             'A': (SCREEN_WIDTH // 2, -50),
             'B': (SCREEN_WIDTH // 3, -50),
@@ -31,54 +30,43 @@ class WaveManager:
         self.current_wave = 0
         self.wave_complete = True
         self.waiting_for_next_wave = True
-        self.next_wave_timer = pygame.time.get_ticks() + 3000  # 3 secondi
+        self.next_wave_timer = pygame.time.get_ticks() + 3000
         
     def update(self):
         # update wave manager, called every frame
         current_time = pygame.time.get_ticks()
         
-        # Controlla se è tempo di avviare una nuova ondata
+        # check if we are waiting for next wave and timer has expired
         if self.waiting_for_next_wave and current_time >= self.next_wave_timer:
             self._execute_wave_start()
             
-        # Aggiorna zombie e proiettili
         self.zombie_group.update()
         self.zombie_projectile_group.update()
         self._handle_zombie_shooting()
         
-        # Aggiorna timer interni delle ondate
-        current_timers = self.wave_timers.copy()  # Copia per evitare modifiche durante l'iterazione
+        # update wave timers, execute actions if timer has expired
+        current_timers = self.wave_timers.copy()
         for timer in current_timers:
             if current_time >= timer['time']:
                 timer['action']()
-                if timer in self.wave_timers:  # Controlla se ancora nella lista
+                if timer in self.wave_timers:  
                     self.wave_timers.remove(timer)
-        
-        # DEBUG: Mostra stato corrente (ogni 2 secondi)
-        if current_time % 2000 < 16:  # Ogni 2 secondi circa
-            # print(f"DEBUG: Wave {self.current_wave}, Zombies: {len(self.zombie_group)}, Projectiles: {len(self.zombie_projectile_group)}")
-            # Show which zombies can shoot
-            shooters = sum(1 for z in self.zombie_group if hasattr(z, 'can_shoot') and z.can_shoot)
             
-        # Controlla se ondata corrente è completata
+        # check if current wave is complete (no zombies left and no pending timers)
         if (not self.wave_complete and 
             not self.waiting_for_next_wave and 
             len(self.zombie_group) == 0 and 
             len(self.wave_timers) == 0):
             
             self.wave_complete = True
-            # print(f"Ondata {self.current_wave} completata!")
-            
-            # Prepara automaticamente la prossima ondata
+            # check if we have more waves to start
             if self.current_wave < self.total_waves:
                 self._prepare_next_wave()
-            # else:
-                # print("TUTTE LE ONDATE COMPLETATE!")
-                
+
     def _prepare_next_wave(self):
         # prepare next wave with 3 second timer
         self.waiting_for_next_wave = True
-        self.next_wave_timer = pygame.time.get_ticks() + 3000  # 3 secondi
+        self.next_wave_timer = pygame.time.get_ticks() + 3000
             
     def _execute_wave_start(self):
         # exectute wave start, spawn zombies based on current wave
@@ -89,7 +77,7 @@ class WaveManager:
         
         print(f"Wave {self.current_wave} begins")
         
-        # Esegue l'ondata corrispondente
+        # execute wave logic based on current wave number
         if self.current_wave == 1:
             self._wave_1()
         elif self.current_wave == 2:
@@ -108,7 +96,7 @@ class WaveManager:
                 self._spawn_zombie_projectile(zombie.rect.midbottom)
                 
     def _spawn_zombie_projectile(self, pos):
-        # creatione proiettile zombie
+        # zombie shoots a projectile, spawn it at given position
         from .zombie_projectile_model import ZombieProjectile
         projectile = ZombieProjectile(pos)
         self.zombie_projectile_group.add(projectile)
@@ -119,64 +107,58 @@ class WaveManager:
             zombie = RedZombie(self.spawn_points[spawn_point], movement_pattern, spawn_point, wave_delay)
             self.zombie_group.add(zombie)
             delay_msg = f" (delay: {wave_delay}ms)" if wave_delay > 0 else ""
-            # print(f"Zombie base 1 spawnato in {spawn_point} ({movement_pattern}){delay_msg}")
-        
+            
     def _spawn_orange(self, spawn_point, movement_pattern='straight', wave_delay=0):
-        # spqna zombie base 2
+        # spawn zombie base 2
         if spawn_point in self.spawn_points:
             zombie = OrangeZombie(self.spawn_points[spawn_point], spawn_point, wave_delay, movement_pattern)
             self.zombie_group.add(zombie)
             delay_msg = f" (delay: {wave_delay}ms)" if wave_delay > 0 else ""
-            #print(f"Zombie base 2 spawnato in {spawn_point} ({movement_pattern}){delay_msg}")
-    
-    # --- DEFINIZIONE ONDATE ---
+            
+    # waves logic, each wave has different spawn patterns and timings
     def _wave_1(self):
         self._spawn_red('A', 'straight')
         
     def _wave_2(self):
-        self._spawn_red('B', 'roam_left')   # Si muove da sinistra verso destra (metà sinistra)
-        self._spawn_red('C', 'roam_right')  # Si muove da destra verso sinistra (metà destra)
+        self._spawn_red('B', 'roam_left')   
+        self._spawn_red('C', 'roam_right')  
         
     def _wave_3(self):
-        self._spawn_orange('B', 'roam_left')   # Si muove da sinistra verso destra (metà sinistra)
-        self._spawn_orange('C', 'roam_right')  # Si muove da destra verso sinistra (metà destra)
+        self._spawn_orange('B', 'roam_left')   
+        self._spawn_orange('C', 'roam_right')  
         
     def _wave_4(self):
-        # Due rossi con movimento simmetrico opposto
         self._spawn_red('B', 'roam_left')
         self._spawn_red('C', 'roam_right')
         
-        # Arancione con delay di 0.4 secondi che si muove su tutto lo schermo
         self._spawn_orange('A', 'roam_full', 1000)
         
     def _wave_5(self):
-        """Ondata 5: Sequenza ordinata con spawn separati e intervalli dimezzati"""
         print("Ondata 5 - Fase 1: 3 Rossi")
-        # Fase 1 - 3 rossi insieme
+        
+        # phase 1 with 3 base 1 zombies
         self._spawn_red('D', 'straight')
         self._spawn_red('A', 'straight')
         self._spawn_red('E', 'straight')
     
-        # Fase 2 - Dopo 1 secondo (dimezzato): 2 rossi con comportamento come wave 2
         self.wave_timers.append({
-            'time': pygame.time.get_ticks() + 1000,  # 1 secondo (dimezzato da 2)
+            'time': pygame.time.get_ticks() + 1000, 
             'action': self._wave_5_phase2
         })
     
-        # Fase 3 - Dopo 2 secondi (dimezzato): 2 arancioni simmetrici
         self.wave_timers.append({
-            'time': pygame.time.get_ticks() + 2000,  # 2 secondi (dimezzato da 4)
+            'time': pygame.time.get_ticks() + 2000, 
             'action': self._wave_5_phase3
         })
 
     def _wave_5_phase2(self):
-        self._spawn_red('B', 'roam_left')   # Stesso comportamento di wave 2
-        self._spawn_red('C', 'roam_right')  # Stesso comportamento di wave 2
+        self._spawn_red('B', 'roam_left')   
+        self._spawn_red('C', 'roam_right')  
     
     def _wave_5_phase3(self):
-        # Arancioni con movimento speculare perfetto
-        self._spawn_orange('B', 'roam_left')   # Si muove da sinistra verso destra
-        self._spawn_orange('C', 'roam_right')  # Si muove da destra verso sinistra
+        # base zombie 2 with delayed spawn to create more pressure on player
+        self._spawn_orange('B', 'roam_left')   
+        self._spawn_orange('C', 'roam_right')  
         
     def all_waves_completed(self):
         # check if all waves are completed

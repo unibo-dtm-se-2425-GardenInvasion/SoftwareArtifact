@@ -9,7 +9,6 @@ from .options_controller import run_options
 from .NewGame_controller import run_game
 from ..Model.sound_manager_model import SoundManager
 
-# ---------- main menu ----------
 settings_model = SettingsModel()
 settings_model.load()
 sound_manager = SoundManager(settings_model) # Initialize sound manager with settings

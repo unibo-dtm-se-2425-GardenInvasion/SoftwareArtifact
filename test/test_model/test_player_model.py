@@ -5,8 +5,6 @@ import os
 from GardenInvasion.Model.plant_model import Player
 
 class TestPlayer(unittest.TestCase):
-    """Test suite for Player class"""
-
     @classmethod
     def setUpClass(cls):
         # Initialize pygame once for all tests
@@ -32,7 +30,7 @@ class TestPlayer(unittest.TestCase):
             player = Player(pos=test_position) # Create Player with mocked image loading
         
         self.assertEqual(player.rect.midbottom, test_position) # Verify player's midbottom matches the position
-        print(f"✅ Player initialized at position: {test_position}")
+        print(f"Player initialized at position: {test_position}")
 
     def test_player_has_last_shot_timestamp(self):
         # Test that Player has last_shot timestamp attribute
@@ -41,7 +39,7 @@ class TestPlayer(unittest.TestCase):
        
         self.assertTrue(hasattr(player, 'last_shot'))
         self.assertIsInstance(player.last_shot, (int, float))  # Verify last_shot attribute exists and is a number
-        print("✅ Player has last_shot timestamp attribute")
+        print("Player has last_shot timestamp attribute")
 
     def test_player_image_loaded_and_scaled(self):
         # Test that Player image is loaded and scaled correctly
@@ -62,10 +60,10 @@ class TestPlayer(unittest.TestCase):
         # Verify scale_factor is set correctly (now internal to Player class)
         self.assertTrue(hasattr(player, 'scale_factor'))
         self.assertEqual(player.scale_factor, 0.15)
-        print("✅ Player image loaded and scaled successfully")
+        print("Player image loaded and scaled successfully")
 
     def test_player_has_life_points(self):
-        """Test that Player initializes with 2 life points"""
+        # Test that Player initializes with 2 life points
         with patch('pygame.image.load', return_value=self.mock_surface):
             player = Player(pos=(400, 500))
         
@@ -76,10 +74,10 @@ class TestPlayer(unittest.TestCase):
         # Verify initial values are 2
         self.assertEqual(player.life_points, 2)
         self.assertEqual(player.max_life_points, 2)
-        print("✅ Player initialized with 2 life points")
+        print("Player initialized with 2 life points")
 
     def test_player_take_damage_reduces_life_points(self):
-        """Test that take_damage() reduces life points by 1"""
+        # Test that take_damage() reduces life points by 1
         with patch('pygame.image.load', return_value=self.mock_surface):
             player = Player(pos=(400, 500))
         
@@ -90,10 +88,10 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(player.life_points, initial_life - 1)
         # Plant should not be destroyed after first hit
         self.assertFalse(is_destroyed)
-        print(f"✅ take_damage() reduced life from {initial_life} to {player.life_points}")
+        print(f"take_damage() reduced life from {initial_life} to {player.life_points}")
 
     def test_player_is_alive_after_one_damage(self):
-        """Test that plant is still alive after taking 1 damage"""
+        # Test that plant is still alive after taking 1 damage
         with patch('pygame.image.load', return_value=self.mock_surface):
             player = Player(pos=(400, 500))
         
@@ -102,10 +100,10 @@ class TestPlayer(unittest.TestCase):
         # Check is_alive() method
         self.assertTrue(player.is_alive())
         self.assertEqual(player.life_points, 1)
-        print("✅ Plant is alive after 1 damage")
+        print("Plant is alive after 1 damage")
 
     def test_player_destroyed_after_two_damages(self):
-        """Test that plant is destroyed after taking 2 damages"""
+        # Test that plant is destroyed after taking 2 damages
         with patch('pygame.image.load', return_value=self.mock_surface):
             player = Player(pos=(400, 500))
         
@@ -121,10 +119,10 @@ class TestPlayer(unittest.TestCase):
         
         # Plant should not be alive
         self.assertFalse(player.is_alive())
-        print("✅ Plant is destroyed after 2 damages")
+        print("Plant is destroyed after 2 damages")
 
     def test_player_take_damage_below_zero(self):
-        """Test that take_damage() doesn't go below 0 life points"""
+        # Test that take_damage() doesn't go below 0 life points
         with patch('pygame.image.load', return_value=self.mock_surface):
             player = Player(pos=(400, 500))
         
@@ -139,7 +137,7 @@ class TestPlayer(unittest.TestCase):
         self.assertFalse(results[0])  # First damage
         self.assertTrue(results[1])   # Second damage (destruction)
         self.assertTrue(results[2])   # Third damage (already destroyed)
-        print("✅ Life points don't go below 0")
+        print("Life points don't go below 0")
 
     def test_move_left_decreases_x_position(self):
         # Test that move_left() decreases player's x position
@@ -150,7 +148,7 @@ class TestPlayer(unittest.TestCase):
         player.move_left()
         
         self.assertLess(player.rect.x, initial_x)
-        print(f"✅ move_left() decreased x from {initial_x} to {player.rect.x}") # Verify x position decreased
+        print(f"move_left() decreased x from {initial_x} to {player.rect.x}") # Verify x position decreased
 
     def test_move_right_increases_x_position(self):
         # Test that move_right() increases player's x position
@@ -162,7 +160,7 @@ class TestPlayer(unittest.TestCase):
         player.move_right()
         
         self.assertGreater(player.rect.x, initial_x)
-        print(f"✅ move_right() increased x from {initial_x} to {player.rect.x}") # Verify x position increased
+        print(f"move_right() increased x from {initial_x} to {player.rect.x}") # Verify x position increased
 
     def test_can_shoot_returns_true_after_cooldown(self):
         # Test that can_shoot() returns True after cooldown period
@@ -174,7 +172,7 @@ class TestPlayer(unittest.TestCase):
                 
         can_shoot = player.can_shoot() # Check if can shoot (cooldown is 500ms, so should be True)
         self.assertTrue(can_shoot)
-        print("✅ can_shoot() returned True after cooldown period") # Verify can_shoot returns True
+        print("can_shoot() returned True after cooldown period") # Verify can_shoot returns True
 
 if __name__ == '__main__':
     unittest.main()

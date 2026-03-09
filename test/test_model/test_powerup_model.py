@@ -60,7 +60,7 @@ class TestIncreasingFirePU(unittest.TestCase):
         self.player.update()
 
         self.assertEqual(self.player.shoot_SecondTime, self.player.base_shoot_cooldown)
-        print("✅ Fire boost expires and cooldown resets to base")
+        print("Fire boost expires and cooldown resets to base")
 
     def test_fire_boost_stacks_duration(self):
         # Collecting two power-ups extends, and not resets, the boost end time
@@ -77,7 +77,7 @@ class TestIncreasingFirePU(unittest.TestCase):
         second_end_time = self.player.fire_rate_boost_end_time
 
         self.assertGreaterEqual(second_end_time, first_end_time)
-        print("✅ Second power-up extends (not resets) boost duration")
+        print("Second power-up extends (not resets) boost duration")
 
     def test_player_can_shoot_faster_during_boost(self):
         # shoot_SecondTime is lower during boost → faster fire rate
@@ -89,7 +89,7 @@ class TestIncreasingFirePU(unittest.TestCase):
         boosted_cooldown = self.player.shoot_SecondTime
 
         self.assertLess(boosted_cooldown, normal_cooldown)
-        print("✅ Player can shoot faster during fire rate boost")
+        print("Player can shoot faster during fire rate boost")
 
 
 class TestRepairWallnutPU(unittest.TestCase):
@@ -147,7 +147,7 @@ class TestRepairWallnutPU(unittest.TestCase):
 
         healed = self._get_wallnut_by_slot(0)
         self.assertEqual(healed.health, 2)
-        print("✅ Damaged wallnut (health=1) healed to full health (2)")
+        print("Damaged wallnut (health=1) healed to full health (2)")
 
     def test_repair_does_not_overheal(self):
         # check wallnut already at health 2 stays at 2
@@ -160,7 +160,7 @@ class TestRepairWallnutPU(unittest.TestCase):
 
         healed = self._get_wallnut_by_slot(0)
         self.assertEqual(healed.health, 2)
-        print("✅ Full health wallnut not over-healed")
+        print("Full health wallnut not over-healed")
 
     def test_repair_respawns_destroyed_wallnut(self):
         # after a wallnut is killed, applying repair should respawn it in the same slot
@@ -175,7 +175,7 @@ class TestRepairWallnutPU(unittest.TestCase):
         pu.apply(self.wallnut_manager)
 
         self.assertGreater(len(self.wallnut_manager.get_wallnuts()), initial_count)
-        print("✅ Destroyed wallnut respawns after repair power-up")
+        print("Destroyed wallnut respawns after repair power-up")
 
 class TestPowerUpManager(unittest.TestCase):
     #Tests for PowerUpManager
@@ -209,14 +209,14 @@ class TestPowerUpManager(unittest.TestCase):
         
         self.powerup_manager.spawn_increasing_fire((300, 300))
         self.assertEqual(len(self.powerup_manager.powerup_group), 1)
-        print("✅ spawn_increasing_fire adds 1 power-up to group")
+        print("spawn_increasing_fire adds 1 power-up to group")
 
     def test_spawn_repair_wallnut_adds_to_group(self):
         # spawn_repair_wallnut adds exactly 1 sprite of the powerup to the group
         
         self.powerup_manager.spawn_repair_wallnut((300, 300))
         self.assertEqual(len(self.powerup_manager.powerup_group), 1)
-        print("✅ spawn_repair_wallnut adds 1 power-up to group")
+        print("spawn_repair_wallnut adds 1 power-up to group")
 
 if __name__ == '__main__':
     unittest.main()

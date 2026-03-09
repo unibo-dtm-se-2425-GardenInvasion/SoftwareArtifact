@@ -5,8 +5,6 @@ import os
 from GardenInvasion.Model.projectile_model import Projectile
 
 class TestProjectile(unittest.TestCase):
-    """Test suite for Projectile class"""
-
     @classmethod
     def setUpClass(cls):
         #Initialize pygame once for all tests
@@ -33,7 +31,7 @@ class TestProjectile(unittest.TestCase):
         
         
         self.assertEqual(projectile.rect.midbottom, test_position)
-        print(f"✅ Projectile initialized at position: {test_position}") # Verify projectile's midbottom matches the position
+        print(f"Projectile initialized at position: {test_position}") # Verify projectile's midbottom matches the position
 
     def test_projectile_image_loaded(self):
         #Test that Projectile image is loaded successfully
@@ -43,7 +41,7 @@ class TestProjectile(unittest.TestCase):
         self.assertTrue(hasattr(projectile, 'image'))
         self.assertIsNotNone(projectile.image)
         self.assertIsInstance(projectile.image, pygame.Surface)
-        print("✅ Projectile image loaded successfully") # Verify image attribute exists and it is a pygame.Surface
+        print("Projectile image loaded successfully") # Verify image attribute exists and it is a pygame.Surface
 
     def test_update_moves_projectile_upward(self):
         #Test that update() moves projectile upward (negative y direction)
@@ -54,7 +52,7 @@ class TestProjectile(unittest.TestCase):
         projectile.update()
         
         self.assertLess(projectile.rect.y, initial_y)
-        print(f"✅ update() moved projectile upward from y={initial_y} to y={projectile.rect.y}") # Verify y position decreased (moved upward)S
+        print(f"update() moved projectile upward from y={initial_y} to y={projectile.rect.y}") # Verify y position decreased (moved upward)S
 
     def test_update_removes_projectile_offscreen(self):
         #Test that update() removes projectile when it goes off-screen
@@ -67,7 +65,7 @@ class TestProjectile(unittest.TestCase):
             projectile.update()
         
         self.assertNotIn(projectile, sprite_group)
-        print("✅ update() removed projectile when it went off-screen") # Verify projectile was removed from the group
+        print("update() removed projectile when it went off-screen") # Verify projectile was removed from the group
 
 if __name__ == '__main__':
     unittest.main()

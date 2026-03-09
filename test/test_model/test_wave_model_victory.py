@@ -24,20 +24,20 @@ class TestWaveManagerVictory(unittest.TestCase):
 
         self.assertTrue(hasattr(self.wave_manager, 'is_victory'))
         self.assertTrue(callable(self.wave_manager.is_victory))
-        print("✅ is_victory method exists in WaveManager")
+        print("is_victory method exists in WaveManager")
 
     def test_no_victory_at_start(self):
         # Test that victory is False at game start
 
         self.assertFalse(self.wave_manager.is_victory())
-        print("✅ No victory detected at game start")
+        print("No victory detected at game start")
 
     def test_no_victory_during_waves(self):
         # Test that victory is False while waves are ongoing
 
         self.wave_manager.current_wave = 3
         self.assertFalse(self.wave_manager.is_victory())
-        print("✅ No victory detected during waves")
+        print("No victory detected during waves")
 
     def test_victory_when_all_conditions_met(self):
         # Test that victory is True when all conditions are met
@@ -50,7 +50,7 @@ class TestWaveManagerVictory(unittest.TestCase):
         self.wave_manager.wave_timers = []
         
         self.assertTrue(self.wave_manager.is_victory())
-        print("✅ Victory detected when all conditions met")
+        print("Victory detected when all conditions met")
 
     def test_victory_after_final_wave(self):
         # Test victory detection after final wave completion
@@ -61,7 +61,7 @@ class TestWaveManagerVictory(unittest.TestCase):
         self.wave_manager.wave_timers = []
         
         self.assertTrue(self.wave_manager.is_victory())
-        print("✅ Victory detected after all waves completed")
+        print("Victory detected after all waves completed")
 
 if __name__ == '__main__':
     unittest.main()

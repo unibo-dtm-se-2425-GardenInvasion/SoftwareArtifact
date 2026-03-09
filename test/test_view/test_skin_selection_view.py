@@ -2,7 +2,6 @@ import unittest
 import pygame
 from unittest.mock import patch, MagicMock
 import os
-import sys
 
 # Try to initialize pygame with proper video/audio drivers
 # this is due to past errors in this test file when run in headless environments
@@ -30,8 +29,6 @@ from GardenInvasion.Model.skin_selection_model import SkinSelectionModel
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class TestSkinSelectionView(unittest.TestCase):
-    # Test suite for skin selection view rendering
-    
     @classmethod
     def setUpClass(cls):
         # Set up class-level fixtures once before all tests
@@ -95,9 +92,9 @@ class TestSkinSelectionView(unittest.TestCase):
             )
             self.assertIsNotNone(back_rect)
             self.assertIsInstance(back_rect, pygame.Rect)
-            print("✅ Skin selection menu renders with custom background")
+            print("Skin selection menu renders with custom background")
         except Exception as e:
-            self.fail(f"❌ Error: {e}")
+            self.fail(f"Error: {e}")
     
     def test_draw_skin_selection_menu_without_background(self):
         # Test drawing without background (solid color fallback)
@@ -111,9 +108,9 @@ class TestSkinSelectionView(unittest.TestCase):
             )
             self.assertIsNotNone(back_rect)
             self.assertIsInstance(back_rect, pygame.Rect)
-            print("✅ Skin selection menu renders with solid color fallback")
+            print("Skin selection menu renders with solid color fallback")
         except Exception as e:
-            self.fail(f"❌ Error: {e}")
+            self.fail(f"Error: {e}")
     
     def test_draw_skin_selection_menu_with_skin_selected(self):
         # Test drawing with a skin selected
@@ -129,9 +126,9 @@ class TestSkinSelectionView(unittest.TestCase):
                 self.fonts
             )
             self.assertIsNotNone(back_rect)
-            print("✅ Skin selection menu renders with skin selected")
+            print("Skin selection menu renders with skin selected")
         except Exception as e:
-            self.fail(f"❌ Error: {e}")
+            self.fail(f"Error: {e}")
 
 
 if __name__ == '__main__':

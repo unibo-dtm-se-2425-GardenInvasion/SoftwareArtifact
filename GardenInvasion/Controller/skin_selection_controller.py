@@ -13,9 +13,9 @@ def run_skin_selection(screen: pygame.Surface,
                        background_rect,
                        fonts,
                        settings_model: SettingsModel) -> str:
-    # Run the skin selection menu loop
-
+    
     skin_model = SkinSelectionModel()
+    
     # Load current skin from settings
     skin_model.set_skin_by_id(settings_model.player_skin)
     

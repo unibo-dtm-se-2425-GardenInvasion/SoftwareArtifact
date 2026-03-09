@@ -56,9 +56,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group, 
                      2, self.heart_image,
                      self.zombie_group, self.zombie_projectile_group)
-            print("✅ draw_game executed successfully without errors")
+            print("draw_game executed successfully without errors")
         except Exception as e:
-            self.fail(f"❌ draw_game raised an exception: {e}")
+            self.fail(f"draw_game raised an exception: {e}")
 
     def test_draw_game_renders_player(self):
         # Test that draw_game renders the player sprite
@@ -75,9 +75,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group,
                      2, self.heart_image,
                      self.zombie_group, self.zombie_projectile_group)
-            print("✅ draw_game rendered player sprite successfully")
+            print("draw_game rendered player sprite successfully")
         except Exception as e:
-            self.fail(f"❌ draw_game failed with player sprite: {e}")
+            self.fail(f"draw_game failed with player sprite: {e}")
 
     def test_draw_game_renders_projectiles(self):
         # Test that draw_game renders all projectiles in the group
@@ -97,9 +97,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group,
                      2, self.heart_image,
                      self.zombie_group, self.zombie_projectile_group)
-            print(f"✅ draw_game rendered {len(self.projectile_group)} projectile sprites successfully")
+            print(f"draw_game rendered {len(self.projectile_group)} projectile sprites successfully")
         except Exception as e:
-            self.fail(f"❌ draw_game failed with projectile sprites: {e}")
+            self.fail(f"draw_game failed with projectile sprites: {e}")
 
     def test_draw_game_renders_wallnuts(self):
         # Test that draw_game renders all wallnuts in the group
@@ -118,9 +118,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group,
                      2, self.heart_image,
                      self.zombie_group, self.zombie_projectile_group)
-            print(f"✅ draw_game rendered {len(self.wallnut_group)} wallnut sprites successfully")
+            print(f"draw_game rendered {len(self.wallnut_group)} wallnut sprites successfully")
         except Exception as e:
-            self.fail(f"❌ draw_game failed with wallnut sprites: {e}")
+            self.fail(f"draw_game failed with wallnut sprites: {e}")
 
     def test_draw_game_renders_zombies(self):
         # Test that draw_game renders all zombies in the group
@@ -138,9 +138,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group,
                      2, self.heart_image,
                      self.zombie_group, self.zombie_projectile_group)
-            print(f"✅ draw_game rendered {len(self.zombie_group)} zombie sprites successfully")
+            print(f"draw_game rendered {len(self.zombie_group)} zombie sprites successfully")
         except Exception as e:
-            self.fail(f"❌ draw_game failed with zombie sprites: {e}")
+            self.fail(f"draw_game failed with zombie sprites: {e}")
 
     def test_draw_game_with_none_zombie_group(self):
         # Test that draw_game handles None zombie_group correctly
@@ -149,9 +149,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group,
                      2, self.heart_image,
                      None, None)
-            print("✅ draw_game handles None zombie_group correctly")
+            print("draw_game handles None zombie_group correctly")
         except Exception as e:
-            self.fail(f"❌ draw_game failed with None zombie_group: {e}")
+            self.fail(f"draw_game failed with None zombie_group: {e}")
 
     def test_draw_game_with_empty_zombie_group(self):
         # Test that draw_game handles empty zombie_group correctly
@@ -160,9 +160,9 @@ class TestRunGameView(unittest.TestCase):
                      self.projectile_group, self.wallnut_group,
                      2, self.heart_image,
                      pygame.sprite.Group(), pygame.sprite.Group())
-            print("✅ draw_game handles empty zombie_group correctly")
+            print("draw_game handles empty zombie_group correctly")
         except Exception as e:
-            self.fail(f"❌ draw_game failed with empty zombie_group: {e}")
+            self.fail(f"draw_game failed with empty zombie_group: {e}")
 
     def test_draw_hearts_with_full_health(self):
         # Test that 2 hearts are drawn when player has 2 life points
@@ -173,7 +173,7 @@ class TestRunGameView(unittest.TestCase):
         
         # Verify function executed without errors
         self.assertEqual(player_health, 2)
-        print("✅ Successfully drew 2 hearts for full health")
+        print("Successfully drew 2 hearts for full health")
 
     def test_draw_hearts_with_one_life(self):
         # Test that 1 heart is drawn when player has 1 life point
@@ -184,7 +184,7 @@ class TestRunGameView(unittest.TestCase):
         
         # Verify function executed without errors
         self.assertEqual(player_health, 1)
-        print("✅ Successfully drew 1 heart for damaged state")
+        print("Successfully drew 1 heart for damaged state")
 
     def test_draw_hearts_with_zero_health(self):
         # Test that no hearts are drawn when player has 0 life points
@@ -195,7 +195,7 @@ class TestRunGameView(unittest.TestCase):
         
         # Verify function executed without errors
         self.assertEqual(player_health, 0)
-        print("✅ Successfully handled 0 hearts (game over state)")
+        print("Successfully handled 0 hearts (game over state)")
 
 if __name__ == '__main__':
     unittest.main()

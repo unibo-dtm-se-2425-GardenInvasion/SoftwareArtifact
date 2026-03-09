@@ -9,7 +9,6 @@ os.environ['SDL_AUDIODRIVER'] = 'dummy'  # Use dummy audio driver
 pygame.init()
 pygame.display.set_mode((1, 1))
 
-from GardenInvasion.Controller.wallnut_controller import handle_wallnut_placement
 from GardenInvasion.Model.wallnut_model import WallNut, WallNutManager
 from GardenInvasion.Model.projectile_model import Projectile
 from GardenInvasion.Model.sound_manager_model import SoundManager
@@ -59,7 +58,7 @@ class TestWallnutController(unittest.TestCase):
 
         # Wallnut health should be unchanged (no friendly fire)
         self.assertEqual(wallnut.health, initial_health)
-        print("✅ Wallnuts not damaged by player projectiles (friendly fire disabled)")
+        print("Wallnuts not damaged by player projectiles (friendly fire disabled)")
 
     def test_wallnut_destroyed_sound_plays(self):
         # Test that wallnut_destroyed sound plays when wallnut health reaches 0
@@ -77,7 +76,7 @@ class TestWallnutController(unittest.TestCase):
         # Verify destruction sound was played
         self.mock_sound_manager.play_sound.assert_called_once_with('wallnut_destroyed')
         self.assertTrue(result)  # Should return True when destroyed
-        print("✅ wallnut_destroyed sound plays when health reaches 0")
+        print("wallnut_destroyed sound plays when health reaches 0")
 
     def test_no_sound_when_wallnut_damaged_but_alive(self):
         # Test that no sound plays when wallnut is damaged but not destroyed
@@ -93,7 +92,7 @@ class TestWallnutController(unittest.TestCase):
         # Sound should NOT have been called
         self.mock_sound_manager.play_sound.assert_not_called()
         self.assertFalse(result)  # Should return False (not destroyed)
-        print("✅ No sound plays when wallnut damaged but still alive")
+        print("No sound plays when wallnut damaged but still alive")
     
 if __name__ == '__main__':
     unittest.main()

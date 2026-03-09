@@ -40,8 +40,7 @@ class ZombieProjectile(pygame.sprite.Sprite):
     def update(self):
         # Update projectile position
         self.rect.y += self.speed
-        
-        # Rimuovi se esce dallo schermo in basso
+        # remove projectile if it goes off screen
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
             

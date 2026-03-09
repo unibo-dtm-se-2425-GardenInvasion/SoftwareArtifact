@@ -6,11 +6,8 @@ from GardenInvasion.Model.wallnut_model import WallNut, WallNutManager
 
 
 class TestWallNut(unittest.TestCase):
-    """Test suite for WallNut class"""
-
     @classmethod
     def setUpClass(cls):
-        """Initialize pygame once for all tests"""
         # Set SDL to use dummy video driver (no window needed)
         os.environ['SDL_VIDEODRIVER'] = 'dummy'
         # Initialize all pygame modules
@@ -20,19 +17,17 @@ class TestWallNut(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Quit pygame after all tests"""
         # Clean up pygame resources
         pygame.quit()
 
     def setUp(self):
-        """Set up test fixtures before each test"""
         # Create mock surfaces for wallnut sprites
         mock_surface = pygame.Surface((60, 60))
         # Now convert_alpha() will work because display mode is set
         self.mock_surface = mock_surface.convert_alpha()
 
     def test_wallnut_initializes_with_slot_index(self):
-        """Test that WallNut initializes with correct slot_index"""
+        # Test that WallNut initializes with the correct slot_index
         # Define test slot index
         test_slot = 2
         test_position = (300, 200)
@@ -43,30 +38,30 @@ class TestWallNut(unittest.TestCase):
         
         # Verify slot_index is set correctly
         self.assertEqual(wallnut.slot_index, test_slot)
-        print(f"✅ WallNut initialized with slot_index: {test_slot}")
+        print(f"WallNut initialized with slot_index: {test_slot}")
 
     def test_wallnut_initial_health_is_two(self):
-        """Test that WallNut initializes with health of 2 (was 3)"""
+        # Test that WallNut initializes with health of 2
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
         
         # Verify initial health is 2
         self.assertEqual(wallnut.health, 2)
-        print(f"✅ WallNut initialized with health: {wallnut.health}")
+        print(f"WallNut initialized with health: {wallnut.health}")
 
     def test_wallnut_max_health_is_two(self):
-        """Test that WallNut has max_health of 2 (was 3)"""
+        # Test that WallNut has max_health of 2
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
         
         # Verify max_health is 2
         self.assertEqual(wallnut.max_health, 2)
-        print(f"✅ WallNut has max_health: {wallnut.max_health}")
+        print(f"WallNut has max_health: {wallnut.max_health}")
 
     def test_wallnut_initial_image_is_full_health(self):
-        """Test that WallNut starts with full health sprite"""
+        # WallNut starts with full health sprite
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
@@ -79,10 +74,10 @@ class TestWallNut(unittest.TestCase):
         self.assertIn(2, wallnut.sprites)  # Full health
         self.assertIn(1, wallnut.sprites)  # Damaged
         self.assertNotIn(3, wallnut.sprites)  # Should not have key 3 anymore
-        print("✅ WallNut initialized with full health sprite (2 life points)")
+        print("WallNut initialized with full health sprite (2 life points)")
 
     def test_take_damage_reduces_health(self):
-        """Test that take_damage() reduces health by 1"""
+        # Test that take_damage() reduces health by 1
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
@@ -95,10 +90,10 @@ class TestWallNut(unittest.TestCase):
         
         # Verify health decreased by 1
         self.assertEqual(wallnut.health, initial_health - 1)
-        print(f"✅ take_damage() reduced health from {initial_health} to {wallnut.health}")
+        print(f"take_damage() reduced health from {initial_health} to {wallnut.health}")
 
     def test_take_damage_changes_sprite(self):
-        """Test that take_damage() updates sprite to show damage"""
+        # Test that take_damage() updates the sprite to show damage (switches to damaged sprite)
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
@@ -114,10 +109,10 @@ class TestWallNut(unittest.TestCase):
         self.assertIsNotNone(wallnut.image)
         # Verify health is now 1 (damaged state)
         self.assertEqual(wallnut.health, 1)
-        print("✅ take_damage() updated sprite to show damage")
+        print("take_damage() updated sprite to show damage")
 
     def test_take_damage_at_zero_health_kills_sprite(self):
-        """Test that take_damage() kills sprite when health reaches 0"""
+        # Test that take_damage() returns True when health reaches 0 and removes sprite from group
         # Create a sprite group to track wallnut
         sprite_group = pygame.sprite.Group()
         
@@ -134,10 +129,10 @@ class TestWallNut(unittest.TestCase):
         self.assertTrue(result)
         # Verify wallnut was removed from sprite group
         self.assertNotIn(wallnut, sprite_group)
-        print("✅ take_damage() killed sprite when health reached 0 (after 2 hits)")
+        print("take_damage() killed sprite when health reached 0 (after 2 hits)")
 
     def test_take_damage_updates_image(self):
-        """Test that take_damage() updates image attribute"""
+        # Test that take_damage() updates image attribute
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
@@ -150,10 +145,10 @@ class TestWallNut(unittest.TestCase):
         self.assertIsInstance(wallnut.image, pygame.Surface)
         # Verify health decreased
         self.assertEqual(wallnut.health, 1)
-        print("✅ take_damage() updated image attribute successfully")
+        print("take_damage() updated image attribute successfully")
 
     def test_take_damage_does_not_go_below_zero(self):
-        """Test that take_damage() doesn't reduce health below 0"""
+        # Test that take_damage() doesn't reduce health below 0
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
@@ -169,10 +164,10 @@ class TestWallNut(unittest.TestCase):
         self.assertFalse(results[0])  # First damage (2 -> 1)
         self.assertTrue(results[1])   # Second damage (1 -> 0, destruction)
         self.assertTrue(results[2])   # Third damage (already destroyed)
-        print("✅ Health doesn't go below 0 with extra damage")
+        print("Health doesn't go below 0 with extra damage")
 
     def test_wallnut_sprite_dictionary_size(self):
-        """Test that wallnut sprites dictionary has exactly 2 entries"""
+        # Test that wallnut sprites dictionary has exactly 2 entries
         # Create WallNut with mocked image loading
         with patch('pygame.image.load', return_value=self.mock_surface):
             wallnut = WallNut(position=(300, 200), slot_index=0)
@@ -181,7 +176,7 @@ class TestWallNut(unittest.TestCase):
         self.assertEqual(len(wallnut.sprites), 2)
         # Verify the keys are 2 and 1
         self.assertSetEqual(set(wallnut.sprites.keys()), {2, 1})
-        print("✅ WallNut sprites dictionary has 2 entries (for 2 life points)")
+        print("WallNut sprites dictionary has 2 entries (for 2 life points)")
 
 if __name__ == '__main__':
     unittest.main()

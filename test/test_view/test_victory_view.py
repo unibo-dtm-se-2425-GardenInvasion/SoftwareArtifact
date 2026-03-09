@@ -30,9 +30,9 @@ class TestVictoryView(unittest.TestCase):
                 self.screen, 
                 self.victory_model
             )
-            print("✅ draw_victory_screen executed successfully")
+            print("draw_victory_screen executed successfully")
         except Exception as e:
-            self.fail(f"❌ draw_victory_screen raised an exception: {e}")
+            self.fail(f"draw_victory_screen raised an exception: {e}")
 
     def test_draw_victory_screen_with_play_again_selected(self):
         # Test rendering with 'Play Again' button selected
@@ -44,9 +44,9 @@ class TestVictoryView(unittest.TestCase):
                 self.victory_model
             )
             self.assertEqual(self.victory_model.get_selected_option(), "Play Again")
-            print("✅ Victory screen renders correctly with 'Play Again' selected")
+            print("Victory screen renders correctly with 'Play Again' selected")
         except Exception as e:
-            self.fail(f"❌ Failed with 'Play Again' selected: {e}")
+            self.fail(f"Failed with 'Play Again' selected: {e}")
 
     def test_draw_victory_screen_with_main_menu_selected(self):
         # Test rendering with 'Main Menu' button selected
@@ -58,9 +58,9 @@ class TestVictoryView(unittest.TestCase):
                 self.victory_model
             )
             self.assertEqual(self.victory_model.get_selected_option(), "Main Menu")
-            print("✅ Victory screen renders correctly with 'Main Menu' selected")
+            print("Victory screen renders correctly with 'Main Menu' selected")
         except Exception as e:
-            self.fail(f"❌ Failed with 'Main Menu' selected: {e}")
+            self.fail(f"Failed with 'Main Menu' selected: {e}")
 
     def test_button_rects_positioned_correctly(self):
         # Test that buttons are positioned within screen bounds
@@ -75,7 +75,7 @@ class TestVictoryView(unittest.TestCase):
         self.assertLessEqual(play_again_rect.right, SCREEN_WIDTH)
         self.assertGreaterEqual(menu_rect.left, 0)
         self.assertLessEqual(menu_rect.right, SCREEN_WIDTH)
-        print("✅ Buttons positioned within screen bounds")
+        print("Buttons positioned within screen bounds")
 
 if __name__ == '__main__':
     unittest.main()

@@ -99,7 +99,7 @@ class TestVolumeController(unittest.TestCase):
                                           self.fonts, 50, self.mock_sound_manager, self.settings_model) # Start at volume 50
         
         self.assertEqual(final_volume, 45) # Expect volume to be 45
-        print("✅ Left arrow decreases volume by 5")
+        print("Left arrow decreases volume by 5")
     
     @patch('GardenInvasion.Controller.options_controller.draw_volume_menu')
     @patch('pygame.display.flip')
@@ -123,7 +123,7 @@ class TestVolumeController(unittest.TestCase):
                                           self.fonts, 50, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 55)
-        print("✅ Right arrow increases volume by 5")
+        print("Right arrow increases volume by 5")
     
     @patch('GardenInvasion.Controller.options_controller.draw_volume_menu')
     @patch('pygame.display.flip')
@@ -149,7 +149,7 @@ class TestVolumeController(unittest.TestCase):
                                           self.fonts, 5, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 0)
-        print("✅ Volume cannot go below 0")
+        print("Volume cannot go below 0")
     
     @patch('GardenInvasion.Controller.options_controller.draw_volume_menu')
     @patch('pygame.display.flip')
@@ -175,7 +175,7 @@ class TestVolumeController(unittest.TestCase):
                                           self.fonts, 95, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 100)
-        print("✅ Volume cannot exceed 100")
+        print("Volume cannot exceed 100")
     
     @patch('GardenInvasion.Controller.options_controller.draw_volume_menu')
     @patch('pygame.display.flip')
@@ -198,7 +198,7 @@ class TestVolumeController(unittest.TestCase):
                                           self.fonts, 50, self.mock_sound_manager, self.settings_model)
         
         self.assertEqual(final_volume, 50)
-        print("✅ Back button click exits volume menu")
+        print("Back button click exits volume menu")
     
     @patch('GardenInvasion.Controller.options_controller.show_confirm_quit')
     @patch('GardenInvasion.Controller.options_controller.draw_volume_menu')
@@ -229,7 +229,7 @@ class TestVolumeController(unittest.TestCase):
                                       self.fonts, 50, self.mock_sound_manager, self.settings_model)
         
         mock_quit.assert_called_once()
-        print("✅ ESC shows quit confirmation in volume menu")
+        print("ESC shows quit confirmation in volume menu")
 
 if __name__ == '__main__':
     unittest.main()

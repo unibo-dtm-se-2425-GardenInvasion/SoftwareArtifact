@@ -1,8 +1,6 @@
 import pygame
 import sys
 import webbrowser # Added import for webbrowser later used for the email
-from pathlib import Path
-
 from .menu_controller_utilities import show_confirm_quit
 from ..Model.menu_model import MenuModel
 from ..Model.options_model import OptionsModel, VolumeModel
@@ -12,6 +10,7 @@ from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from .skin_selection_controller import run_skin_selection
 from ..Model.sound_manager_model import SoundManager
 
+# Function to show the contact confirmation modal when "Contact Us" is selected in the options menu
 def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsModel) -> bool:
     clock = pygame.time.Clock()
     background_copy = screen.copy()
@@ -66,6 +65,7 @@ def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsMode
         pygame.display.flip()
         clock.tick(60)
 
+# Function to run the volume menu, allowing the user to adjust the volume in real-time and see immediate feedback
 def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, background_rect, fonts,
                     initial_volume: int,
                     sound_manager: SoundManager,
@@ -124,6 +124,7 @@ def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, b
     
     return volume_model.volume
 
+# Main function to run the options menu, allowing navigation to volume settings, skin personalization, and contact us modal
 def run_options(screen: pygame.Surface, 
                 model: MenuModel, 
                 background_surf, 
@@ -183,7 +184,7 @@ def run_options(screen: pygame.Surface,
                         else:
                             print("Contact Us confirmation modal closed without opening email client")
 
-                    elif options_model.selected_index == 3:  # Back
+                    elif options_model.selected_index == 3:  
                         print("Enter/Space key detected on Back option, exiting options menu")
                         running = False
             

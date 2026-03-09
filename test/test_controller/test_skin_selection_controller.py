@@ -67,7 +67,7 @@ class TestSkinSelectionController(unittest.TestCase):
         # Verify settings were saved (skin changed from default)
         self.assertIn(self.settings_model.player_skin, ["default", "Carnivorous", "Cactus"])
         
-        print("✅ Right arrow navigates to next skin")
+        print("Right arrow navigates to next skin")
     
     @patch('GardenInvasion.Controller.skin_selection_controller.draw_skin_selection_menu')
     @patch('pygame.display.flip')
@@ -92,7 +92,7 @@ class TestSkinSelectionController(unittest.TestCase):
             )
         
         self.assertEqual(result, 'main_menu')
-        print("✅ Left arrow navigates to previous skin")
+        print("Left arrow navigates to previous skin")
     
     @patch('GardenInvasion.Controller.skin_selection_controller.draw_skin_selection_menu')
     @patch('pygame.display.flip')
@@ -118,7 +118,7 @@ class TestSkinSelectionController(unittest.TestCase):
         
         # Should return 'back' (not save skin, go to options menu)
         self.assertEqual(result, 'back')
-        print("✅ Down arrow selects Back button")
+        print("Down arrow selects Back button")
 
     @patch('GardenInvasion.Controller.skin_selection_controller.draw_skin_selection_menu')
     @patch('pygame.display.flip')
@@ -147,7 +147,7 @@ class TestSkinSelectionController(unittest.TestCase):
         
         # Should save skin and return to main menu
         self.assertEqual(result, 'main_menu')
-        print("✅ Mouse click on skin selects and exits to main menu")
+        print("Mouse click on skin selects and exits to main menu")
 
 if __name__ == '__main__':
     unittest.main()

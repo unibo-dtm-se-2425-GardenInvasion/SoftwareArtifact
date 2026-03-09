@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import Mock, patch, MagicMock
 import pygame
 import os
-from GardenInvasion.Model.victory_model import VictoryModel
 from GardenInvasion.Model.menu_model import MenuModel
 from GardenInvasion.Model.sound_manager_model import SoundManager
 from GardenInvasion.Model.setting_volume_model import SettingsModel
@@ -35,7 +34,7 @@ class TestVictoryController(unittest.TestCase):
         with patch.object(self.sound_manager, 'play_sound') as mock_play:
             self.sound_manager.play_sound('victory')
             mock_play.assert_called_once_with('victory')
-            print("✅ SoundManager can play 'victory' sound")
+            print("SoundManager can play 'victory' sound")
 
 if __name__ == '__main__':
     unittest.main()

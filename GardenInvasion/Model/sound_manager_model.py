@@ -69,12 +69,12 @@ class SoundManager:
         
         # Define sound file mappings - AGGIUNGI I NUOVI SUONI
         sound_files = {
-            'plant_shoot': 'shoot_plant.wav',           # Sound when plant shoots
-            'wallnut_destroyed': 'wallnut_destroyed.wav', # Sound when wallnut destroyed
-            'game_over': 'gameover_sound.ogg',           # Game over sound
-            'zombie_hit': 'zombie_hit.ogg',              # NUOVO: quando proiettile colpisce zombie
-            'plant_hit': 'plant_hit.ogg',                  # NUOVO: quando pianta viene colpita
-            'victory': 'victory.mp3'                      # victory sound
+            'plant_shoot': 'shoot_plant.wav',           
+            'wallnut_destroyed': 'wallnut_destroyed.wav', 
+            'game_over': 'gameover_sound.ogg',           
+            'zombie_hit': 'zombie_hit.ogg',              
+            'plant_hit': 'plant_hit.ogg',                  
+            'victory': 'victory.mp3'                      
         }
     
         # Load each sound file
@@ -119,7 +119,7 @@ class SoundManager:
         if not self.audio_available: # No audio available
             return
 
-        volume = self.settings_model.volume / 100.0 # Convert to 0.0 - 1.0 range
+        volume = self.settings_model.volume / 100.0
         
         for sound in self.sounds.values(): # Update volume for each sound
             if sound:
@@ -178,7 +178,6 @@ class SoundManager:
             pass
         
         self.current_music = None # Clear currently playing music
-        # print("Music stopped") # Log music stop
     
     def pause_music(self):
         # Pause the currently playing music

@@ -1,6 +1,6 @@
 import unittest
 import pygame
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from pathlib import Path
 
 from GardenInvasion.Model.skin_selection_model import SkinOption, SkinSelectionModel
@@ -27,7 +27,7 @@ class TestSkinOption(unittest.TestCase):
         self.assertEqual(skin.sprite_path, "fake/path/test.png")
         self.assertEqual(skin.preview_path, "fake/path/test.png")  # Should default to sprite_path
         
-        print("✅ SkinOption initializes with correct attributes")
+        print("SkinOption initializes with correct attributes")
     
     def test_skin_option_preview_image_loaded_and_scaled(self):
         # Test that preview image is loaded and scaled to 80x80
@@ -42,7 +42,7 @@ class TestSkinOption(unittest.TestCase):
         self.assertIsInstance(skin.preview_image, pygame.Surface)
         self.assertEqual(skin.preview_image.get_size(), (80, 80))
         
-        print("✅ Preview image loaded and scaled to 80x80")
+        print("Preview image loaded and scaled to 80x80")
     
     def test_skin_option_handles_missing_image(self):
         #Test that SkinOption creates placeholder when image fails to load
@@ -61,7 +61,7 @@ class TestSkinOption(unittest.TestCase):
         color = skin.preview_image.get_at((40, 40))  # Check center pixel
         self.assertEqual(color[:3], (100, 200, 100))
         
-        print("✅ SkinOption creates green placeholder for missing images")
+        print("SkinOption creates green placeholder for missing images")
 
 
 class TestSkinSelectionModel(unittest.TestCase):
@@ -75,18 +75,17 @@ class TestSkinSelectionModel(unittest.TestCase):
         self.model = SkinSelectionModel()
     
     def tearDown(self):
-        """Clean up after each test"""
         self.patcher.stop()
     
     def test_model_initialization(self):
-        """Test that SkinSelectionModel initializes with correct defaults"""
+        # Test that SkinSelectionModel initializes with correct defaults
         self.assertIsInstance(self.model.available_skins, list)
         self.assertGreater(len(self.model.available_skins), 0)  # Should have at least 1 skin
         self.assertEqual(self.model.selected_index, 0)  # Should start at first skin
         self.assertEqual(self.model.current_skin_id, "default")
         self.assertFalse(self.model.back_button_selected)  # Should start in skin selection mode
         
-        print("✅ SkinSelectionModel initializes with correct defaults")
+        print("SkinSelectionModel initializes with correct defaults")
     
     def test_get_selected_skin(self):
         # Test that get_selected_skin returns the correct skin
@@ -96,7 +95,7 @@ class TestSkinSelectionModel(unittest.TestCase):
         self.assertEqual(selected_skin, self.model.available_skins[self.model.selected_index])
         self.assertEqual(selected_skin.skin_id, "default")  # First skin is default
         
-        print("✅ get_selected_skin returns correct skin")
+        print("get_selected_skin returns correct skin")
     
     def test_select_next_skin(self):
         # Test that select_next_skin moves forward through skins
@@ -111,7 +110,7 @@ class TestSkinSelectionModel(unittest.TestCase):
         self.model.select_next_skin()
         self.assertEqual(self.model.selected_index, 2)
         
-        print("✅ select_next_skin moves forward through skins")
+        print("select_next_skin moves forward through skins")
 
     def test_select_previous_skin(self):
         # Test that select_previous_skin moves backward through skins
@@ -126,7 +125,7 @@ class TestSkinSelectionModel(unittest.TestCase):
         self.model.select_previous_skin()
         self.assertEqual(self.model.selected_index, 0)
         
-        print("✅ select_previous_skin moves backward through skins")
+        print("select_previous_skin moves backward through skins")
 
     def test_navigation_disabled_when_back_button_selected(self):
         # Test that skin navigation is disabled when Back button is selected
@@ -142,7 +141,7 @@ class TestSkinSelectionModel(unittest.TestCase):
         self.model.select_previous_skin()
         self.assertEqual(self.model.selected_index, original_index)
         
-        print("✅ Skin navigation disabled when Back button selected")
+        print("Skin navigation disabled when Back button selected")
     
     def test_back_button_selection_toggle(self):
         # Test selecting and deselecting Back button
@@ -157,7 +156,7 @@ class TestSkinSelectionModel(unittest.TestCase):
         self.model.deselect_back_button()
         self.assertFalse(self.model.back_button_selected)
         
-        print("✅ Back button selection toggles correctly")
+        print("Back button selection toggles correctly")
 
 if __name__ == '__main__':
     unittest.main()

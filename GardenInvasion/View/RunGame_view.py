@@ -44,7 +44,7 @@ def draw_game(screen: pygame.Surface,
     # Draw wall-nuts (behind player for visual layering)
     draw_wallnuts(screen, wallnut_group)
     
-    # NUOVO: Draw zombies if provided (behind player, above wallnuts)
+    # Draw zombies if provided (behind player, above wallnuts)
     if zombie_group:
         draw_zombies(screen, zombie_group)
 
@@ -53,7 +53,6 @@ def draw_game(screen: pygame.Surface,
         for proj in zombie_projectile_group:
             # Draw the projectile itself
             screen.blit(proj.image, proj.rect)
-            # ✅ NEW: Draw a red outline circle for visibility testing
             pygame.draw.circle(screen, (255, 0, 0), proj.rect.center, 20, 2)
     
     if powerup_group: # Draw power-ups if provided

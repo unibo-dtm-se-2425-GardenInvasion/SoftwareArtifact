@@ -65,7 +65,7 @@ class TestOptionsController(unittest.TestCase):
             run_options(self.screen, self.menu_model, self.background_surf, 
                        self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
-        print("✅ UP/DOWN navigation through options works")
+        print("UP/DOWN navigation through options works")
     
     @patch('GardenInvasion.Controller.options_controller.run_volume_menu')
     @patch('GardenInvasion.Controller.options_controller.draw_options_menu')
@@ -93,7 +93,7 @@ class TestOptionsController(unittest.TestCase):
                        self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         mock_volume.assert_called_once()
-        print("✅ Enter opens volume submenu")
+        print("Enter opens volume submenu")
     
     @patch('GardenInvasion.Controller.options_controller.run_skin_selection')
     @patch('GardenInvasion.Controller.options_controller.draw_options_menu')
@@ -121,7 +121,7 @@ class TestOptionsController(unittest.TestCase):
                        self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         mock_skin.assert_called_once()
-        print("✅ Enter opens skin personalization")
+        print("Enter opens skin personalization")
     
     @patch('GardenInvasion.Controller.options_controller.show_contact_confirmation')
     @patch('GardenInvasion.Controller.options_controller.draw_options_menu')
@@ -149,7 +149,7 @@ class TestOptionsController(unittest.TestCase):
                        self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
         mock_contact.assert_called_once()
-        print("✅ Enter opens contact modal")
+        print("Enter opens contact modal")
     
     @patch('GardenInvasion.Controller.options_controller.draw_options_menu')
     @patch('pygame.display.flip')
@@ -172,7 +172,7 @@ class TestOptionsController(unittest.TestCase):
             run_options(self.screen, self.menu_model, self.background_surf, 
                        self.background_rect, self.fonts, self.settings_model, self.mock_sound_manager)
         
-        print("✅ Back button returns to menu")
+        print("Back button returns to menu")
 
 if __name__ == '__main__':
     unittest.main()

@@ -45,7 +45,7 @@ class TestPlantController(unittest.TestCase):
             handle_player_input(self.player, self.projectile_group)
         
         self.assertLess(self.player.rect.x, initial_x)
-        print("✅ Left arrow moves player left")
+        print("Left arrow moves player left")
     
     def test_right_arrow_moves_player_right(self):
         # Test that right arrow moves player right
@@ -57,7 +57,7 @@ class TestPlantController(unittest.TestCase):
             handle_player_input(self.player, self.projectile_group)
         
         self.assertGreater(self.player.rect.x, initial_x)
-        print("✅ Right arrow moves player right")
+        print("Right arrow moves player right")
     
     @patch('pygame.time.get_ticks')
     def test_player_auto_shooting_with_cooldown(self, mock_ticks):
@@ -88,7 +88,7 @@ class TestPlantController(unittest.TestCase):
             handle_player_input(self.player, self.projectile_group)
         self.assertGreater(len(self.projectile_group), first_count)
         
-        print("✅ Projectile creation respects 1000ms cooldown")
+        print("Projectile creation respects 1000ms cooldown")
     
     def test_player_stops_at_left_boundary(self):
         # Test that player cannot move beyond left screen boundary
@@ -100,7 +100,7 @@ class TestPlantController(unittest.TestCase):
                 handle_player_input(self.player, self.projectile_group)
         
         self.assertGreaterEqual(self.player.rect.left, 0)
-        print("✅ Player stops at left boundary")
+        print("Player stops at left boundary")
     
     def test_player_stops_at_right_boundary(self):
         # Test that player cannot move beyond right screen boundary
@@ -113,7 +113,7 @@ class TestPlantController(unittest.TestCase):
                 handle_player_input(self.player, self.projectile_group)
         
         self.assertLessEqual(self.player.rect.right, 600)
-        print("✅ Player stops at right boundary")
+        print("Player stops at right boundary")
 
     @patch('pygame.time.get_ticks') # Mock time to control shooting timing
     def test_shoot_sound_plays_when_projectile_created(self, mock_ticks):
@@ -131,7 +131,7 @@ class TestPlantController(unittest.TestCase):
         
         # Verify sound was played
         self.mock_sound_manager.play_sound.assert_called_once_with('plant_shoot')
-        print("✅ plant_shoot sound plays when projectile created")
+        print("plant_shoot sound plays when projectile created")
     
     @patch('pygame.time.get_ticks')
     def test_no_sound_during_cooldown(self, mock_ticks):
@@ -156,7 +156,7 @@ class TestPlantController(unittest.TestCase):
         
         # Sound should NOT have been called
         self.mock_sound_manager.play_sound.assert_not_called()
-        print("✅ No sound plays during shooting cooldown")
+        print("No sound plays during shooting cooldown")
     
 if __name__ == '__main__':
     unittest.main()

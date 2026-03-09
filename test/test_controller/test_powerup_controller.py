@@ -14,7 +14,7 @@ from GardenInvasion.Model.sound_manager_model import SoundManager
 
 
 class TestPowerUpController(unittest.TestCase):
-    # Tests for power-up collection and drop logic in the controller"""
+    # Tests for power-up collection and drop logic in the controller
 
     @classmethod
     def setUpClass(cls):
@@ -56,7 +56,7 @@ class TestPowerUpController(unittest.TestCase):
             pygame.event.clear()
 
     def test_powerup_collected_on_player_overlap(self):
-        # the player collects a power-up when they overlap, and the power-up is removed from the group"""
+        # the player collects a power-up when they overlap, and the power-up is removed from the group
         
         # Spawn power-up exactly at player position
         self.powerup_manager.spawn_increasing_fire(self.player.rect.center)
@@ -69,7 +69,7 @@ class TestPowerUpController(unittest.TestCase):
 
         self.assertEqual(len(collected), 1)
         self.assertEqual(len(self.powerup_manager.powerup_group), 0)
-        print("✅ Power-up removed from group when player overlaps it")
+        print("Power-up removed from group when player overlaps it")
 
     def test_powerup_removed_after_collection(self):
         # after player collects power-up, it should be removed from the group (dokill=True)
@@ -81,7 +81,7 @@ class TestPowerUpController(unittest.TestCase):
         )
 
         self.assertEqual(len(self.powerup_manager.powerup_group), 0)
-        print("✅ Power-up removed from group after collection (dokill=True)")
+        print("Power-up removed from group after collection (dokill=True)")
 
 if __name__ == '__main__':
     unittest.main()

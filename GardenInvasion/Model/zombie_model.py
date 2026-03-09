@@ -18,12 +18,11 @@ class Zombie(pygame.sprite.Sprite):
         self.wave_delay = wave_delay
         self.active = wave_delay == 0
         
-        # Variabili per movimento - velocità di base 2.5
-        self.horizontal_speed = 2.5  # Velocità base per tutti i zombie
+        self.horizontal_speed = 2.5
         self.movement_counter = 0
         self.x_accumulator = self.rect.x
         
-        # Per movimento simmetrico
+        # determine initial horizontal direction based on movement pattern and spawn point
         if movement_pattern == 'roam_left':
             self.horizontal_direction = 1
         elif movement_pattern == 'roam_right':
@@ -31,7 +30,6 @@ class Zombie(pygame.sprite.Sprite):
         else:
             self.horizontal_direction = 1
             
-        # Sistema di sparo
         self.can_shoot = False
         self.shoot_cooldown = 1000  # milliseconds
         self.last_shot = pygame.time.get_ticks()
@@ -77,7 +75,7 @@ class Zombie(pygame.sprite.Sprite):
             self.image.fill(self.color)
 
     def update(self):
-        # Gestione delay
+        # delay management for wave spawning
         current_time = pygame.time.get_ticks()
         if not self.active and current_time - self.spawn_time >= self.wave_delay:
             self.active = True
@@ -87,7 +85,7 @@ class Zombie(pygame.sprite.Sprite):
             
         self.rect.y += self.speed_y
         
-        # Gestione diversi pattern di movimento
+        # different movement patterns based on type and wave
         if self.movement_pattern == 'zigzag':
             self._move_zigzag()
         elif self.movement_pattern == 'straight':
@@ -115,7 +113,7 @@ class Zombie(pygame.sprite.Sprite):
         else:
             zigzag_amplitude = 2.5
         
-        # Usa accumulatore per movimento fluido
+        # use accumulator for smoother movement and better boundary control
         self.x_accumulator += self.horizontal_direction * zigzag_amplitude
         
         if self.color == (255, 165, 0):
@@ -146,10 +144,9 @@ class Zombie(pygame.sprite.Sprite):
             self.spawn_point == 'A'):
             effective_speed = 3.0  # 1.5x speed per orange zombie in wave 4
         
-        # Aggiorna accumulatore
+        # update accumulator for smoother movement and better boundary control
         self.x_accumulator += self.horizontal_direction * effective_speed
         
-        # Calcola i limiti esatti per meeting al centro senza overlap
         center_x = SCREEN_WIDTH // 2
         zombie_width = 30
         
@@ -160,7 +157,7 @@ class Zombie(pygame.sprite.Sprite):
             min_x = center_x
             max_x = SCREEN_WIDTH - 45
         
-        # Controlla bordi e cambia direzione
+        # check boundaries and reverse direction if needed
         if self.x_accumulator <= min_x:
             self.x_accumulator = min_x
             self.horizontal_direction = 1
@@ -168,7 +165,7 @@ class Zombie(pygame.sprite.Sprite):
             self.x_accumulator = max_x
             self.horizontal_direction = -1
             
-        # Aggiorna posizione reale
+        # update rect position based on accumulator
         self.rect.x = int(self.x_accumulator)
     
     def _move_roam_full_screen(self):

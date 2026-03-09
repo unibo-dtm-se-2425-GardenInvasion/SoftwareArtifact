@@ -8,20 +8,16 @@ from GardenInvasion.Model.menu_model import MenuModel, BackgroundModel, load_bac
 
 
 class TestMenuModel(unittest.TestCase):
-    """Test suite for MenuModel class"""
-
     def test_initial_menu_items(self):
         # Create a new MenuModel instance
         model = MenuModel()
         expected_items = ["New Game", "Options"]
         self.assertEqual(model.menu_items, expected_items)
         # Verify menu_items contains the expected items
-        print(f"✅ MenuModel initialized with correct menu items: {model.menu_items}")
+        print(f"MenuModel initialized with correct menu items: {model.menu_items}")
 
 
 class TestBackgroundModel(unittest.TestCase):
-    """Test suite for BackgroundModel class"""
-
     @classmethod
     def setUpClass(cls):
         os.environ['SDL_VIDEODRIVER'] = 'dummy' # Set SDL to use dummy video driver (no window needed)
@@ -33,7 +29,6 @@ class TestBackgroundModel(unittest.TestCase):
         pygame.quit()
 
     def setUp(self):
-        """Set up test fixtures before each test"""
         # Create a temporary directory for test files
         self.test_dir = tempfile.mkdtemp()
         # Create a valid test image (1x1 pixel PNG)
@@ -44,7 +39,6 @@ class TestBackgroundModel(unittest.TestCase):
         pygame.image.save(test_surface, str(self.valid_image_path))
 
     def tearDown(self):
-        """Clean up after each test"""
         import shutil
         shutil.rmtree(self.test_dir)
 
@@ -56,7 +50,7 @@ class TestBackgroundModel(unittest.TestCase):
         # Verify surface and rect are not None
         self.assertIsNotNone(background.surface)
         self.assertIsNotNone(background.rect)
-        print("✅ BackgroundModel loaded successfully with valid image path")
+        print("BackgroundModel loaded successfully with valid image path")
 
     def test_background_returns_none_with_missing_file(self):
         #Test that BackgroundModel handles missing file gracefully
@@ -67,15 +61,12 @@ class TestBackgroundModel(unittest.TestCase):
         # Verify both surface and rect are None
         self.assertIsNone(background.surface)
         self.assertIsNone(background.rect)
-        print("✅ BackgroundModel handled missing file gracefully")
+        print("BackgroundModel handled missing file gracefully")
 
 
 class TestLoadBackgroundKeepRatio(unittest.TestCase):
-    """Test suite for load_background_keep_ratio function"""
-
     @classmethod
     def setUpClass(cls):
-        """Initialize pygame once for all tests"""
         os.environ['SDL_VIDEODRIVER'] = 'dummy'
         pygame.init()
 
@@ -85,11 +76,9 @@ class TestLoadBackgroundKeepRatio(unittest.TestCase):
         pygame.quit()
 
     def setUp(self):
-        """Set up test fixtures before each test"""
         self.test_dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        """Clean up after each test"""
         import shutil
         shutil.rmtree(self.test_dir)
 
@@ -101,7 +90,7 @@ class TestLoadBackgroundKeepRatio(unittest.TestCase):
         # Verify both return values are None
         self.assertIsNone(surface)
         self.assertIsNone(rect)
-        print("✅ load_background_keep_ratio returned (None, None) for nonexistent file")
+        print("load_background_keep_ratio returned (None, None) for nonexistent file")
 
 if __name__ == '__main__':
     unittest.main()
