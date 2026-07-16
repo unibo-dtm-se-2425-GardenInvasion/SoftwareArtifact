@@ -11,7 +11,7 @@ from ..Model.wave_model import WaveManager
 from .plant_controller import handle_player_input
 from .wallnut_controller import handle_wallnut_placement
 from ..View.RunGame_view import draw_game
-from .menu_controller_utilities import show_confirm_quit
+from .menu_controller_utilities import show_confirm_quit, get_blurred_background
 from ..Model.setting_volume_model import SettingsModel
 from ..Model.sound_manager_model import SoundManager
 from ..Model.game_over_model import GameOverModel
@@ -23,10 +23,7 @@ from ..Model.PowerUp_model import PowerUpManager, IncreasingFirePU, RepairWallnu
 
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
     clock = pygame.time.Clock()
-    background_copy = screen.copy()
-    small_size = (screen.get_width() // 3, screen.get_height() // 3)
-    blurred = pygame.transform.smoothscale(background_copy, small_size)
-    blurred = pygame.transform.smoothscale(blurred, screen.get_size())
+    blurred = get_blurred_background(screen, [3])
     # Reset to middle button (Resume) by default
     pause_selected = 1  # 0=Main Menu, 1=Resume, 2=Quit
     
@@ -102,12 +99,8 @@ def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_m
     sound_manager.play_sound('game_over') 
 
     # Capture and blur the background ONCE before the loop
-    background_snapshot = screen.copy() # Capture current screen
-    small_size = (screen.get_width() // 8, screen.get_height() // 8) # Reduce size for blurring
-    blurred_bg = pygame.transform.smoothscale(background_snapshot, small_size)
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, (screen.get_width() // 6, screen.get_height() // 6))
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, screen.get_size())
-    
+    blurred_bg = get_blurred_background(screen, [8, 6])
+
     # Store button rects (will be updated after first draw)
     restart_rect = None
     menu_rect = None
@@ -179,12 +172,8 @@ def show_victory_screen(screen: pygame.Surface, menu_model: MenuModel, sound_man
     sound_manager.play_sound('victory')
     
     # Capture and blur the background ONCE before the loop
-    background_snapshot = screen.copy()
-    small_size = (screen.get_width() // 8, screen.get_height() // 8)
-    blurred_bg = pygame.transform.smoothscale(background_snapshot, small_size)
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, (screen.get_width() // 6, screen.get_height() // 6))
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, screen.get_size())
-    
+    blurred_bg = get_blurred_background(screen, [8, 6])
+
     # Store button rects
     play_again_rect = None
     menu_rect = None

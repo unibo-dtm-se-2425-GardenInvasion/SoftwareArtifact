@@ -3,15 +3,19 @@ from ..Model.menu_model import MenuModel
 from ..View.menu_view import draw_modal
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
+def get_blurred_background(screen: pygame.Surface, divisors) -> pygame.Surface:
+    # Cheap blur effect: shrink the screen by each divisor in sequence (each computed
+    # from the original screen size), then scale back up to full size.
+    blurred = screen.copy()
+    for divisor in divisors:
+        blurred = pygame.transform.smoothscale(blurred, (screen.get_width() // divisor, screen.get_height() // divisor))
+    return pygame.transform.smoothscale(blurred, screen.get_size())
+
 def show_confirm_quit(screen: pygame.Surface, model: MenuModel) -> bool:
     # Returns True if user confirmed quit, False otherwise
     clock = pygame.time.Clock()
-    background_copy = screen.copy() # Create a copy of the current screen to blur later
-    small_size = (screen.get_width() // 3, screen.get_height() // 3) # Reduce size for faster blurring
-    blurred = pygame.transform.smoothscale(background_copy, small_size) 
-    blurred = pygame.transform.smoothscale(blurred, screen.get_size())
-    # scales down the background image, which is a screen of the current game 
-    
+    blurred = get_blurred_background(screen, [3]) # scales down the background image, which is a screen of the current game
+
     while True: 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
