@@ -414,8 +414,6 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         heart_image = pygame.Surface((40, 40))
         heart_image.fill((255, 0, 0))
 
-    sound_manager = SoundManager(settings_model)
-
     # Create player with selected skin
     player = Player((SCREEN_WIDTH // 2, SCREEN_HEIGHT * 0.95), settings_model)
     player_group = pygame.sprite.GroupSingle(player)
