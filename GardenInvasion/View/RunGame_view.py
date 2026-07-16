@@ -49,11 +49,8 @@ def draw_game(screen: pygame.Surface,
         draw_zombies(screen, zombie_group)
 
     if zombie_projectile_group and len(zombie_projectile_group) > 0:
-        # Draw a red circle around each projectile for testing
         for proj in zombie_projectile_group:
-            # Draw the projectile itself
             screen.blit(proj.image, proj.rect)
-            pygame.draw.circle(screen, (255, 0, 0), proj.rect.center, 20, 2)
     
     if powerup_group: # Draw power-ups if provided
         powerup_group.draw(screen)
