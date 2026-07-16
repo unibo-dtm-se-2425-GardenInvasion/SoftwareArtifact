@@ -1,3 +1,31 @@
+## [1.9.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.9.0...1.9.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* **ci:** restore GITHUB_TOKEN in release workflow ([ea67066](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/ea67066c206bb934dbb31e89f1d6230b7e8b4df0))
+* **controller:** stop re-creating SoundManager in run_game() ([0cf53fc](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/0cf53fc084295d6ffde4b17af802ab18ce26b6cc))
+* **model:** propagate sound_manager when placing wall-nuts ([e997ff9](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/e997ff9817ad8e901497700ebc569978c6cb541a))
+* **model:** resolve asset sprite paths relative to package, not cwd ([f4eb375](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/f4eb37518231a7474fd30d32f64e3827e109b2a1))
+* **model:** stop fire-rate boost expiry from colliding with 0 sentinel ([c7ad736](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/c7ad736909088e3afd52f96f47b1729ac8d206b1))
+
+
+### Tests
+
+* merge TestWaveManagerVictory into test_wave_model and remove redundant file ([280811e](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/280811ea63f5236f959bada68ae8655c7f726ac9))
+* remove duplicate TestWaveManagerVictory file, keep merged copy ([a5ddcef](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/a5ddcef99edf5bef658ab5210cb6fdfe3661c6f0))
+
+
+### Build and continuous integration
+
+* add TEST_PYPI_API_TOKEN secret to twine upload step ([ebc38b2](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/ebc38b2dcec5025ed2bd56463d37dc4460c27843))
+
+
+### Style improvements
+
+* clean up comments and remove print statements ([7edf01d](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/7edf01d940e174c6f1a37db3cc11f3674c2bb912))
+* remove debug print statements ([e4e9aec](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/e4e9aecea0bf28916e24311e343e62743bb836e1))
+
 ## [1.9.0](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.8.0...1.9.0) (2026-02-22)
 
 
