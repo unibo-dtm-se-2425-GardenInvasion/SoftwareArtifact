@@ -164,18 +164,6 @@ class WaveManager:
         # check if all waves are completed
         return self.current_wave >= self.total_waves and self.wave_complete
     
-    def get_wave_info(self):
-        # return string with current wave info for UI display
-        if self.waiting_for_next_wave:
-            time_left = max(0, (self.next_wave_timer - pygame.time.get_ticks()) // 1000)
-            return f"Ondata {self.current_wave + 1} tra {time_left}s"
-        elif self.wave_complete and self.current_wave >= self.total_waves:
-            return "VITTORIA!"
-        elif self.wave_complete:
-            return f"Ondata {self.current_wave} completata"
-        else:
-            return f"Ondata {self.current_wave} - Zombie: {len(self.zombie_group)}"
-    
     def is_victory(self) -> bool: # check if player won by completing all waves and defeating all zombies
         all_waves_completed = self.current_wave >= self.total_waves
         no_zombies_remaining = len(self.zombie_group) == 0
