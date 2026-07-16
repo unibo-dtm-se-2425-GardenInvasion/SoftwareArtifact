@@ -42,8 +42,9 @@ class Player(pygame.sprite.Sprite):
         self.shoot_SecondTime = self.base_shoot_cooldown
         self.last_shot = pygame.time.get_ticks()
 
-        # Power‑up related: when does the fire‑rate boost end? 0 = no boost active
+        # Power‑up related: when does the fire‑rate boost end?
         self.fire_rate_boost_end_time = 0
+        self.fire_rate_boost_active = False  # explicit flag, since end_time alone can't safely tell "no boost" apart from "boost ending at tick 0"
         
         # NEW: Life points system (2 life points)
         self.life_points = 2  # Start with 2 life points
@@ -58,12 +59,14 @@ class Player(pygame.sprite.Sprite):
         self.shoot_SecondTime = max(100, new_cooldown)
         # Extend boost time if another power‑up is collected while active
         self.fire_rate_boost_end_time = max(self.fire_rate_boost_end_time, now + duration_ms)
+        self.fire_rate_boost_active = True
 
     def update(self):
-        
+
         now = pygame.time.get_ticks() # Check if fire‑rate boost has expired
-        if self.fire_rate_boost_end_time and now >= self.fire_rate_boost_end_time:
+        if self.fire_rate_boost_active and now >= self.fire_rate_boost_end_time:
             # Boost expired → restore normal fire rate
+            self.fire_rate_boost_active = False
             self.fire_rate_boost_end_time = 0
             self.shoot_SecondTime = self.base_shoot_cooldown
 
