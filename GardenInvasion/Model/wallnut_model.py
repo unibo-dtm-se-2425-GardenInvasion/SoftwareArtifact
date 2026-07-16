@@ -142,4 +142,4 @@ class WallNutManager:
         # place wall-nuts in all 4 slots at game start.
         for i in range(self.max_wallnuts):
             print("Placing wallnut in slot", i)
-            self.place_wallnut(i)
+            self.place_wallnut(i, self.sound_manager)
