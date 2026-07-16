@@ -1,5 +1,6 @@
 import pygame
 from ..View.zombie_view import draw_zombies
+from ..View.zombie_projectile_view import draw_zombie_projectiles
 
 def draw_wallnuts(screen: pygame.Surface, wallnut_group: pygame.sprite.Group):
     # Draws all wall-nuts on the screen.
@@ -49,8 +50,7 @@ def draw_game(screen: pygame.Surface,
         draw_zombies(screen, zombie_group)
 
     if zombie_projectile_group and len(zombie_projectile_group) > 0:
-        for proj in zombie_projectile_group:
-            screen.blit(proj.image, proj.rect)
+        draw_zombie_projectiles(screen, zombie_projectile_group)
     
     if powerup_group: # Draw power-ups if provided
         powerup_group.draw(screen)
