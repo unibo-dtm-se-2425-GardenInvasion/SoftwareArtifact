@@ -1,6 +1,6 @@
 import pygame
 from ..Utilities.constants import *
-from .view_utilities import render_text_with_outline
+from .view_utilities import render_text_with_outline, draw_selection_arrows
 
 
 def draw_options_menu(screen, model, background_surf, background_rect, fonts):
@@ -95,16 +95,6 @@ def draw_volume_menu(screen, volume_model, background_surf, background_rect, fon
     screen.blit(inst_text, inst_rect)
 
     return back_rect  # Used by controller to detect user clicks
-
-def draw_selection_arrows(screen, target_rect, color=(98, 222, 109)):
-    left_x = target_rect.left - 30 # Positions left arrow to the left of target
-    mid_y = target_rect.centery
-    left_arrow = [(left_x, mid_y), (left_x + 12, mid_y - 8), (left_x + 12, mid_y + 8)]
-    pygame.draw.polygon(screen, color, left_arrow)  # Draws left-pointing arrow
-
-    right_x = target_rect.right + 30 # Positions right arrow to the right of target
-    right_arrow = [(right_x, mid_y), (right_x - 12, mid_y - 8), (right_x - 12, mid_y + 8)]
-    pygame.draw.polygon(screen, color, right_arrow)  # Draws right-pointing arrow
 
 def draw_contact_modal(screen, selected_button=0):
     overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)  # Creates transparent overlay

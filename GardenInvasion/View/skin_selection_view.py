@@ -1,7 +1,7 @@
 import pygame
 from ..Model.skin_selection_model import SkinSelectionModel
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT, GREEN_SI, WHITE_Instruction, BLACK
-from .view_utilities import render_text_with_outline
+from .view_utilities import render_text_with_outline, draw_selection_arrows
 
 
 def draw_skin_selection_menu(screen: pygame.Surface,
@@ -65,13 +65,3 @@ def draw_skin_selection_menu(screen: pygame.Surface,
     return back_rect
 
 
-def draw_selection_arrows(screen, target_rect, color=GREEN_SI):
-    # Draw left and right arrows around a selected menu item.
-    left_x = target_rect.left - 30
-    mid_y = target_rect.centery
-    left_arrow = [(left_x, mid_y), (left_x + 12, mid_y - 8), (left_x + 12, mid_y + 8)]
-    pygame.draw.polygon(screen, color, left_arrow)
-    
-    right_x = target_rect.right + 30
-    right_arrow = [(right_x, mid_y), (right_x - 12, mid_y - 8), (right_x - 12, mid_y + 8)]
-    pygame.draw.polygon(screen, color, right_arrow)

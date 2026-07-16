@@ -1,5 +1,5 @@
 import pygame
-from ..Utilities.constants import BLACK
+from ..Utilities.constants import BLACK, GREEN_SI
 
 def render_text_with_outline(font, text, color, outline_color=BLACK, outline_width=2):
     # Render text with a dark outline for better visibility on dark backgrounds.
@@ -26,3 +26,14 @@ def render_text_with_outline(font, text, color, outline_color=BLACK, outline_wid
     text_surface.blit(main_text, (outline_width, outline_width))
 
     return text_surface
+
+def draw_selection_arrows(screen, target_rect, color=GREEN_SI):
+    # Draw left and right arrows around a selected menu item.
+    left_x = target_rect.left - 30
+    mid_y = target_rect.centery
+    left_arrow = [(left_x, mid_y), (left_x + 12, mid_y - 8), (left_x + 12, mid_y + 8)]
+    pygame.draw.polygon(screen, color, left_arrow)
+
+    right_x = target_rect.right + 30
+    right_arrow = [(right_x, mid_y), (right_x - 12, mid_y - 8), (right_x - 12, mid_y + 8)]
+    pygame.draw.polygon(screen, color, right_arrow)

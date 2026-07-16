@@ -1,6 +1,6 @@
 import pygame
 from ..Utilities.constants import *
-from .view_utilities import render_text_with_outline
+from .view_utilities import render_text_with_outline, draw_selection_arrows
 
 def draw_pause_modal(screen, selected_button=1):
 
@@ -94,16 +94,6 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
 
     pygame.display.flip()  # Update the display to show all drawn elements
     return label_rects  # Return menu item rects to controller for input detection
-
-def draw_selection_arrows(screen, target_rect, color=(98, 222, 109)):
-    left_x = target_rect.left - 30  # Position left arrow
-    mid_y = target_rect.centery  # Vertical center of the item
-    left_arrow = [(left_x, mid_y), (left_x + 12, mid_y - 8), (left_x + 12, mid_y + 8)]  # Left-pointing triangle
-    pygame.draw.polygon(screen, color, left_arrow)  # Draw left arrow
-    
-    right_x = target_rect.right + 30  # Position right arrow
-    right_arrow = [(right_x, mid_y), (right_x - 12, mid_y - 8), (right_x - 12, mid_y + 8)]  # Right-pointing triangle
-    pygame.draw.polygon(screen, color, right_arrow)  # Draw right arrow
 
 def draw_modal(screen, selected_button=1):
     # Draws a quit confirmation modal dialog with Yes/No buttons.
