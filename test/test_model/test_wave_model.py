@@ -195,6 +195,13 @@ class TestWaveManagerVictory(unittest.TestCase):
         self.assertFalse(self.wave_manager.is_victory())
         print("No victory detected at game start")
 
+    def test_no_victory_during_waves(self):
+        # Test that victory is False while waves are ongoing
+
+        self.wave_manager.current_wave = 3
+        self.assertFalse(self.wave_manager.is_victory())
+        print("No victory detected during waves")
+
     def test_victory_when_all_conditions_met(self):
         # Test that victory is True when all conditions are met
 
