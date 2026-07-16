@@ -1,5 +1,6 @@
 import pygame
 from pathlib import Path
+from GardenInvasion import logger
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Zombie(pygame.sprite.Sprite):
@@ -70,7 +71,7 @@ class Zombie(pygame.sprite.Sprite):
 
         except (pygame.error, FileNotFoundError):
             # Fallback to colored surface
-            print(f"Warning: Could not load sprite {sprite_file}, using colored surface")
+            logger.warning(f"Could not load sprite {sprite_file}, using colored surface")
             self.image = pygame.Surface((40,70))
             self.image.fill(self.color)
 

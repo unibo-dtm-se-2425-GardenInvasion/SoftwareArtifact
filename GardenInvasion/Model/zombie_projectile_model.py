@@ -1,5 +1,6 @@
 import pygame
 from pathlib import Path
+from .. import logger
 from ..Utilities.constants import SCREEN_HEIGHT
 
 class ZombieProjectile(pygame.sprite.Sprite):
@@ -33,7 +34,7 @@ class ZombieProjectile(pygame.sprite.Sprite):
                                     
         except (pygame.error, FileNotFoundError):
             # Fallback to colored surface
-            print(f"Warning: Could not load sprite {sprite_file}, using yellow rectangle")
+            logger.warning(f"Could not load sprite {sprite_file}, using yellow rectangle")
             self.image = pygame.Surface((20, 30))
             self.image.fill((255, 255, 0))
 

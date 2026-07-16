@@ -1,7 +1,8 @@
 import pygame
 from pathlib import Path
-from typing import Optional 
+from typing import Optional
 import os
+from .. import logger
 
 class SoundManager:
     # Manages game sound effects with volume control
@@ -10,7 +11,7 @@ class SoundManager:
             self.settings_model = settings_model # Use provided settings model
         else:
             # Fallback: Create a simple object with default volume
-            print("Warning: Invalid settings_model, using default volume")
+            logger.warning("Invalid settings_model, using default volume")
             class DefaultSettings: # Simple default settings model
                 def __init__(self):
                     self.volume = 50 
@@ -30,7 +31,7 @@ class SoundManager:
         
         # Check if running in CI or headless environment
         if os.environ.get('SDL_AUDIODRIVER') == 'dummy' or os.environ.get('CI'):
-            print("Running in headless environment, audio disabled")
+            logger.info("Running in headless environment, audio disabled")
             self.audio_available = False
         
         # Initialize pygame mixer if not already initialized
@@ -43,7 +44,7 @@ class SoundManager:
                 pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
                 # print("Audio initialized successfully")
             except pygame.error as e:
-                print(f"Audio initialization failed: {e}")
+                logger.warning(f"Audio initialization failed: {e}")
                 self.audio_available = False
                 # Set dummy driver and try again
                 os.environ['SDL_AUDIODRIVER'] = 'dummy'
@@ -61,7 +62,7 @@ class SoundManager:
         # Load all game sound effects
 
         if not self.audio_available:
-            print("Skipping sound loading -> no audio")
+            logger.info("Skipping sound loading -> no audio")
             return
 
         pkg_root = Path(__file__).resolve().parent.parent
@@ -84,14 +85,14 @@ class SoundManager:
                 self.sounds[sound_name] = pygame.mixer.Sound(str(sound_file)) 
                 # print(f"Loaded sound: {sound_name}")  # Aggiungi print per debug
             except (pygame.error, FileNotFoundError) as e: # Handle loading errors
-                print(f"Warning: Could not load sound '{filename}': {e}")
+                logger.warning(f"Could not load sound '{filename}': {e}")
                 self.sounds[sound_name] = None # Silent sound fallback
             
     def _load_music(self):
         # Load background music file
 
         if not self.audio_available:
-            print("Skipping music loading -> no audio")
+            logger.info("Skipping music loading -> no audio")
             return
         
         pkg_root = Path(__file__).resolve().parent.parent
@@ -110,7 +111,7 @@ class SoundManager:
                 self.music_tracks[music_name] = str(music_file) # Store file path
                 # print(f"Found music track: {music_name}")
             else:
-                print(f"Warning: Music file not found: {filename}") 
+                logger.warning(f"Music file not found: {filename}")
                 self.music_tracks[music_name] = None # No file available
         
     def _update_volume(self):
@@ -141,7 +142,7 @@ class SoundManager:
         if sound_name in self.sounds and self.sounds[sound_name]:
             self.sounds[sound_name].play()
         else: # Handle missing sound
-            print(f"Sound '{sound_name}' not found or not loaded")
+            logger.warning(f"Sound '{sound_name}' not found or not loaded")
 
     def play_music(self, music_name: str, loops: int = -1, fade_ms: int = 1000):
         # Play background music (looping by default)
@@ -160,9 +161,9 @@ class SoundManager:
                 self.current_music = music_name # Update currently playing music
                 # print(f" Playing music: {music_name}")
             except pygame.error as e: # Handle loading/playing errors
-                print(f" Could not play music '{music_name}': {e}")
+                logger.warning(f"Could not play music '{music_name}': {e}")
         else:
-            print(f" Music track '{music_name}' not found") # Handle missing music track
+            logger.warning(f"Music track '{music_name}' not found") # Handle missing music track
     
     def stop_music(self, fade_ms: int = 1000):
         # Stop background music with optional fade out

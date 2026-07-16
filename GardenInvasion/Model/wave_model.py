@@ -1,4 +1,5 @@
 import pygame
+from .. import logger
 from .zombie_model import RedZombie, OrangeZombie
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -75,7 +76,7 @@ class WaveManager:
         self.wave_complete = False
         self.wave_timers = []
         
-        print(f"Wave {self.current_wave} begins")
+        logger.debug(f"Wave {self.current_wave} begins")
         
         # execute wave logic based on current wave number
         if self.current_wave == 1:
@@ -134,7 +135,7 @@ class WaveManager:
         self._spawn_orange('A', 'roam_full', 1000)
         
     def _wave_5(self):
-        print("Ondata 5 - Fase 1: 3 Rossi")
+        logger.debug("Ondata 5 - Fase 1: 3 Rossi")
         
         # phase 1 with 3 base 1 zombies
         self._spawn_red('D', 'straight')

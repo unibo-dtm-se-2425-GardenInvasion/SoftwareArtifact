@@ -2,6 +2,7 @@ import pygame
 import sys
 from pathlib import Path
 import random
+from .. import logger
 from ..Model.menu_model import MenuModel, BackgroundModel
 from ..View.menu_view import draw_pause_modal, get_pause_menu_button_rects
 from ..Utilities.constants import*
@@ -39,16 +40,16 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
                     pause_selected = (pause_selected + 1) % 3 # right arrow or D pressed
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if pause_selected == 0:
-                        print("Enter/Space key detected, Returning to Main Menu from Pause Menu")
+                        logger.debug("Enter/Space key detected, Returning to Main Menu from Pause Menu")
                         return 'menu'
                     elif pause_selected == 1:
-                        print("Enter/Space key detected, Resuming Game from Pause Menu")
+                        logger.debug("Enter/Space key detected, Resuming Game from Pause Menu")
                         return 'resume'
                     else:
-                        print("Enter/Space key detected, Quitting Game from Pause Menu, Bye Bye!")
+                        logger.debug("Enter/Space key detected, Quitting Game from Pause Menu, Bye Bye!")
                         return 'quit'
                 elif event.key == pygame.K_ESCAPE:
-                    print("Resuming Game from Pause Menu via ESC key")
+                    logger.debug("Resuming Game from Pause Menu via ESC key")
                     return 'resume'  # ESC in pause menu = resume
                     
             if event.type == pygame.MOUSEMOTION:
@@ -126,10 +127,10 @@ def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_m
                     elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                         selected = game_over_model.get_selected_option()
                         if selected == "Start Again":
-                            print("Restarting game")
+                            logger.debug("Restarting game")
                             return 'restart'
                         else:
-                            print("Returning to main menu")
+                            logger.debug("Returning to main menu")
                             return 'menu'
                             
                 if event.type == pygame.MOUSEMOTION: # Handle mouse hover
@@ -293,7 +294,7 @@ def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, 
 
         # Check if plant was destroyed
         if plant_destroyed:
-            print("plant destroyed by zombie projectile")
+            logger.debug("plant destroyed by zombie projectile")
         return plant_destroyed
 
     # Return True only if plant was actually destroyed, not just hit
@@ -309,9 +310,9 @@ def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnu
     def on_hit(wallnut):
         wallnut_destroyed = wallnut.take_damage()
         if wallnut_destroyed:
-            print(f"Wallnut {wallnut.slot_index} destroyed by zombie projectile")
+            logger.debug(f"Wallnut {wallnut.slot_index} destroyed by zombie projectile")
         else:
-            print(f"Wallnut {wallnut.slot_index} hit by zombie projectile! Health: {wallnut.health}")
+            logger.debug(f"Wallnut {wallnut.slot_index} hit by zombie projectile! Health: {wallnut.health}")
 
     return _resolve_group_collisions(zombie_projectile_group, wallnut_group, on_hit)
 
@@ -325,9 +326,9 @@ def _handle_zombie_wallnut_collisions(zombie_group, wallnut_manager, sound_manag
     def on_hit(wallnut):
         wallnut_destroyed = wallnut.take_damage()
         if wallnut_destroyed:
-            print(f"Wallnut {wallnut.slot_index} destroyed by zombie")
+            logger.debug(f"Wallnut {wallnut.slot_index} destroyed by zombie")
         else:
-            print(f"Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
+            logger.debug(f"Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
 
     return _resolve_group_collisions(zombie_group, wallnut_group, on_hit)
 
@@ -336,17 +337,17 @@ def _handle_zombie_plant_collisions(zombie_group, player, sound_manager=None):
     # Handle collisions between zombies and the plant.
     # Zombie is destroyed on contact, plant takes damage.
     def on_hit(zombie):
-        print(f"Zombie hits plant. Plant life before: {player.life_points}")
+        logger.debug(f"Zombie hits plant. Plant life before: {player.life_points}")
         if sound_manager:
             sound_manager.play_sound('plant_hit')
 
         plant_destroyed = player.take_damage()
-        print(f"Plant life after: {player.life_points}")
+        logger.debug(f"Plant life after: {player.life_points}")
 
         if plant_destroyed:
-            print("PLANT DESTROYED BY ZOMBIE! GAME OVER!")
+            logger.debug("PLANT DESTROYED BY ZOMBIE! GAME OVER!")
         else:
-            print(f"Plant health: {player.life_points}/{player.max_life_points}")
+            logger.debug(f"Plant health: {player.life_points}/{player.max_life_points}")
         return plant_destroyed
 
     return _resolve_plant_collisions(player, zombie_group, on_hit, stop_on_destroy=False)
@@ -364,7 +365,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     try:
         heart_image = pygame.image.load(heart_path).convert_alpha()
     except pygame.error as e:
-        print(f"Error loading heart image: {e}")
+        logger.warning(f"Error loading heart image: {e}")
         # Create a fallback red heart rectangle if image not found
         heart_image = pygame.Surface((40, 40))
         heart_image.fill((255, 0, 0))
@@ -404,7 +405,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                     pygame.quit()
                     sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                print("Escape key pressed, Pause Menu shown")
+                logger.debug("Escape key pressed, Pause Menu shown")
                 sound_manager.pause_music()
                 action = show_pause_menu(screen, model)
                 if action == 'quit':
@@ -481,7 +482,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         # Check if plant was destroyed (game over)
         if plant_destroyed:
-            print("game over, plant destroyed")
+            logger.debug("game over, plant destroyed")
             sound_manager.stop_music(fade_ms=500)
             # Show game over screen
             action = show_game_over_screen(screen, model, sound_manager)
@@ -496,7 +497,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                 sys.exit()
         
         if wave_manager.is_victory():
-            print("Victory, all waves defeated")
+            logger.debug("Victory, all waves defeated")
             sound_manager.stop_music(fade_ms=500)
             action = show_victory_screen(screen, model, sound_manager)
             
