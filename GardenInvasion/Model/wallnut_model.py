@@ -1,4 +1,5 @@
 import pygame
+from pathlib import Path
 from ..Utilities.constants import Brown, Lighter_Brown, Even_Lighter_Brown
 from .sound_manager_model import SoundManager
 
@@ -16,15 +17,16 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
         
         try:
             # Load original sprites
-            sprite_full=pygame.image.load(r"GardenInvasion/Assets/images/Wallnut_body_Undamaged.png").convert_alpha() # Full health
-            sprite_dmg1=pygame.image.load(r"GardenInvasion/Assets/images/Wallnut_Body_cracked1.png").convert_alpha()  # 1 hit taken
-            
+            sprites_path = Path(__file__).resolve().parent.parent / "Assets" / "images"
+            sprite_full = pygame.image.load(str(sprites_path / "Wallnut_body_Undamaged.png")).convert_alpha() # Full health
+            sprite_dmg1 = pygame.image.load(str(sprites_path / "Wallnut_Body_cracked1.png")).convert_alpha()  # 1 hit taken
+
             # Scale sprites to desired size above
             self.sprites = {
                 2: pygame.transform.smoothscale(sprite_full, self.wallnut_size),  # Full health (2 life points)
                 1: pygame.transform.smoothscale(sprite_dmg1, self.wallnut_size),  # Damaged (1 life point)
             }
-        except pygame.error as e:
+        except (pygame.error, FileNotFoundError) as e:
             print(f"Error loading wallnut sprites: {e}")
             # Create placeholder colored rectangles if images don't exist
             self.sprites = {
@@ -140,4 +142,4 @@ class WallNutManager:
         # place wall-nuts in all 4 slots at game start.
         for i in range(self.max_wallnuts):
             print("Placing wallnut in slot", i)
-            self.place_wallnut(i)
+            self.place_wallnut(i, self.sound_manager)
