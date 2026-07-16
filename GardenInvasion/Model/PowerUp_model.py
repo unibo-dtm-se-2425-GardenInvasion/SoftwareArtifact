@@ -1,6 +1,6 @@
-import os
 import pygame
 import random
+from pathlib import Path
 from .zombie_projectile_model import ZombieProjectile
 from .wallnut_model import WallNutManager
 
@@ -41,8 +41,8 @@ class PowerUp(pygame.sprite.Sprite):
 class IncreasingFirePU(PowerUp):
 
     def __init__(self, pos, duration_ms: int = 5000, cooldown_multiplier: float = 0.6, target_size=None):
-        img_path = os.path.join("GardenInvasion", "Assets", "images", "IncreaseFirePU.png")
-        image = pygame.image.load(img_path).convert_alpha()
+        img_path = Path(__file__).resolve().parent.parent / "Assets" / "images" / "IncreaseFirePU.png"
+        image = pygame.image.load(str(img_path)).convert_alpha()
         super().__init__(pos, image, target_size=target_size)
 
         self.duration_ms = duration_ms
@@ -58,8 +58,8 @@ class IncreasingFirePU(PowerUp):
 class RepairWallnutPU(PowerUp):
     
     def __init__(self, pos, target_size=None):
-        img_path = os.path.join("GardenInvasion", "Assets", "images", "RepairWallnutPU.png")
-        image = pygame.image.load(img_path).convert_alpha()
+        img_path = Path(__file__).resolve().parent.parent / "Assets" / "images" / "RepairWallnutPU.png"
+        image = pygame.image.load(str(img_path)).convert_alpha()
         super().__init__(pos, image, target_size=target_size)
 
     def apply(self, wallnut_manager) -> None:
