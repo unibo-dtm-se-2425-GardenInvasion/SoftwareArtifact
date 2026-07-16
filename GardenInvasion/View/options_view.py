@@ -117,7 +117,7 @@ def draw_contact_modal(screen, selected_button=0):
 
     # Displayed email address
     font_info = pygame.font.SysFont("Arial", 18)
-    email_surface = font_info.render("Email: GardenInvasion@email.com", True, (40, 40, 40))
+    email_surface = font_info.render(f"Email: {CONTACT_EMAIL}", True, (40, 40, 40))
     email_rect = email_surface.get_rect(center=(box_rect.centerx, box_rect.top + box_height * 0.35))
     screen.blit(email_surface, email_rect)
 

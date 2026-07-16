@@ -14,3 +14,6 @@ GREEN_SI = (98, 222, 109)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
+
+# Contact info
+CONTACT_EMAIL = "GardenInvasion@email.com"

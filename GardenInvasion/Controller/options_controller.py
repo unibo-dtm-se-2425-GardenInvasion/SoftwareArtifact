@@ -1,23 +1,19 @@
 import pygame
 import sys
 import webbrowser # Added import for webbrowser later used for the email
-from .menu_controller_utilities import show_confirm_quit
+from .menu_controller_utilities import show_confirm_quit, get_blurred_background
 from ..Model.menu_model import MenuModel
 from ..Model.options_model import OptionsModel, VolumeModel
 from ..Model.setting_volume_model import SettingsModel
 from ..View.options_view import draw_options_menu, draw_contact_modal, draw_volume_menu
-from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT, CONTACT_EMAIL
 from .skin_selection_controller import run_skin_selection
 from ..Model.sound_manager_model import SoundManager
 
 # Function to show the contact confirmation modal when "Contact Us" is selected in the options menu
 def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsModel) -> bool:
     clock = pygame.time.Clock()
-    background_copy = screen.copy()
-    small_size = (screen.get_width() // 3, screen.get_height() // 3)
-    blurred = pygame.transform.smoothscale(background_copy, small_size)
-    blurred = pygame.transform.smoothscale(blurred, screen.get_size())
-    # create a blurred background screen for the pop up regarding the contact us option
+    blurred = get_blurred_background(screen, [3]) # create a blurred background screen for the pop up regarding the contact us option
     options_model.modal_selected_button = 0 # set default selected button to "Open Email Client"
     
     while True:
@@ -177,7 +173,7 @@ def run_options(screen: pygame.Surface,
                     elif options_model.selected_index == 2:  # Contact Us
                         print("Enter/Space key detected on Contact Us option, showing contact confirmation modal")
                         if show_contact_confirmation(screen, options_model):
-                            email = "GardenInvasion@email.com"
+                            email = CONTACT_EMAIL
                             mailto_url = "mailto:" + email
                             webbrowser.open(mailto_url)
                             print(f"Enter/Space key. Opening email client with URL: {mailto_url}")
@@ -221,7 +217,7 @@ def run_options(screen: pygame.Surface,
                         elif i == 2:  # Contact Us
                             print("Contact Us option clicked, showing contact confirmation modal")
                             if show_contact_confirmation(screen, options_model):
-                                email = "GardenInvasion@email.com"
+                                email = CONTACT_EMAIL
                                 mailto_url = "mailto:" + email
                                 webbrowser.open(mailto_url)
                                 print(f"Click detected. Opening email client with URL: {mailto_url}")
