@@ -49,7 +49,10 @@ jobs:
           npm install
           npx semantic-release
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          # RELEASE_DRY_RUN routes the twine upload to TestPyPI instead of real PyPI;
+          # TestPyPI is a separate service with its own separate credentials, so the
+          # twine username/password must switch together with the upload target.
+          TWINE_USERNAME: ${{ contains(github.repository, 'SoftwareArtifact') && '__token__' || secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ contains(github.repository, 'SoftwareArtifact') && secrets.TEST_PYPI_API_TOKEN || secrets.PYPI_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_DRY_RUN: ${{ contains(github.repository, 'SoftwareArtifact') }}
