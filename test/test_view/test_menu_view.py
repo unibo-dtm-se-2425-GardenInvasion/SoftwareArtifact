@@ -41,13 +41,15 @@ class TestMenuView(unittest.TestCase):
 
     def test_draw_menu_with_background_surface(self):
         # Test that draw_menu can handle a valid background surface
-        
-        label_rects = draw_menu(self.screen, self.model, self.background_surf, self.background_rect, self.fonts)
-        # Should return a list of rects
+
+        label_rects, click_rects = draw_menu(self.screen, self.model, self.background_surf, self.background_rect, self.fonts)
+        # Should return two lists of rects
         self.assertIsInstance(label_rects, list) # Check return type is list
+        self.assertIsInstance(click_rects, list)
         # Number of rects should match number of menu items
         self.assertEqual(len(label_rects), len(self.model.menu_items)) # Check correct number of rects
-        print(f"draw_menu returned {len(label_rects)} label rects as expected")
+        self.assertEqual(len(click_rects), len(self.model.menu_items))
+        print(f"draw_menu returned {len(label_rects)} label rects and {len(click_rects)} click rects as expected")
 
     def test_draw_pause_modal_does_not_crash(self):
         # Test that draw_pause_modal executes without exceptions

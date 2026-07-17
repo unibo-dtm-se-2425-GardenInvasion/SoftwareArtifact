@@ -28,11 +28,14 @@ def draw_skin_selection_menu(screen: pygame.Surface,
     skin_y = SCREEN_HEIGHT * 0.42
     
     # loop through the skins and show the preview
-    for i, skin in enumerate(skin_model.available_skins): 
+    skin_hit_rects = []  # Hit-test regions for the controller's mouse hover/click detection
+    for i, skin in enumerate(skin_model.available_skins):
         x = start_x + spacing * (i + 1)
         # Draw skin preview image
         preview_rect = skin.preview_image.get_rect(center=(x, skin_y))
         screen.blit(skin.preview_image, preview_rect)
+        # Slightly larger than the preview itself, matching the hit-test region the controller has always used
+        skin_hit_rects.append(preview_rect.inflate(20, 20))
         # Draw selection indicator if the skin is selected
         if i == skin_model.selected_index and not skin_model.back_button_selected:
             
@@ -62,6 +65,6 @@ def draw_skin_selection_menu(screen: pygame.Surface,
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))
     screen.blit(inst_text, inst_rect)
     
-    return back_rect
+    return back_rect, skin_hit_rects
 
 

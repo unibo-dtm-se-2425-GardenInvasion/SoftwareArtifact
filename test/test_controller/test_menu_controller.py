@@ -43,9 +43,10 @@ class TestMenuController(unittest.TestCase):
     @patch('pygame.display.flip') # Mock pygame display flip
     def test_enter_key_starts_new_game(self, mock_flip, mock_draw, mock_global_quit, mock_run_game):
         # Test that Enter key starts New Game when selected
+        mock_draw.return_value = ([], [])  # (label_rects, click_rects) - no mouse interaction in this test
 
         # After run_game is called, trigger quit to exit the loop
-        def run_game_side_effect(*args): 
+        def run_game_side_effect(*args):
             mock_global_quit.return_value = True # Exit loop after starting game
         
         mock_run_game.side_effect = run_game_side_effect # Simulate run_game side effect
@@ -70,13 +71,14 @@ class TestMenuController(unittest.TestCase):
     @patch('pygame.display.flip')
     def test_space_key_opens_options(self, mock_flip, mock_draw, mock_global_quit, mock_run_options):
         # Test that Space key opens Options when selected
+        mock_draw.return_value = ([], [])  # (label_rects, click_rects) - no mouse interaction in this test
 
         # After run_options is called, trigger quit to exit the loop
         def run_options_side_effect(*args):
             mock_global_quit.return_value = True
-        
+
         mock_run_options.side_effect = run_options_side_effect
-        
+
         # Navigate down to Options (index 1), then press Space
         events_sequence = [
             [pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_DOWN})],
@@ -94,17 +96,17 @@ class TestMenuController(unittest.TestCase):
 
     @patch('GardenInvasion.Controller.menu_controller.run_game')
     @patch('GardenInvasion.Controller.menu_controller._global_quit', return_value=False)
-    @patch('GardenInvasion.Controller.menu_controller.draw_menu')
     @patch('pygame.display.flip')
-    def test_mouse_click_on_new_game(self, mock_flip, mock_draw, mock_global_quit, mock_run_game):
+    def test_mouse_click_on_new_game(self, mock_flip, mock_global_quit, mock_run_game):
         # Test clicking New Game launches the game
+        # draw_menu is NOT mocked here - the real click_rects it returns are what we're testing against
 
         # After run_game is called, trigger quit to exit the loop
         def run_game_side_effect(*args):
             mock_global_quit.return_value = True
-        
+
         mock_run_game.side_effect = run_game_side_effect
-        
+
         # Click on New Game area (y around 240)
         events_sequence = [
             [pygame.event.Event(pygame.MOUSEBUTTONDOWN, {'button': 1, 'pos': (300, 240)})],
@@ -120,17 +122,17 @@ class TestMenuController(unittest.TestCase):
     
     @patch('GardenInvasion.Controller.menu_controller.run_options')
     @patch('GardenInvasion.Controller.menu_controller._global_quit', return_value=False)
-    @patch('GardenInvasion.Controller.menu_controller.draw_menu')
     @patch('pygame.display.flip')
-    def test_mouse_click_on_options(self, mock_flip, mock_draw, mock_global_quit, mock_run_options):
+    def test_mouse_click_on_options(self, mock_flip, mock_global_quit, mock_run_options):
         # Test clicking Options opens options menu
+        # draw_menu is NOT mocked here - the real click_rects it returns are what we're testing against
 
         # After run_options is called, trigger quit to exit the loop
         def run_options_side_effect(*args):
             mock_global_quit.return_value = True
-        
+
         mock_run_options.side_effect = run_options_side_effect
-        
+
         # Click on Options area (y around 300)
         events_sequence = [
             [pygame.event.Event(pygame.MOUSEBUTTONDOWN, {'button': 1, 'pos': (300, 300)})],
@@ -149,6 +151,7 @@ class TestMenuController(unittest.TestCase):
     @patch('pygame.display.flip')
     def test_escape_shows_quit_confirmation(self, mock_flip, mock_draw, mock_global_quit):
         # Test that ESC triggers quit confirmation modal
+        mock_draw.return_value = ([], [])  # (label_rects, click_rects) - no mouse interaction in this test
 
         # First call returns True (user confirms quit)
         mock_global_quit.return_value = True

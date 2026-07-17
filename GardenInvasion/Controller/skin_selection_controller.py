@@ -23,8 +23,11 @@ def run_skin_selection(screen: pygame.Surface,
     clock = pygame.time.Clock()
     running = True
     return_to = 'back'  # Default: return to options menu
-    back_rect = None # To store the Back button rect for mouse interaction
-    
+
+    # Priming draw so hit-test rects are available before the first event is processed
+    back_rect, skin_hit_rects = draw_skin_selection_menu(screen, skin_model, background_surf, background_rect, fonts)
+    pygame.display.flip()
+
     while running:
         for event in pygame.event.get():
             # Handle universal quit via X button
@@ -85,46 +88,30 @@ def run_skin_selection(screen: pygame.Surface,
             
             # Handle mouse hover to highlight skins
             elif event.type == pygame.MOUSEMOTION:
-                mx, my = event.pos # Mouse coordinates
-
                 if back_rect and back_rect.collidepoint(event.pos):
                     skin_model.select_back_button()
                 else:
                     skin_model.deselect_back_button()
-                    
-                    # Check if hovering over any skin
-                    total_skins = skin_model.get_total_skins()
-                    spacing = screen.get_width() * 0.7 / (total_skins + 1)
-                    start_x = screen.get_width() * 0.15
-                    
-                    for i in range(total_skins): # Iterate through skins
-                        x = start_x + spacing * (i + 1)
-                        y = screen.get_height() * 0.45
-                        if abs(mx - x) < 50 and abs(my - y) < 50: # Within preview bounds
+
+                    # Check if hovering over any skin, using the View-computed hit-test rects
+                    for i, rect in enumerate(skin_hit_rects):
+                        if rect.collidepoint(event.pos):
                             skin_model.selected_index = i
                             break # Stop checking after first match
             
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # Left click
-                mx, my = event.pos
                 # Use the actual back_rect from view
                 if back_rect and back_rect.collidepoint(event.pos):
                     logger.debug("Back button clicked, returning to options")
                     return_to = 'back'
                     running = False
                     break
-                # Check if player clicked on a skin preview
-                total_skins = skin_model.get_total_skins()
-                spacing = screen.get_width() * 0.7 / (total_skins + 1)
-                start_x = screen.get_width() * 0.15
-                
-                for i in range(total_skins):
-                    x = start_x + spacing * (i + 1)
-                    y = screen.get_height() * 0.45
-                    # Check if click is within preview bounds
-                    if abs(mx - x) < 50 and abs(my - y) < 50:
+                # Check if player clicked on a skin preview, using the View-computed hit-test rects
+                for i, rect in enumerate(skin_hit_rects):
+                    if rect.collidepoint(event.pos):
                         skin_model.selected_index = i
                         skin_model.current_skin_id = skin_model.available_skins[i].skin_id
-                        
+
                         # Confirm selection on click (persisted by the caller once this menu returns)
                         selected_skin = skin_model.get_selected_skin()
                         settings_model.player_skin = selected_skin.skin_id
@@ -133,8 +120,8 @@ def run_skin_selection(screen: pygame.Surface,
                         running = False
                         break
         
-        # Draw and get the actual back_rect
-        back_rect = draw_skin_selection_menu(screen, skin_model, background_surf, background_rect, fonts)
+        # Draw and get the actual back_rect and skin hit-test rects
+        back_rect, skin_hit_rects = draw_skin_selection_menu(screen, skin_model, background_surf, background_rect, fonts)
         pygame.display.flip()
         clock.tick(60)
         
