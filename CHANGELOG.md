@@ -1,3 +1,30 @@
+## [1.9.2](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.9.1...1.9.2) (2026-07-17)
+
+
+### Bug Fixes
+
+* **deps:** bump handlebars to 4.7.9 to fix AST-injection RCE ([4ae7a12](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/4ae7a129cf0bd9d7c093283abcc12d92e7239b50))
+* **view:** remove debug hit-box circle from zombie projectiles ([6045056](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/6045056a3a37a00d95e9e2702197cd76194cf7d9))
+
+
+### General maintenance
+
+* remove leftover cookiecutter template scaffolding ([494b281](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/494b2815ec9e489f32a833f7f5959b344f4584c0))
+* **tests:** drop unused pytest dep, guard visual debug script ([26faf73](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/26faf7379acb88c5c1b4a7ac5e0f61587d4d975a))
+
+
+### Refactoring
+
+* centralize contact email, fold in a missed blur duplicate ([463fe03](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/463fe038526d3b33675816c24a669b9050f1813f))
+* **controller:** collapse the 5 collision-handler functions ([0649088](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/064908842d0dde2650eb51e2e0666f937c64301c))
+* **controller:** extract repeated blur-background helper ([1a98725](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/1a987256345db9ea0eedfc4e3a177c4ad98887eb))
+* **model:** remove dead code WaveManager.get_wave_info() ([c46196e](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/c46196e2fd6a18a2aa9376f13154f67c2134d40c))
+* **model:** share base between GameOverModel and VictoryModel ([66d7e2c](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/66d7e2c7e5995cfe17c5070e278e22ae78f04fc6))
+* route print() debug statements through the logger ([6e58a93](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/6e58a9385d045b577725195fda430d8dfbf4fd46))
+* **view:** consolidate triplicated draw_selection_arrows() ([8e40c8b](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/8e40c8b1d86d55960433a2cd0fc757fe4dc911c9))
+* **view:** consolidate triplicated render_text_with_outline() ([5e54f87](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/5e54f872d141101e016aaae4a06c4ced44b6ffcc))
+* **view:** remove dead view modules, wire up zombie projectile draw ([7bd1826](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/7bd1826518e7ef5c5d9300175062835bf67ee0b0))
+
 ## [1.9.1](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.9.0...1.9.1) (2026-07-16)
 
 
