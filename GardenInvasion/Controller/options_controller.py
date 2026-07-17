@@ -168,6 +168,7 @@ def run_options(screen: pygame.Surface,
                         logger.debug("Enter/Space key detected on Skin Personalization, opening skin selector")
                         result = run_skin_selection(screen, model, background_surf, background_rect, fonts, settings_model)
                         if result == 'main_menu':
+                            settings_model.save()
                             logger.debug("Skin selected, returning to main menu")
                             running = False
 
@@ -212,6 +213,7 @@ def run_options(screen: pygame.Surface,
                             logger.debug("Skin Personalization clicked, opening skin selector")
                             result = run_skin_selection(screen, model, background_surf, background_rect, fonts, settings_model)
                             if result == 'main_menu':
+                                settings_model.save()
                                 logger.debug("Skin selected, returning to main menu")
                                 running = False
 
