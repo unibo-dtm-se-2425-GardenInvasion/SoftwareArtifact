@@ -83,4 +83,5 @@ def main_menu_loop(screen: pygame.Surface,
                             run_options(screen, model, background_surf, background_rect, fonts, settings_model, sound_manager)
             # this if handles the input from the mouse left click with an approximate hitbox
         draw_menu(screen, model, background_surf, background_rect, fonts) # draw the menu
+        pygame.display.flip() # update the display, matching every other controller's loop
         clock.tick(60) # limit to 60 FPS

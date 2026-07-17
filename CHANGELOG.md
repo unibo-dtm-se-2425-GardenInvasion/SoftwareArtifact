@@ -1,3 +1,23 @@
+## [1.9.3](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.9.2...1.9.3) (2026-07-17)
+
+
+### Bug Fixes
+
+* **assets:** down-scale oversized background images to actual render size ([b3659e2](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/b3659e2a193d09a73d2bd35e2c24e8839db671ca))
+* **assets:** re-encode 9 WebP-as-.png files to genuine PNG ([90b7c75](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/90b7c759eafa48ce216bc7538d189f8e04e4458a))
+* **assets:** remove dead wallnut asset, normalize filename capitalization ([4603d8b](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/4603d8ba8cfefa07b0756f533ef1297a3e13e78a))
+* **controller:** convert 13 print() calls missed by the earlier logger sweep ([52c46ec](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/52c46ec0caf5870bdb51b254c70d61441c110d1f))
+
+
+### Performance improvements
+
+* **view:** scale heart icon once per draw_hearts() call, not per heart ([656ec6f](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/656ec6f9bc77b3fc9572dc35b6a5b2a3d45cd2ae))
+
+
+### Refactoring
+
+* **view:** move pygame.display.flip() responsibility to the controller ([230deea](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/commit/230deea0795eff0c7fecc24fc246053dc9ef63e7))
+
 ## [1.9.2](https://github.com/unibo-dtm-se-2425-GardenInvasion/SoftwareArtifact/compare/1.9.1...1.9.2) (2026-07-17)
 
 
