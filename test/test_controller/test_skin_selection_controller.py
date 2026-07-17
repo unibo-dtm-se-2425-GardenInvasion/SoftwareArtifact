@@ -43,8 +43,8 @@ class TestSkinSelectionController(unittest.TestCase):
     @patch('pygame.display.flip') # Mock display flip to avoid actual rendering
     def test_right_arrow_navigates_to_next_skin(self, mock_flip, mock_draw):
         # Test that right arrow key navigates to next skin
-        # Mock draw to return a back_rect
-        mock_draw.return_value = pygame.Rect(100, 100, 50, 30)
+        # Mock draw to return (back_rect, skin_hit_rects) - no mouse interaction in this test
+        mock_draw.return_value = (pygame.Rect(100, 100, 50, 30), [])
         
         # Simulate right arrow press, then Enter to exit
         events = [
@@ -73,7 +73,7 @@ class TestSkinSelectionController(unittest.TestCase):
     @patch('pygame.display.flip')
     def test_left_arrow_navigates_to_previous_skin(self, mock_flip, mock_draw):
         # Test that left arrow key navigates to previous skin
-        mock_draw.return_value = pygame.Rect(100, 100, 50, 30)
+        mock_draw.return_value = (pygame.Rect(100, 100, 50, 30), [])
         
         # Simulate left arrow press, then Enter to exit
         events = [
@@ -98,7 +98,7 @@ class TestSkinSelectionController(unittest.TestCase):
     @patch('pygame.display.flip')
     def test_down_arrow_selects_back_button(self, mock_flip, mock_draw):
         # Test that down arrow selects Back button
-        mock_draw.return_value = pygame.Rect(100, 100, 50, 30)
+        mock_draw.return_value = (pygame.Rect(100, 100, 50, 30), [])
         
         # Simulate down arrow, then Enter (should go back to options)
         events = [
@@ -120,18 +120,18 @@ class TestSkinSelectionController(unittest.TestCase):
         self.assertEqual(result, 'back')
         print("Down arrow selects Back button")
 
-    @patch('GardenInvasion.Controller.skin_selection_controller.draw_skin_selection_menu')
     @patch('pygame.display.flip')
-    def test_mouse_click_on_skin_selects_and_exits(self, mock_flip, mock_draw):
+    def test_mouse_click_on_skin_selects_and_exits(self, mock_flip):
         # Test that clicking on a skin selects it and exits
-        mock_draw.return_value = pygame.Rect(100, 100, 50, 30)
-        
-        # Simulate mouse click on second skin (Carnivorous)
-        # Position: start_x=120, spacing≈186, skin 2 at x≈493, y=252
+        # draw_skin_selection_menu is NOT mocked here - the real skin_hit_rects it
+        # returns are what we're testing against.
+        # Real geometry uses the SCREEN_WIDTH/SCREEN_HEIGHT constants (600x600),
+        # not this test's screen size: total_skins=3, spacing=105, start_x=90,
+        # skin_y=252 -> skin index 1 ("Carnivorous Plant") is centered at (300, 252).
         events = [
             pygame.event.Event(pygame.MOUSEBUTTONDOWN, {
                 'button': 1,
-                'pos': (400, 250)  # Click on middle area
+                'pos': (300, 252)  # Dead center of skin index 1's hit rect
             })
         ]
         

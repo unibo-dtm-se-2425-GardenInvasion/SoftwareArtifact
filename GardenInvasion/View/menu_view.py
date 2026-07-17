@@ -79,11 +79,16 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
     title_rect = title_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.25))  # Position title at top center
     screen.blit(title_text, title_rect)  # Draw title to screen
     
-    label_rects = []  # List to store menu item rectangles for click detection
+    label_rects = []  # Tight text bounding boxes, used above for positioning the selection arrows
+    click_rects = []  # Wider hit-test regions for the controller's mouse hover/click detection
+    line_h = SCREEN_HEIGHT * 0.1
     for idx, label in enumerate(model.menu_items):  # Loop through menu items (e.g., "New Game", "Options")
         text_surf = render_text_with_outline(item_font, label, GREEN_SI, BLACK, 2)  # Render menu item text
-        rect = text_surf.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.4 + idx * SCREEN_HEIGHT * 0.1))  # Position item vertically
-        label_rects.append(rect)  # Store rect for controller to detect clicks/hovers
+        cy = SCREEN_HEIGHT * 0.4 + idx * line_h  # Center y of this menu item
+        rect = text_surf.get_rect(center=(SCREEN_WIDTH * 0.5, cy))  # Position item vertically
+        label_rects.append(rect)
+        # Full-width vertical band, matching the hit-test region the controller has always used
+        click_rects.append(pygame.Rect(0, cy - line_h * 0.4, SCREEN_WIDTH, line_h * 0.8))
         screen.blit(text_surf, rect)  # Draw menu item text to screen
         if idx == model.selected_index:  # If this item is currently selected
             draw_selection_arrows(screen, rect, color=GREEN_SI)  # Draw arrows around selected item
@@ -92,7 +97,7 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))  # Position instructions at bottom
     screen.blit(inst_text, inst_rect)  # Draw instructions to screen
 
-    return label_rects  # Return menu item rects to controller for input detection
+    return label_rects, click_rects  # Return both to the controller (arrows-positioning rects, hit-test rects)
 
 def draw_modal(screen, selected_button=1):
     # Draws a quit confirmation modal dialog with Yes/No buttons.

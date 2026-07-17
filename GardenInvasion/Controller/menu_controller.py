@@ -27,6 +27,10 @@ def main_menu_loop(screen: pygame.Surface,
 
     running = True
 
+    # Priming draw so hit-test rects are available before the first event is processed
+    _, click_rects = draw_menu(screen, model, background_surf, background_rect, fonts)
+    pygame.display.flip()
+
     while running: # loop reads events, updates model, draws view
         for event in pygame.event.get():
             if _global_quit(event, screen, model):
@@ -54,22 +58,15 @@ def main_menu_loop(screen: pygame.Surface,
             # this if handles the input from the keyboard (UP/W and DOWN/S to navigate, ENTER/SPACE to select)
             
             elif event.type == pygame.MOUSEMOTION: # mouse hover detection
-                mx, my = event.pos # get mouse position
-                line_h = SCREEN_HEIGHT * 0.1
-                for i in range(len(model.menu_items)):
-                    cy = SCREEN_HEIGHT * 0.4 + i * line_h  # Center y of each menu item
-                    if abs(my - cy) < line_h * 0.4:  # Within 40% of line height
+                for i, rect in enumerate(click_rects):
+                    if rect.collidepoint(event.pos):
                         model.selected_index = i  # Update selection on hover
                         break
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                # simple click detection using View-computed rects
-                mx, my = event.pos
-                line_h = SCREEN_HEIGHT*0.1
-                for i in range(len(model.menu_items)):
-                    cy = SCREEN_HEIGHT*0.4 + i*line_h # compute center y of each menu item, i.e. new game and options
-                    if abs(my - cy) < line_h*0.4: # checks if the mouse y is close enough to the center of the item
-                        # within 40% of the line height
+                # click detection using View-computed hit-test rects
+                for i, rect in enumerate(click_rects):
+                    if rect.collidepoint(event.pos):
                         model.selected_index = i
                         if i == 0:
                             logger.debug("Starting Game from Mouse Click")
@@ -82,6 +79,6 @@ def main_menu_loop(screen: pygame.Surface,
                             logger.debug("Opening Options from Mouse Click")
                             run_options(screen, model, background_surf, background_rect, fonts, settings_model, sound_manager)
             # this if handles the input from the mouse left click with an approximate hitbox
-        draw_menu(screen, model, background_surf, background_rect, fonts) # draw the menu
+        _, click_rects = draw_menu(screen, model, background_surf, background_rect, fonts) # draw the menu
         pygame.display.flip() # update the display, matching every other controller's loop
         clock.tick(60) # limit to 60 FPS

@@ -83,7 +83,7 @@ class TestSkinSelectionView(unittest.TestCase):
     def test_draw_skin_selection_menu_with_background(self):
         # Test drawing with custom background
         try:
-            back_rect = draw_skin_selection_menu(
+            back_rect, skin_hit_rects = draw_skin_selection_menu(
                 self.screen,
                 self.model,
                 self.background_surf,
@@ -92,14 +92,16 @@ class TestSkinSelectionView(unittest.TestCase):
             )
             self.assertIsNotNone(back_rect)
             self.assertIsInstance(back_rect, pygame.Rect)
+            self.assertIsInstance(skin_hit_rects, list)
+            self.assertEqual(len(skin_hit_rects), len(self.model.available_skins))
             print("Skin selection menu renders with custom background")
         except Exception as e:
             self.fail(f"Error: {e}")
-    
+
     def test_draw_skin_selection_menu_without_background(self):
         # Test drawing without background (solid color fallback)
         try:
-            back_rect = draw_skin_selection_menu(
+            back_rect, skin_hit_rects = draw_skin_selection_menu(
                 self.screen,
                 self.model,
                 None,  # No background
@@ -108,17 +110,18 @@ class TestSkinSelectionView(unittest.TestCase):
             )
             self.assertIsNotNone(back_rect)
             self.assertIsInstance(back_rect, pygame.Rect)
+            self.assertIsInstance(skin_hit_rects, list)
             print("Skin selection menu renders with solid color fallback")
         except Exception as e:
             self.fail(f"Error: {e}")
-    
+
     def test_draw_skin_selection_menu_with_skin_selected(self):
         # Test drawing with a skin selected
         self.model.selected_index = 1
         self.model.back_button_selected = False
-        
+
         try:
-            back_rect = draw_skin_selection_menu(
+            back_rect, skin_hit_rects = draw_skin_selection_menu(
                 self.screen,
                 self.model,
                 self.background_surf,
