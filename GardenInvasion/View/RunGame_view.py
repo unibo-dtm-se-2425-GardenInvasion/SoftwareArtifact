@@ -16,12 +16,12 @@ def draw_hearts(screen: pygame.Surface, player_health: int, heart_image: pygame.
     start_x = screen.get_width() - margin - (heart_size * player_health) - (spacing * (player_health - 1))
     start_y = margin
     
-    # Draw hearts
-    for i in range(player_health):
-        x_pos = start_x + (i * (heart_size + spacing))
-        # Scale heart image if needed
+    if player_health > 0:
+        # Scale once per call and reuse for every heart, instead of rescaling per heart
         scaled_heart = pygame.transform.scale(heart_image, (heart_size, heart_size))
-        screen.blit(scaled_heart, (x_pos, start_y))
+        for i in range(player_health):
+            x_pos = start_x + (i * (heart_size + spacing))
+            screen.blit(scaled_heart, (x_pos, start_y))
 
 
 def draw_game(screen: pygame.Surface, 
