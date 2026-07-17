@@ -76,10 +76,9 @@ def run_skin_selection(screen: pygame.Surface,
                         return_to = 'back'
                         running = False
                     else:
-                        # Confirm skin selection and save
+                        # Confirm skin selection (persisted by the caller once this menu returns)
                         selected_skin = skin_model.get_selected_skin()
                         settings_model.player_skin = selected_skin.skin_id
-                        settings_model.save()
                         logger.debug(f"Enter/Space key: Skin changed to {selected_skin.display_name}")
                         return_to = 'main_menu'
                         running = False
@@ -126,10 +125,9 @@ def run_skin_selection(screen: pygame.Surface,
                         skin_model.selected_index = i
                         skin_model.current_skin_id = skin_model.available_skins[i].skin_id
                         
-                        # Confirm selection immediately on click
+                        # Confirm selection on click (persisted by the caller once this menu returns)
                         selected_skin = skin_model.get_selected_skin()
                         settings_model.player_skin = selected_skin.skin_id
-                        settings_model.save()
                         logger.debug(f"Mouse click: Skin changed to {selected_skin.display_name}")
                         return_to = 'main_menu'
                         running = False
