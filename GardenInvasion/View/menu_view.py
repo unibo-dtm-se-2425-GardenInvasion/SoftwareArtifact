@@ -92,7 +92,6 @@ def draw_menu(screen, model, background_surf, background_rect, fonts):
     inst_rect = inst_text.get_rect(center=(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.65))  # Position instructions at bottom
     screen.blit(inst_text, inst_rect)  # Draw instructions to screen
 
-    pygame.display.flip()  # Update the display to show all drawn elements
     return label_rects  # Return menu item rects to controller for input detection
 
 def draw_modal(screen, selected_button=1):
