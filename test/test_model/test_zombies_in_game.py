@@ -11,7 +11,7 @@ from GardenInvasion.Model.wave_model import WaveManager
 from GardenInvasion.Model.plant_model import Player
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
-def test_zombies_visual():
+def manual_zombies_visual_check():
     # Test visivo degli zombie nel gioco
     os.environ['SDL_AUDIODRIVER'] = 'dummy'
     pygame.init()
@@ -66,4 +66,4 @@ def test_zombies_visual():
     print("Visual test completed.")
 
 if __name__ == "__main__":
-    test_zombies_visual()
+    manual_zombies_visual_check()

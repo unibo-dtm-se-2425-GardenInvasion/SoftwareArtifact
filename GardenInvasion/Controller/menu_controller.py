@@ -1,5 +1,6 @@
 import pygame
 import sys
+from .. import logger
 from ..Model.menu_model import MenuModel
 from ..View.menu_view import draw_menu
 from ..Utilities.constants import*
@@ -29,7 +30,7 @@ def main_menu_loop(screen: pygame.Surface,
     while running: # loop reads events, updates model, draws view
         for event in pygame.event.get():
             if _global_quit(event, screen, model):
-                print("Global quit confirmed from main menu")
+                logger.debug("Global quit confirmed from main menu")
                 sound_manager.stop_music(fade_ms=1000) # Fade out music over 1 second
                 running = False
                 break

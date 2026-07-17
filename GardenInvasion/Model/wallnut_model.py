@@ -1,5 +1,6 @@
 import pygame
 from pathlib import Path
+from .. import logger
 from ..Utilities.constants import Brown, Lighter_Brown, Even_Lighter_Brown
 from .sound_manager_model import SoundManager
 
@@ -27,7 +28,7 @@ class WallNut(pygame.sprite.Sprite): # Model for a defensive wall-nut that prote
                 1: pygame.transform.smoothscale(sprite_dmg1, self.wallnut_size),  # Damaged (1 life point)
             }
         except (pygame.error, FileNotFoundError) as e:
-            print(f"Error loading wallnut sprites: {e}")
+            logger.warning(f"Error loading wallnut sprites: {e}")
             # Create placeholder colored rectangles if images don't exist
             self.sprites = {
                 2: self._create_placeholder(self.wallnut_size, Brown),
@@ -141,5 +142,5 @@ class WallNutManager:
     def place_all_wallnuts(self):
         # place wall-nuts in all 4 slots at game start.
         for i in range(self.max_wallnuts):
-            print("Placing wallnut in slot", i)
+            logger.debug(f"Placing wallnut in slot {i}")
             self.place_wallnut(i, self.sound_manager)

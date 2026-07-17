@@ -1,4 +1,5 @@
 import pygame
+from .. import logger
 from .zombie_model import RedZombie, OrangeZombie
 from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -75,7 +76,7 @@ class WaveManager:
         self.wave_complete = False
         self.wave_timers = []
         
-        print(f"Wave {self.current_wave} begins")
+        logger.debug(f"Wave {self.current_wave} begins")
         
         # execute wave logic based on current wave number
         if self.current_wave == 1:
@@ -134,7 +135,7 @@ class WaveManager:
         self._spawn_orange('A', 'roam_full', 1000)
         
     def _wave_5(self):
-        print("Ondata 5 - Fase 1: 3 Rossi")
+        logger.debug("Ondata 5 - Fase 1: 3 Rossi")
         
         # phase 1 with 3 base 1 zombies
         self._spawn_red('D', 'straight')
@@ -163,18 +164,6 @@ class WaveManager:
     def all_waves_completed(self):
         # check if all waves are completed
         return self.current_wave >= self.total_waves and self.wave_complete
-    
-    def get_wave_info(self):
-        # return string with current wave info for UI display
-        if self.waiting_for_next_wave:
-            time_left = max(0, (self.next_wave_timer - pygame.time.get_ticks()) // 1000)
-            return f"Ondata {self.current_wave + 1} tra {time_left}s"
-        elif self.wave_complete and self.current_wave >= self.total_waves:
-            return "VITTORIA!"
-        elif self.wave_complete:
-            return f"Ondata {self.current_wave} completata"
-        else:
-            return f"Ondata {self.current_wave} - Zombie: {len(self.zombie_group)}"
     
     def is_victory(self) -> bool: # check if player won by completing all waves and defeating all zombies
         all_waves_completed = self.current_wave >= self.total_waves

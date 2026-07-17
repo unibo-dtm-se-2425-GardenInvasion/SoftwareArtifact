@@ -2,6 +2,7 @@ import pygame
 import sys
 from pathlib import Path
 import random
+from .. import logger
 from ..Model.menu_model import MenuModel, BackgroundModel
 from ..View.menu_view import draw_pause_modal, get_pause_menu_button_rects
 from ..Utilities.constants import*
@@ -11,7 +12,7 @@ from ..Model.wave_model import WaveManager
 from .plant_controller import handle_player_input
 from .wallnut_controller import handle_wallnut_placement
 from ..View.RunGame_view import draw_game
-from .menu_controller_utilities import show_confirm_quit
+from .menu_controller_utilities import show_confirm_quit, get_blurred_background
 from ..Model.setting_volume_model import SettingsModel
 from ..Model.sound_manager_model import SoundManager
 from ..Model.game_over_model import GameOverModel
@@ -23,10 +24,7 @@ from ..Model.PowerUp_model import PowerUpManager, IncreasingFirePU, RepairWallnu
 
 def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
     clock = pygame.time.Clock()
-    background_copy = screen.copy()
-    small_size = (screen.get_width() // 3, screen.get_height() // 3)
-    blurred = pygame.transform.smoothscale(background_copy, small_size)
-    blurred = pygame.transform.smoothscale(blurred, screen.get_size())
+    blurred = get_blurred_background(screen, [3])
     # Reset to middle button (Resume) by default
     pause_selected = 1  # 0=Main Menu, 1=Resume, 2=Quit
     
@@ -42,16 +40,16 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
                     pause_selected = (pause_selected + 1) % 3 # right arrow or D pressed
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if pause_selected == 0:
-                        print("Enter/Space key detected, Returning to Main Menu from Pause Menu")
+                        logger.debug("Enter/Space key detected, Returning to Main Menu from Pause Menu")
                         return 'menu'
                     elif pause_selected == 1:
-                        print("Enter/Space key detected, Resuming Game from Pause Menu")
+                        logger.debug("Enter/Space key detected, Resuming Game from Pause Menu")
                         return 'resume'
                     else:
-                        print("Enter/Space key detected, Quitting Game from Pause Menu, Bye Bye!")
+                        logger.debug("Enter/Space key detected, Quitting Game from Pause Menu, Bye Bye!")
                         return 'quit'
                 elif event.key == pygame.K_ESCAPE:
-                    print("Resuming Game from Pause Menu via ESC key")
+                    logger.debug("Resuming Game from Pause Menu via ESC key")
                     return 'resume'  # ESC in pause menu = resume
                     
             if event.type == pygame.MOUSEMOTION:
@@ -102,12 +100,8 @@ def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_m
     sound_manager.play_sound('game_over') 
 
     # Capture and blur the background ONCE before the loop
-    background_snapshot = screen.copy() # Capture current screen
-    small_size = (screen.get_width() // 8, screen.get_height() // 8) # Reduce size for blurring
-    blurred_bg = pygame.transform.smoothscale(background_snapshot, small_size)
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, (screen.get_width() // 6, screen.get_height() // 6))
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, screen.get_size())
-    
+    blurred_bg = get_blurred_background(screen, [8, 6])
+
     # Store button rects (will be updated after first draw)
     restart_rect = None
     menu_rect = None
@@ -133,10 +127,10 @@ def show_game_over_screen(screen: pygame.Surface, menu_model: MenuModel, sound_m
                     elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                         selected = game_over_model.get_selected_option()
                         if selected == "Start Again":
-                            print("Restarting game")
+                            logger.debug("Restarting game")
                             return 'restart'
                         else:
-                            print("Returning to main menu")
+                            logger.debug("Returning to main menu")
                             return 'menu'
                             
                 if event.type == pygame.MOUSEMOTION: # Handle mouse hover
@@ -179,12 +173,8 @@ def show_victory_screen(screen: pygame.Surface, menu_model: MenuModel, sound_man
     sound_manager.play_sound('victory')
     
     # Capture and blur the background ONCE before the loop
-    background_snapshot = screen.copy()
-    small_size = (screen.get_width() // 8, screen.get_height() // 8)
-    blurred_bg = pygame.transform.smoothscale(background_snapshot, small_size)
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, (screen.get_width() // 6, screen.get_height() // 6))
-    blurred_bg = pygame.transform.smoothscale(blurred_bg, screen.get_size())
-    
+    blurred_bg = get_blurred_background(screen, [8, 6])
+
     # Store button rects
     play_again_rect = None
     menu_rect = None
@@ -252,57 +242,63 @@ def show_victory_screen(screen: pygame.Surface, menu_model: MenuModel, sound_man
 
 # series of functions to handle different types of collisions in the game
 
+def _resolve_group_collisions(attacker_group, defender_group, on_hit):
+    # Shared shape for the 3 group-vs-group collision handlers below: the attacker
+    # is always removed on contact (dokill=True), the defender survives the
+    # collision call itself and is handled one at a time via on_hit(defender).
+    # Returns True if any attacker collided with anything.
+    collisions = pygame.sprite.groupcollide(attacker_group, defender_group, True, False)
+    for defenders_hit in collisions.values():
+        for defender in defenders_hit:
+            on_hit(defender)
+    return len(collisions) > 0
+
+
+def _resolve_plant_collisions(player, attacker_group, on_hit, stop_on_destroy):
+    # Shared shape for the 2 attacker-vs-plant collision handlers below: every
+    # attacker touching the player is removed on contact (dokill=True), and
+    # on_hit(attacker) applies damage/sound/logging and returns whether that hit
+    # destroyed the plant. stop_on_destroy preserves each handler's own original
+    # behavior on further hits within the same frame once the plant is destroyed.
+    hits = pygame.sprite.spritecollide(player, attacker_group, True, pygame.sprite.collide_rect)
+    plant_was_destroyed = False
+    for attacker in hits:
+        if on_hit(attacker):
+            plant_was_destroyed = True
+            if stop_on_destroy:
+                break
+    return plant_was_destroyed
+
+
 def _handle_projectile_zombie_collisions(projectile_group, zombie_group, sound_manager=None, powerup_manager=None):
     # Handle collisions between player projectiles and zombies
-    collisions = pygame.sprite.groupcollide(
-        projectile_group,
-        zombie_group,
-        True,
-        False
-    )
-    
-    # For each collision, make the zombie take damage
-    for projectile, zombies_hit in collisions.items():
-        for zombie in zombies_hit:
-            zombie_destroyed = zombie.take_damage(1)  # Deal 1 damage
-            if sound_manager:
-                sound_manager.play_sound('zombie_hit')
-            
-            if zombie_destroyed and powerup_manager is not None: # spawn power-up with 50% probability if zombie was destroyed
-                if random.random() < 0.5:
-                    powerup_manager.spawn_random_powerup(zombie.rect.center)
-                    
-    return len(collisions) > 0  # Return True if any collisions occurred
+    def on_hit(zombie):
+        zombie_destroyed = zombie.take_damage(1)  # Deal 1 damage
+        if sound_manager:
+            sound_manager.play_sound('zombie_hit')
+
+        if zombie_destroyed and powerup_manager is not None: # spawn power-up with 50% probability if zombie was destroyed
+            if random.random() < 0.5:
+                powerup_manager.spawn_random_powerup(zombie.rect.center)
+
+    return _resolve_group_collisions(projectile_group, zombie_group, on_hit)
 
 def _handle_zombie_projectile_plant_collisions(zombie_projectile_group, player, sound_manager=None):
     # Handle collisions between zombie projectiles and plant
-    
-    # Check collision between zombie projectiles and player
-    collisions = pygame.sprite.spritecollide(
-        player,                    
-        zombie_projectile_group,   
-        True,                      
-        pygame.sprite.collide_rect 
-    )
-        
-    plant_was_destroyed = False
-    
-    # For each collision, make the plant take damage
-    for projectile in collisions:        
+    def on_hit(projectile):
         # Plant hit by projectile
         if sound_manager:
             sound_manager.play_sound('plant_hit')
-        
+
         plant_destroyed = player.take_damage()
-        
+
         # Check if plant was destroyed
         if plant_destroyed:
-            print("plant destroyed by zombie projectile")
-            plant_was_destroyed = True
-            break
-    
+            logger.debug("plant destroyed by zombie projectile")
+        return plant_destroyed
+
     # Return True only if plant was actually destroyed, not just hit
-    return plant_was_destroyed
+    return _resolve_plant_collisions(player, zombie_projectile_group, on_hit, stop_on_destroy=True)
 
 
 def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnut_manager, sound_manager=None):
@@ -310,91 +306,51 @@ def _handle_zombie_projectile_wallnut_collisions(zombie_projectile_group, wallnu
 
     # Get the wallnut sprite group
     wallnut_group = wallnut_manager.get_wallnuts()
-    
-    # Check collisions between zombie projectiles and wallnuts
-    collisions = pygame.sprite.groupcollide(
-        zombie_projectile_group,  
-        wallnut_group,            
-        True,                     
-        False                     
-    )
-    
-    wallnut_destroyed_count = 0
-    
-    # For each collision, make the wallnut take damage
-    for projectile, wallnuts_hit in collisions.items():
-        for wallnut in wallnuts_hit:
-            wallnut_destroyed = wallnut.take_damage()
-            if wallnut_destroyed:
-                wallnut_destroyed_count += 1
-                print(f"Wallnut {wallnut.slot_index} destroyed by zombie projectile")
-            else:
-                print(f"Wallnut {wallnut.slot_index} hit by zombie projectile! Health: {wallnut.health}")
-    
-    return len(collisions) > 0  # Return True if any collisions occurred
+
+    def on_hit(wallnut):
+        wallnut_destroyed = wallnut.take_damage()
+        if wallnut_destroyed:
+            logger.debug(f"Wallnut {wallnut.slot_index} destroyed by zombie projectile")
+        else:
+            logger.debug(f"Wallnut {wallnut.slot_index} hit by zombie projectile! Health: {wallnut.health}")
+
+    return _resolve_group_collisions(zombie_projectile_group, wallnut_group, on_hit)
 
 
 def _handle_zombie_wallnut_collisions(zombie_group, wallnut_manager, sound_manager=None):
     # Handle collisions between zombies and wallnuts
     # Zombie is destroyed on contact, wallnut takes damage
-    
+
     wallnut_group = wallnut_manager.get_wallnuts()
-    
-    # Check collisions between zombies and wallnuts
-    # True = remove zombie on collision (it gets destroyed)
-    # False = don't auto-remove wallnut (it takes damage via take_damage())
-    collisions = pygame.sprite.groupcollide(
-        zombie_group,      
-        wallnut_group,     
-        True,              
-        False              
-    )
-    
-    wallnut_destroyed_count = 0
-    
-    # For each collision, make the wallnut take damage
-    for zombie, wallnuts_hit in collisions.items():
-        for wallnut in wallnuts_hit:
-            wallnut_destroyed = wallnut.take_damage()
-            if wallnut_destroyed:
-                wallnut_destroyed_count += 1
-                print(f"Wallnut {wallnut.slot_index} destroyed by zombie")
-            else:
-                print(f"Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
-    
-    return len(collisions) > 0  # Return True if any collisions occurred
+
+    def on_hit(wallnut):
+        wallnut_destroyed = wallnut.take_damage()
+        if wallnut_destroyed:
+            logger.debug(f"Wallnut {wallnut.slot_index} destroyed by zombie")
+        else:
+            logger.debug(f"Zombie destroyed by wallnut {wallnut.slot_index}! Wallnut health: {wallnut.health}")
+
+    return _resolve_group_collisions(zombie_group, wallnut_group, on_hit)
 
 
 def _handle_zombie_plant_collisions(zombie_group, player, sound_manager=None):
     # Handle collisions between zombies and the plant.
     # Zombie is destroyed on contact, plant takes damage.
-
-    # Check collisions between zombies and player
-    # True = remove zombie on collision (it gets destroyed)
-    collisions = pygame.sprite.spritecollide(
-        player,              
-        zombie_group,        
-        True,                
-        pygame.sprite.collide_rect  
-    )
-    
-    plant_was_destroyed = False
-    
-    # For each collision, make the plant take damage
-    for zombie in collisions:
-        print(f"Zombie hits plant. Plant life before: {player.life_points}")
+    def on_hit(zombie):
+        logger.debug(f"Zombie hits plant. Plant life before: {player.life_points}")
         if sound_manager:
             sound_manager.play_sound('plant_hit')
-        
+
         plant_destroyed = player.take_damage()
-        print(f"Plant life after: {player.life_points}")
-        
+        logger.debug(f"Plant life after: {player.life_points}")
+
         if plant_destroyed:
-            print("PLANT DESTROYED BY ZOMBIE! GAME OVER!")
-            plant_was_destroyed = True
+            logger.debug("PLANT DESTROYED BY ZOMBIE! GAME OVER!")
         else:
-            print(f"Plant health: {player.life_points}/{player.max_life_points}")
-    return plant_was_destroyed  
+            logger.debug(f"Plant health: {player.life_points}/{player.max_life_points}")
+        return plant_destroyed
+
+    return _resolve_plant_collisions(player, zombie_group, on_hit, stop_on_destroy=False)
 
 # Main game loop controller
 def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsModel, sound_manager: SoundManager) -> None:
@@ -409,7 +365,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     try:
         heart_image = pygame.image.load(heart_path).convert_alpha()
     except pygame.error as e:
-        print(f"Error loading heart image: {e}")
+        logger.warning(f"Error loading heart image: {e}")
         # Create a fallback red heart rectangle if image not found
         heart_image = pygame.Surface((40, 40))
         heart_image.fill((255, 0, 0))
@@ -449,7 +405,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                     pygame.quit()
                     sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                print("Escape key pressed, Pause Menu shown")
+                logger.debug("Escape key pressed, Pause Menu shown")
                 sound_manager.pause_music()
                 action = show_pause_menu(screen, model)
                 if action == 'quit':
@@ -526,7 +482,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
         
         # Check if plant was destroyed (game over)
         if plant_destroyed:
-            print("game over, plant destroyed")
+            logger.debug("game over, plant destroyed")
             sound_manager.stop_music(fade_ms=500)
             # Show game over screen
             action = show_game_over_screen(screen, model, sound_manager)
@@ -541,7 +497,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
                 sys.exit()
         
         if wave_manager.is_victory():
-            print("Victory, all waves defeated")
+            logger.debug("Victory, all waves defeated")
             sound_manager.stop_music(fade_ms=500)
             action = show_victory_screen(screen, model, sound_manager)
             

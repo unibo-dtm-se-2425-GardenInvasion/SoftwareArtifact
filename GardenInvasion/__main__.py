@@ -1,5 +1,6 @@
 import pygame, sys
 from pathlib import Path
+from GardenInvasion import logger
 from GardenInvasion.Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from GardenInvasion.Model.menu_model import BackgroundModel
 from GardenInvasion.Controller.menu_controller import main_menu_loop
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     try:
         main_menu_loop(screen, background_model.surface, background_model.rect, fonts)
     except Exception as e:
-        print("Fatal error:", e)
+        logger.exception(f"Fatal error: {e}")
     finally:
         pygame.quit()
         sys.exit()

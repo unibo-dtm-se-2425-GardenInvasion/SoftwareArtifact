@@ -1,23 +1,20 @@
 import pygame
 import sys
 import webbrowser # Added import for webbrowser later used for the email
-from .menu_controller_utilities import show_confirm_quit
+from .. import logger
+from .menu_controller_utilities import show_confirm_quit, get_blurred_background
 from ..Model.menu_model import MenuModel
 from ..Model.options_model import OptionsModel, VolumeModel
 from ..Model.setting_volume_model import SettingsModel
 from ..View.options_view import draw_options_menu, draw_contact_modal, draw_volume_menu
-from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from ..Utilities.constants import SCREEN_WIDTH, SCREEN_HEIGHT, CONTACT_EMAIL
 from .skin_selection_controller import run_skin_selection
 from ..Model.sound_manager_model import SoundManager
 
 # Function to show the contact confirmation modal when "Contact Us" is selected in the options menu
 def show_contact_confirmation(screen: pygame.Surface, options_model: OptionsModel) -> bool:
     clock = pygame.time.Clock()
-    background_copy = screen.copy()
-    small_size = (screen.get_width() // 3, screen.get_height() // 3)
-    blurred = pygame.transform.smoothscale(background_copy, small_size)
-    blurred = pygame.transform.smoothscale(blurred, screen.get_size())
-    # create a blurred background screen for the pop up regarding the contact us option
+    blurred = get_blurred_background(screen, [3]) # create a blurred background screen for the pop up regarding the contact us option
     options_model.modal_selected_button = 0 # set default selected button to "Open Email Client"
     
     while True:
@@ -80,7 +77,7 @@ def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, b
                 # Show quit confirmation
                 print ("'X' Click detected, global quit shown in volume submenu")
                 if show_confirm_quit(screen, model):
-                    print("Click detected, global quit from volume submenu")
+                    logger.debug("Click detected, global quit from volume submenu")
                     pygame.quit()
                     sys.exit()
                     
@@ -101,7 +98,7 @@ def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, b
                 elif event.key == pygame.K_ESCAPE:
                     print ("Escape key detected in volume submenu, global quit shown")
                     if show_confirm_quit(screen, model):
-                        print("Enter/space key detected, Global quit from volume submenu")
+                        logger.debug("Enter/space key detected, Global quit from volume submenu")
                         pygame.quit()
                         sys.exit()
                         
@@ -143,15 +140,15 @@ def run_options(screen: pygame.Surface,
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print("'X' click detected in options menu, global quit shown")
+                logger.debug("'X' click detected in options menu, global quit shown")
                 if show_confirm_quit(screen, model):
-                    print("Click detected, global quit from options menu")
+                    logger.debug("Click detected, global quit from options menu")
                     pygame.quit()
                     sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                print("Escape key detected in options menu, global quit shown")
+                logger.debug("Escape key detected in options menu, global quit shown")
                 if show_confirm_quit(screen, model):
-                    print("Enter/space key detected, global quit from options menu")
+                    logger.debug("Enter/space key detected, global quit from options menu")
                     pygame.quit()
                     sys.exit()
                 
@@ -162,30 +159,30 @@ def run_options(screen: pygame.Surface,
                     options_model.selected_index = (options_model.selected_index + 1) % len(options_model.options_items)
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if options_model.selected_index == 0:  # Volume
-                        print("Enter/Space key detected on Volume option, opening volume menu")
+                        logger.debug("Enter/Space key detected on Volume option, opening volume menu")
                         options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume, sound_manager, settings_model)
                         settings_model.volume = options_model.volume
                         settings_model.save()
                     
                     elif options_model.selected_index == 1:  # Skin Personalization
-                        print("Enter/Space key detected on Skin Personalization, opening skin selector")
+                        logger.debug("Enter/Space key detected on Skin Personalization, opening skin selector")
                         result = run_skin_selection(screen, model, background_surf, background_rect, fonts, settings_model)
                         if result == 'main_menu':
-                            print("Skin selected, returning to main menu")
+                            logger.debug("Skin selected, returning to main menu")
                             running = False
 
                     elif options_model.selected_index == 2:  # Contact Us
-                        print("Enter/Space key detected on Contact Us option, showing contact confirmation modal")
+                        logger.debug("Enter/Space key detected on Contact Us option, showing contact confirmation modal")
                         if show_contact_confirmation(screen, options_model):
-                            email = "GardenInvasion@email.com"
+                            email = CONTACT_EMAIL
                             mailto_url = "mailto:" + email
                             webbrowser.open(mailto_url)
-                            print(f"Enter/Space key. Opening email client with URL: {mailto_url}")
+                            logger.debug(f"Enter/Space key. Opening email client with URL: {mailto_url}")
                         else:
-                            print("Contact Us confirmation modal closed without opening email client")
+                            logger.debug("Contact Us confirmation modal closed without opening email client")
 
                     elif options_model.selected_index == 3:  
-                        print("Enter/Space key detected on Back option, exiting options menu")
+                        logger.debug("Enter/Space key detected on Back option, exiting options menu")
                         running = False
             
             # Mouse hover detection to highlight options
@@ -206,30 +203,30 @@ def run_options(screen: pygame.Surface,
                         options_model.selected_index = i
                         
                         if i == 0:  # Volume
-                            print("Volume option clicked, opening volume menu")
+                            logger.debug("Volume option clicked, opening volume menu")
                             options_model.volume = run_volume_menu(screen, model, background_surf, background_rect, fonts, options_model.volume, sound_manager, settings_model)
                             settings_model.volume = options_model.volume
                             settings_model.save()
 
                         elif i == 1:  # Skin Personalization
-                            print("Skin Personalization clicked, opening skin selector")
+                            logger.debug("Skin Personalization clicked, opening skin selector")
                             result = run_skin_selection(screen, model, background_surf, background_rect, fonts, settings_model)
                             if result == 'main_menu':
-                                print("Skin selected, returning to main menu")
+                                logger.debug("Skin selected, returning to main menu")
                                 running = False
 
                         elif i == 2:  # Contact Us
-                            print("Contact Us option clicked, showing contact confirmation modal")
+                            logger.debug("Contact Us option clicked, showing contact confirmation modal")
                             if show_contact_confirmation(screen, options_model):
-                                email = "GardenInvasion@email.com"
+                                email = CONTACT_EMAIL
                                 mailto_url = "mailto:" + email
                                 webbrowser.open(mailto_url)
-                                print(f"Click detected. Opening email client with URL: {mailto_url}")
+                                logger.debug(f"Click detected. Opening email client with URL: {mailto_url}")
                             else:
-                                print("Contact Us confirmation modal closed without opening email client")
+                                logger.debug("Contact Us confirmation modal closed without opening email client")
 
                         elif i == 3:  # Back
-                            print("Back option clicked, exiting options menu")
+                            logger.debug("Back option clicked, exiting options menu")
                             running = False
                         break
                 if not running: # Exit the loop if "Back" was clicked
