@@ -75,7 +75,7 @@ def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, b
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 # Show quit confirmation
-                print ("'X' Click detected, global quit shown in volume submenu")
+                logger.debug("'X' Click detected, global quit shown in volume submenu")
                 if show_confirm_quit(screen, model):
                     logger.debug("Click detected, global quit from volume submenu")
                     pygame.quit()
@@ -93,10 +93,10 @@ def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, b
                     sound_manager.update_volume_realtime()
 
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    print ("Enter/Space key detected in volume submenu, exiting volume menu")
+                    logger.debug("Enter/Space key detected in volume submenu, exiting volume menu")
                     running = False # Exit volume menu
                 elif event.key == pygame.K_ESCAPE:
-                    print ("Escape key detected in volume submenu, global quit shown")
+                    logger.debug("Escape key detected in volume submenu, global quit shown")
                     if show_confirm_quit(screen, model):
                         logger.debug("Enter/space key detected, Global quit from volume submenu")
                         pygame.quit()
@@ -113,7 +113,7 @@ def run_volume_menu(screen: pygame.Surface, model: MenuModel, background_surf, b
                 back_rect.center = (SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.61)
                 
                 if back_rect.collidepoint(event.pos):
-                    print ("Back button clicked in volume menu, exiting volume menu")
+                    logger.debug("Back button clicked in volume menu, exiting volume menu")
                     running = False # Exit volume menu
         back_rect = draw_volume_menu(screen, volume_model, background_surf, background_rect, fonts)
         pygame.display.flip()

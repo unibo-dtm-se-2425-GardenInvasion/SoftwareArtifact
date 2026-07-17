@@ -31,7 +31,7 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print ("Quit event detected in pause menu, Bye Bye!")
+                logger.debug("Quit event detected in pause menu, Bye Bye!")
                 return 'quit' # Quit the game
             if event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_LEFT, pygame.K_a):
@@ -76,13 +76,13 @@ def show_pause_menu(screen: pygame.Surface, model: MenuModel) -> str:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 menu_rect, resume_rect, quit_rect = get_pause_menu_button_rects()
                 if pause_selected == 0:
-                    print ("Returning to Main Menu from Pause Menu via Mouse Click")
+                    logger.debug("Returning to Main Menu from Pause Menu via Mouse Click")
                     return 'menu'
                 elif pause_selected == 1:
-                    print ("Resuming Game from Pause Menu via Mouse Click")
+                    logger.debug("Resuming Game from Pause Menu via Mouse Click")
                     return 'resume'
                 else:
-                    print ("Quitting Game from Pause Menu via Mouse Click, Bye Bye!")
+                    logger.debug("Quitting Game from Pause Menu via Mouse Click, Bye Bye!")
                     return 'quit'
         
         screen.blit(blurred, (0, 0))
@@ -399,7 +399,7 @@ def run_game(screen: pygame.Surface, model: MenuModel, settings_model: SettingsM
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print ("Quit event detected in game loop")
+                logger.debug("Quit event detected in game loop")
                 if show_confirm_quit(screen, model):
                     sound_manager.stop_music(fade_ms=500)
                     pygame.quit()
