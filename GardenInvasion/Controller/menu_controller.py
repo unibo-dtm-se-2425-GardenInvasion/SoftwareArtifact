@@ -43,13 +43,13 @@ def main_menu_loop(screen: pygame.Surface,
                     model.selected_index = (model.selected_index + 1) % len(model.menu_items)
                 elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if model.selected_index == 0:
-                        print ("Starting Game from enter/space key")
+                        logger.debug("Starting Game from enter/space key")
                         sound_manager.stop_music(fade_ms=500) # Fade out menu music quickly
                         run_game(screen, model, settings_model, sound_manager)  # Pass sound_manager
                         # Restart menu music when returning
                         sound_manager.play_music('menu', loops=-1, fade_ms=2000) # Play menu music with fade-in
                     else:
-                        print ("Opening Options from enter/space key")
+                        logger.debug("Opening Options from enter/space key")
                         run_options(screen, model, background_surf, background_rect, fonts, settings_model, sound_manager)
             # this if handles the input from the keyboard (UP/W and DOWN/S to navigate, ENTER/SPACE to select)
             
@@ -72,14 +72,14 @@ def main_menu_loop(screen: pygame.Surface,
                         # within 40% of the line height
                         model.selected_index = i
                         if i == 0:
-                            print ("Starting Game from Mouse Click")
+                            logger.debug("Starting Game from Mouse Click")
 
                             sound_manager.stop_music(fade_ms=500) # Fade out menu music quickly
                             run_game(screen, model, settings_model, sound_manager)  # Pass sound_manager
                             # Restart menu music when returning
                             sound_manager.play_music('menu', loops=-1, fade_ms=2000) # Play menu music with fade-in
                         else:
-                            print ("Opening Options from Mouse Click")
+                            logger.debug("Opening Options from Mouse Click")
                             run_options(screen, model, background_surf, background_rect, fonts, settings_model, sound_manager)
             # this if handles the input from the mouse left click with an approximate hitbox
         draw_menu(screen, model, background_surf, background_rect, fonts) # draw the menu
